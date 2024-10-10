@@ -1,0 +1,5 @@
+package com.kofi.assist
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity: FlutterActivity()
