@@ -70,6 +70,7 @@ class CustomTheme {
   );
 
   static final ThemeData lightTheme = ThemeData(
+    primaryColor: primaryColor,
     brightness: Brightness
         .light, //Setting the Brightness to light  so that this can be used as Light ThemeData
     scaffoldBackgroundColor: Colors.white,
