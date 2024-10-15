@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -42,7 +41,7 @@ class MovingBackgroundScreenState extends State<MovingBackgroundScreen>
     _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
       if (_currentPage != _images.length - 1) {
         _pageController.nextPage(
-            duration: const Duration(milliseconds: 800), curve: Curves.ease);
+            duration: const Duration(milliseconds: 500), curve: Curves.ease);
         _currentPage++;
       } else {
         _pageController.jumpToPage(
@@ -130,7 +129,7 @@ class MovingBackgroundScreenState extends State<MovingBackgroundScreen>
                   width: size.width * 0.5,
                   child: OutlinedButton(
                     onPressed: () {
-                      log('Button 1 Pressed');
+                      Get.toNamed('/signin');
                     },
                     child: const Text('Sign In'),
                   ),
@@ -140,7 +139,7 @@ class MovingBackgroundScreenState extends State<MovingBackgroundScreen>
                   width: size.width * 0.5,
                   child: OutlinedButton(
                     onPressed: () {
-                      log('Get Started');
+                      Get.toNamed('/signup');
                     },
                     child: const Text('Get Started'),
                   ),
