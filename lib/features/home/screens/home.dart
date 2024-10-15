@@ -49,6 +49,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Home'),
+          automaticallyImplyLeading: false,
         ),
         body: const Center(
           child: Text('Home Screen'),
