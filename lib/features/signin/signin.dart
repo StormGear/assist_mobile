@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -14,8 +15,17 @@ class _SignInState extends State<SignIn> {
       appBar: AppBar(
         title: const Text('Sign In'),
       ),
-      body: const Center(
-        child: Text('Sign In Screen'),
+      body: Center(
+        child: Column(
+          children: [
+            const Text('Sign In Screen'),
+            ElevatedButton(
+                onPressed: () {
+                  Get.toNamed('/home');
+                },
+                child: const Text('home'))
+          ],
+        ),
       ),
     );
   }

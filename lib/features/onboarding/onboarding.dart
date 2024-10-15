@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:assist/common_widgets/common_button.dart';
 import 'package:assist/common_widgets/constants/colors.dart';
-import 'package:assist/features/home/controllers/home_controller.dart';
+import 'package:assist/features/welcome/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
