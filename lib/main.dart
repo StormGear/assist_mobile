@@ -1,6 +1,5 @@
 import 'package:assist/features/onboarding/onboarding.dart';
 import 'package:assist/routes/page_routes.dart';
-import 'package:assist/translations/codegen_loader.g.dart';
 import 'package:assist/utils/dependency_injection.dart';
 import 'package:assist/utils/theme/custom_theme.dart';
 import 'package:assist/utils/theme/theme_controller.dart';
@@ -18,7 +17,7 @@ void main() async {
       ],
       path: 'assets/translations', // Path to your translation files
       fallbackLocale: const Locale('en', 'US'),
-      assetLoader: const CodegenLoader(),
+      // assetLoader: const CodegenLoader(),
       child: MyApp()));
 }
 
