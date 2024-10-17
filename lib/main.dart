@@ -1,15 +1,25 @@
 import 'package:assist/features/onboarding/onboarding.dart';
 import 'package:assist/routes/page_routes.dart';
+import 'package:assist/translations/codegen_loader.g.dart';
 import 'package:assist/utils/dependency_injection.dart';
 import 'package:assist/utils/theme/custom_theme.dart';
 import 'package:assist/utils/theme/theme_controller.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   DependencyInjection.setupDependencies();
-  runApp(MyApp());
+  runApp(EasyLocalization(
+      supportedLocales: const [
+        Locale('en', 'US'),
+      ],
+      path: 'assets/translations', // Path to your translation files
+      fallbackLocale: const Locale('en', 'US'),
+      assetLoader: const CodegenLoader(),
+      child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -28,6 +38,8 @@ class MyApp extends StatelessWidget {
       darkTheme: CustomTheme.darkTheme,
       themeMode: ThemeMode.system,
       debugShowCheckedModeBanner: false,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
       home: const Onboarding(),
     );
   }

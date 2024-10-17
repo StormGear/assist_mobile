@@ -40,6 +40,10 @@ dependencies:
   firebase_core: ^3.6.0
   flutter_svg: ^2.0.10+1
   cuberto_bottom_bar: ^3.1.0
+  easy_localization: ^3.0.7
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
@@ -70,6 +74,7 @@ flutter:
     - assets/images/logo/
     - assets/google_fonts/actor/
     - assets/images/onboarding/
+    - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
