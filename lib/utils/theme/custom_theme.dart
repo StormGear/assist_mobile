@@ -8,7 +8,10 @@ class CustomTheme {
         .dark, //Setting the Brightness to Dark  so that this can be used as Dark ThemeData
     scaffoldBackgroundColor:
         Colors.black, //Setting the Text Theme to DarkTextTheme
-    appBarTheme: const AppBarTheme(centerTitle: true),
+    appBarTheme: const AppBarTheme(
+      centerTitle: true,
+      foregroundColor: Colors.white,
+    ),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
@@ -79,18 +82,38 @@ class CustomTheme {
       backgroundColor: primaryColor,
       elevation: 0,
       centerTitle: true,
+      foregroundColor: Colors.white,
     ),
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: primaryColor,
+      selectionColor: primaryColor.withOpacity(0.3),
+      selectionHandleColor: primaryColor,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          borderSide: BorderSide.none,
+        ),
+        filled: true,
+        fillColor: Colors.white),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
+           splashFactory: InkRipple.splashFactory,
+        overlayColor:
+            WidgetStateProperty.all<Color>(primaryColor.withOpacity(0.3)),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       backgroundColor: WidgetStateProperty.all<Color>(primaryColor),
       padding: WidgetStateProperty.all<EdgeInsets>(
           const EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0)),
-      shape: WidgetStateProperty.all<OutlinedBorder>(
-          // RoundedRectangleBorder(
-          //   borderRadius: BorderRadius.circular(8.0),
-          // ),
-          const StadiumBorder()),
+      shape: WidgetStateProperty.all<OutlinedBorder>(const StadiumBorder()),
       textStyle: WidgetStateProperty.all<TextStyle>(
         const TextStyle(
           fontSize: 18,
@@ -99,6 +122,21 @@ class CustomTheme {
         ),
       ),
     )),
+    textButtonTheme: TextButtonThemeData(
+      style: ButtonStyle(
+        splashFactory: InkRipple.splashFactory,
+        overlayColor:
+            WidgetStateProperty.all<Color>(primaryColor.withOpacity(0.3)),
+        foregroundColor: WidgetStateProperty.all<Color>(primaryColor),
+        textStyle: WidgetStateProperty.all<TextStyle>(
+          const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: primaryColor,
+          ),
+        ),
+      ),
+    ),
     textTheme: const TextTheme(
       displayLarge: TextStyle(color: Colors.black, fontSize: 48.0),
       displayMedium: TextStyle(color: Colors.black, fontSize: 40.0),

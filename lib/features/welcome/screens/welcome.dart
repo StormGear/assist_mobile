@@ -38,7 +38,7 @@ class MovingBackgroundScreenState extends State<MovingBackgroundScreen>
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-    _timer = Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       if (_currentPage != _images.length - 1) {
         _pageController.nextPage(
             duration: const Duration(milliseconds: 500), curve: Curves.ease);
@@ -113,7 +113,7 @@ class MovingBackgroundScreenState extends State<MovingBackgroundScreen>
               height: size.width * 0.4,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/logo/logo.png'),
+                  image: AssetImage('assets/images/logo/logow.png'),
                   fit: BoxFit.contain,
                 ),
               ),

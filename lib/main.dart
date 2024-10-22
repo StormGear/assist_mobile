@@ -17,7 +17,6 @@ void main() async {
       ],
       path: 'assets/translations', // Path to your translation files
       fallbackLocale: const Locale('en', 'US'),
-      // assetLoader: const CodegenLoader(),
       child: MyApp()));
 }
 
