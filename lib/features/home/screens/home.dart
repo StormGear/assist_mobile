@@ -48,11 +48,23 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Home'),
+          title: Text(currentTitle),
           automaticallyImplyLeading: false,
         ),
-        body: const Center(
-          child: Text('Home Screen'),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Current Page: $_currentPage',
+                style: TextStyle(color: currentColor),
+              ),
+              Text(
+                'Current Title: $currentTitle',
+                style: TextStyle(color: currentColor),
+              ),
+            ],
+          ),
         ),
         bottomNavigationBar: CubertoBottomBar(
           key: const Key("BottomBar"),
