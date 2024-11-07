@@ -12,21 +12,21 @@ class HomeController extends GetxController {
   final List<OnBoard> demoData = [
     OnBoard(
       imageUrl: 'assets/images/onboarding/coffee_break.svg',
-      title: "Find Best Musicians All Around Your City",
+      title: "Find Skilled Artisans in your City",
       description:
-          "Thousands of musicians around you are waiting to rock your event.",
+          "Severals artisans are available in your city to help you with your tasks.",
     ),
     OnBoard(
       imageUrl: 'assets/images/onboarding/todo.svg',
-      title: "Fastest Way To Book Great Musicians",
+      title: "Fastest Way To Book Great Artisans",
       description:
-          "Find the perfect match to perform for your event and make the day remarkable.",
+          "Book an artisan in less than 5 minutes and get your task done.",
     ),
     OnBoard(
       imageUrl: 'assets/images/onboarding/workers.svg',
-      title: "Find Top Sessions Pros For Your Event",
+      title: "Make Informed Decisions when Hiring Artisans",
       description:
-          "Find the perfect match to perform for your event and make the day remarkable.",
+          "View ratings and reviews from other customers before hiring an artisan.",
     ),
   ];
 }
