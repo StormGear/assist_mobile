@@ -1,6 +1,6 @@
 import 'package:assist/common_widgets/constants/colors.dart';
-import 'package:cuberto_bottom_bar/cuberto_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -10,87 +10,176 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<TabData> tabs = [];
-  final Color _inactiveColor = primaryColor;
-  Color currentColor = primaryColor;
-  int _currentPage = 0;
-  late String currentTitle;
-
-  @override
-  void initState() {
-    super.initState();
-    tabs = [
-      const TabData(
-        iconData: Icons.home,
-        title: "Home",
-        tabColor: Colors.deepPurple,
-      ),
-      const TabData(
-        iconData: Icons.search,
-        title: "Search",
-        tabColor: Colors.pink,
-      ),
-      const TabData(
-        iconData: Icons.alarm,
-        title: "Alarm",
-        tabColor: Colors.amber,
-      ),
-      const TabData(
-        iconData: Icons.settings,
-        title: "Settings",
-        tabColor: Colors.teal,
-      ),
-    ];
-    currentTitle = tabs[0].title;
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(currentTitle),
-          automaticallyImplyLeading: false,
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Current Page: $_currentPage',
-                style: TextStyle(color: currentColor),
-              ),
-              Text(
-                'Current Title: $currentTitle',
-                style: TextStyle(color: currentColor),
-              ),
-            ],
+    return Container(
+      color: Colors.white,
+      child: Column(
+        // mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Gap(10),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: Text(
+              "I'd need help with...",
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
           ),
-        ),
-        bottomNavigationBar: CubertoBottomBar(
-          key: const Key("BottomBar"),
-          inactiveIconColor: _inactiveColor,
-          tabStyle: CubertoTabStyle.styleNormal,
-          selectedTab: _currentPage,
-          tabs: tabs
-              .map(
-                (value) => TabData(
-                  key: Key(value.title),
-                  iconData: value.iconData,
-                  title: value.title,
-                  tabColor: value.tabColor,
-                  tabGradient: value.tabGradient,
-                ),
-              )
-              .toList(),
-          onTabChangedListener: (position, title, color) {
-            setState(() {
-              _currentPage = position;
-              currentTitle = title;
-              if (color != null) {
-                currentColor = color;
-              }
-            });
-          },
-        ));
+          Gap(10),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: _buildSearchField(),
+          ),
+          Gap(20),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: Text(
+              "Select a category",
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          Gap(10),
+          _buildHorizontalScrollableGrid(context),
+          Gap(20),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: Text(
+              "Popular services",
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          Gap(10),
+          _buildHorizontalScrollableGrid(context),
+          Gap(20),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: Text(
+              "Recommended for you",
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          Gap(10),
+          _buildHorizontalScrollableGrid(context),
+          Gap(20),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: Text("Looking for something else?"),
+          ),
+          Gap(20),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
+            child: _buildCategories(context, items: [
+              'Plumbing',
+              'Electrician',
+              'Carpentry',
+              'Cleaning',
+              'Painting'
+            ]),
+          ),
+          Gap(20),
+        ],
+      ),
+    );
   }
+}
+
+Widget _buildSearchField() {
+  return TextField(
+    decoration: InputDecoration(
+      hintText: 'Try "Plumbing" or "Electrician"',
+      prefixIcon: Icon(Icons.search),
+      filled: true,
+      fillColor: Colors.grey[200],
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.all(Radius.circular(30.0)),
+        borderSide: BorderSide.none,
+      ),
+    ),
+  );
+}
+
+Widget _buildHorizontalScrollableGrid(BuildContext context,
+    {List<String> items = const []}) {
+  return SingleChildScrollView(
+    scrollDirection: Axis.horizontal,
+    child: Padding(
+      padding: const EdgeInsets.only(left: 15.0),
+      child: Row(
+        children: List.generate(10, (index) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 150,
+                height: 150,
+                margin: EdgeInsets.only(right: 10),
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: Center(
+                  child: Text(
+                    'Item $index',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                ),
+              ),
+              Gap(10),
+              Text('Item $index',
+                  style: Theme.of(context).textTheme.labelLarge),
+            ],
+          );
+        }),
+      ),
+    ),
+  );
+}
+
+Widget _buildCategories(BuildContext context, {List<String> items = const []}) {
+  return GridView.builder(
+    shrinkWrap: true,
+    physics: NeverScrollableScrollPhysics(),
+    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: 2,
+      mainAxisSpacing: 20,
+      crossAxisSpacing: 10,
+      childAspectRatio: 4,
+    ),
+    itemCount: items.length,
+    itemBuilder: (context, index) {
+      String item = items[index];
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          return Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.blueAccent),
+            ),
+            child: Center(
+              child: Text(
+                item,
+                style: TextStyle(
+                    color: primaryColor,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
 }

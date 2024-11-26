@@ -1,4 +1,4 @@
-import 'package:assist/features/home/screens/home.dart';
+import 'package:assist/features/home/screens/setup.dart';
 import 'package:assist/features/welcome/screens/welcome.dart';
 import 'package:assist/features/onboarding/onboarding.dart';
 import 'package:assist/features/signin/signin.dart';
@@ -12,7 +12,7 @@ final List<GetPage<dynamic>> appRoutes = [
   GetPage(name: '/welcome', page: () => const WelcomeScreen()),
   GetPage(name: '/signup', page: () => const SignUp()),
   GetPage(name: '/signin', page: () => const SignIn()),
-  GetPage(name: '/home', page: () => const Home()),
+  GetPage(name: '/home', page: () => const Setup()),
 ];
 
 /// `openingRoutes` represents routes to the initial screens of the application.
