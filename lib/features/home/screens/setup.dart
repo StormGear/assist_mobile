@@ -1,5 +1,6 @@
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/features/home/screens/home.dart';
+import 'package:assist/features/settings/screens/settings.dart';
 // import 'package:assist/features/home/screens/home.dart';
 import 'package:cuberto_bottom_bar/cuberto_bottom_bar.dart';
 import 'package:flutter/material.dart';
@@ -50,24 +51,37 @@ class _SetupState extends State<Setup> {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.white,
-        appBar: _currentPage == 0
-            ? AppBar(
+        appBar: switch (_currentPage) {
+          0 => AppBar(
                 backgroundColor: Colors.transparent,
                 automaticallyImplyLeading: false,
                 actions: [
-                    IconButton(
-                      iconSize: 30,
-                      icon: Icon(
-                        Icons.search,
-                        color: primaryColor,
-                      ),
-                      onPressed: () {},
+                  IconButton(
+                    iconSize: 30,
+                    icon: Icon(
+                      Icons.search,
+                      color: primaryColor,
                     ),
-                  ])
-            : AppBar(
-                title: Text(currentTitle),
-                automaticallyImplyLeading: false,
+                    onPressed: () {},
+                  ),
+                ]),
+          3 => AppBar(
+              backgroundColor: Colors.transparent,
+              title: Text(
+                currentTitle,
+                style: TextStyle(
+                    color: primaryColor,
+                    fontSize:
+                        Theme.of(context).textTheme.headlineSmall!.fontSize,
+                    fontWeight: FontWeight.bold),
               ),
+              automaticallyImplyLeading: false,
+            ),
+          _ => AppBar(
+              title: Text(currentTitle),
+              automaticallyImplyLeading: false,
+            ),
+        },
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
@@ -81,10 +95,7 @@ class _SetupState extends State<Setup> {
                     'Alarm Page',
                     style: TextStyle(color: currentColor),
                   ),
-                3 => Text(
-                    'Settings Page',
-                    style: TextStyle(color: currentColor),
-                  ),
+                3 => Settings(),
                 _ => Text(
                     'Home Page',
                     style: TextStyle(color: currentColor),
