@@ -1,5 +1,6 @@
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/features/home/screens/home.dart';
+import 'package:assist/features/postings/post.dart';
 import 'package:assist/features/settings/screens/settings.dart';
 // import 'package:assist/features/home/screens/home.dart';
 import 'package:cuberto_bottom_bar/cuberto_bottom_bar.dart';
@@ -31,8 +32,8 @@ class _SetupState extends State<Setup> {
         tabColor: Colors.deepPurple,
       ),
       const TabData(
-        iconData: Icons.search,
-        title: "Search",
+        iconData: Icons.add,
+        title: "Post",
         tabColor: Colors.pink,
       ),
       const TabData(
@@ -76,6 +77,18 @@ class _SetupState extends State<Setup> {
                     },
                   ),
                 ]),
+          1 => AppBar(
+              backgroundColor: Colors.transparent,
+              title: Text(
+                "Post Service/Business",
+                style: TextStyle(
+                    color: primaryColor,
+                    fontSize:
+                        Theme.of(context).textTheme.headlineSmall!.fontSize,
+                    fontWeight: FontWeight.bold),
+              ),
+              automaticallyImplyLeading: false,
+            ),
           3 => AppBar(
               backgroundColor: Colors.transparent,
               title: Text(
@@ -89,7 +102,15 @@ class _SetupState extends State<Setup> {
               automaticallyImplyLeading: false,
             ),
           _ => AppBar(
-              title: Text(currentTitle),
+              backgroundColor: Colors.transparent,
+              title: Text(
+                currentTitle,
+                style: TextStyle(
+                    color: primaryColor,
+                    fontSize:
+                        Theme.of(context).textTheme.headlineSmall!.fontSize,
+                    fontWeight: FontWeight.bold),
+              ),
               automaticallyImplyLeading: false,
             ),
         },
@@ -98,10 +119,7 @@ class _SetupState extends State<Setup> {
             children: <Widget>[
               switch (_currentPage) {
                 0 => Home(),
-                1 => Text(
-                    'Search Page',
-                    style: TextStyle(color: currentColor),
-                  ),
+                1 => Post(),
                 2 => Text(
                     'Alarm Page',
                     style: TextStyle(color: currentColor),

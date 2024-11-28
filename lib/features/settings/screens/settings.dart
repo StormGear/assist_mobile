@@ -40,8 +40,13 @@ class _SettingsState extends State<Settings> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                Image.asset(
+                  'assets/images/settings/gift.png',
+                  width: 20,
+                ),
+                Gap(10),
                 Text(
-                  'Help Your Friends, Get Rewarded',
+                  'Help Your Friends, Earn Rewards',
                   style: TextStyle(
                       color: primaryColor,
                       fontSize: 18,
