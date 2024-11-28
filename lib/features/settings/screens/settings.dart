@@ -19,7 +19,9 @@ class _SettingsState extends State<Settings> {
         children: [
           Gap(20),
           CircleAvatar(
-            radius: 70,
+            maxRadius: 70,
+            // foregroundImage: AssetImage('assets/images/settings/profile.jpg'),
+            backgroundImage: AssetImage('assets/images/settings/profile.jpg'),
           ),
           Gap(10),
           Text(

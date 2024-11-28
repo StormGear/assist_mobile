@@ -4,6 +4,7 @@ import 'package:assist/features/settings/screens/settings.dart';
 // import 'package:assist/features/home/screens/home.dart';
 import 'package:cuberto_bottom_bar/cuberto_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class Setup extends StatefulWidget {
@@ -56,6 +57,13 @@ class _SetupState extends State<Setup> {
           0 => AppBar(
                 backgroundColor: Colors.transparent,
                 automaticallyImplyLeading: false,
+                leadingWidth: 70,
+                leading: Row(
+                  children: [
+                    Gap(10),
+                    Image.asset('assets/images/logo/favicon.png'),
+                  ],
+                ),
                 actions: [
                   IconButton(
                     iconSize: 30,
