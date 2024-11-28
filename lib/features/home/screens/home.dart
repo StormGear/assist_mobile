@@ -1,6 +1,7 @@
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -29,7 +30,7 @@ class _HomeState extends State<Home> {
           Gap(10),
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-            child: _buildSearchField(),
+            child: _buildSearchField(context),
           ),
           Gap(20),
           Padding(
@@ -84,11 +85,18 @@ class _HomeState extends State<Home> {
   }
 }
 
-Widget _buildSearchField() {
+Widget _buildSearchField(BuildContext context) {
   return TextField(
+    onTap: () {
+      Get.toNamed('/search');
+    },
+    readOnly: true,
     decoration: InputDecoration(
       hintText: 'Try "Plumbing" or "Electrician"',
-      prefixIcon: Icon(Icons.search),
+      prefixIcon: Icon(
+        Icons.search,
+        color: Theme.of(context).primaryColor,
+      ),
       filled: true,
       fillColor: Colors.grey[200],
       border: OutlineInputBorder(
@@ -107,8 +115,7 @@ Widget _buildSearchField() {
   );
 }
 
-Widget _buildHorizontalScrollableGrid(BuildContext context,
-    {List<String> items = const []}) {
+Widget _buildHorizontalScrollableGrid(BuildContext context) {
   return SingleChildScrollView(
     scrollDirection: Axis.horizontal,
     child: Padding(

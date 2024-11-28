@@ -4,6 +4,7 @@ import 'package:assist/features/settings/screens/settings.dart';
 // import 'package:assist/features/home/screens/home.dart';
 import 'package:cuberto_bottom_bar/cuberto_bottom_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class Setup extends StatefulWidget {
   const Setup({super.key});
@@ -62,7 +63,9 @@ class _SetupState extends State<Setup> {
                       Icons.search,
                       color: primaryColor,
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Get.toNamed('/search');
+                    },
                   ),
                 ]),
           3 => AppBar(
