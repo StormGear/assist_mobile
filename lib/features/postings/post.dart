@@ -20,29 +20,34 @@ class Post extends StatelessWidget {
           //   'You can also view the services that are available on Assist and request for them.',
           //   style: Theme.of(context).textTheme.bodyMedium,
           // ),
-          Column(
-            children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.blueAccent),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/post-service');
+            },
+            child: Column(
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  child: Image.asset('assets/images/settings/gift.png'),
                 ),
-                child: Image.asset('assets/images/settings/gift.png'),
-              ),
-              Gap(10),
-              Text(
-                'Render Services',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Gap(10),
-              Text(
-                'Post your own business or services you render',
-                style: Theme.of(context).textTheme.bodyMedium,
-              )
-            ],
+                Gap(10),
+                Text(
+                  'Render Services',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Gap(10),
+                Text(
+                  'Post your own business or services you render',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                )
+              ],
+            ),
           ),
           Gap(70),
           Column(
