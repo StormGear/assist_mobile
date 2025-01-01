@@ -200,7 +200,6 @@ class _SignUpState extends State<SignUp> {
                               ),
                             ),
                             Gap(size.height * 0.04),
-                            
                             SizedBox(
                               width: size.width * 0.5,
                               child: ElevatedButton(
@@ -283,31 +282,32 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               const Gap(20),
-              SizedBox(
-                width: size.width * 0.8,
-                child: ElevatedButton(
-                    onPressed: () {},
-                    style: ButtonStyle(
-                      elevation: WidgetStateProperty.all<double>(2),
-                      foregroundColor: WidgetStateProperty.all<Color>(
-                          Theme.of(context).primaryColor),
-                      backgroundColor:
-                          WidgetStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: const Row(
-                      textBaseline: TextBaseline.alphabetic,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image(
-                          image: AssetImage('assets/images/signin/apple.png'),
-                          height: 20,
-                        ),
-                        Gap(8),
-                        Text('Sign Up with Apple'),
-                      ],
-                    )),
-              ),
+              if (Theme.of(context).platform == TargetPlatform.iOS)
+                SizedBox(
+                  width: size.width * 0.8,
+                  child: ElevatedButton(
+                      onPressed: () {},
+                      style: ButtonStyle(
+                        elevation: WidgetStateProperty.all<double>(2),
+                        foregroundColor: WidgetStateProperty.all<Color>(
+                            Theme.of(context).primaryColor),
+                        backgroundColor:
+                            WidgetStateProperty.all<Color>(Colors.white),
+                      ),
+                      child: const Row(
+                        textBaseline: TextBaseline.alphabetic,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image(
+                            image: AssetImage('assets/images/signin/apple.png'),
+                            height: 20,
+                          ),
+                          Gap(8),
+                          Text('Sign Up with Apple'),
+                        ],
+                      )),
+                ),
               const Gap(20)
             ],
           ),

@@ -1,14 +1,19 @@
 import 'package:assist/features/onboarding/onboarding.dart';
+import 'package:assist/firebase_options.dart';
 import 'package:assist/routes/page_routes.dart';
 import 'package:assist/utils/dependency_injection.dart';
 import 'package:assist/utils/theme/custom_theme.dart';
 import 'package:assist/utils/theme/theme_controller.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await EasyLocalization.ensureInitialized();
   DependencyInjection.setupDependencies();
   runApp(EasyLocalization(

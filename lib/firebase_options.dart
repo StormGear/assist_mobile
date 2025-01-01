@@ -52,7 +52,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '363102107768',
     projectId: 'assist-fcb34',
     authDomain: 'assist-fcb34.firebaseapp.com',
-    storageBucket: 'assist-fcb34.appspot.com',
+    storageBucket: 'assist-fcb34.firebasestorage.app',
     measurementId: 'G-BJPH1BQKNB',
   );
 
@@ -61,7 +61,7 @@ class DefaultFirebaseOptions {
     appId: '1:363102107768:android:c86e3ff61a6f39dc4c558d',
     messagingSenderId: '363102107768',
     projectId: 'assist-fcb34',
-    storageBucket: 'assist-fcb34.appspot.com',
+    storageBucket: 'assist-fcb34.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -69,7 +69,8 @@ class DefaultFirebaseOptions {
     appId: '1:363102107768:ios:02b6c6c933c8c3c04c558d',
     messagingSenderId: '363102107768',
     projectId: 'assist-fcb34',
-    storageBucket: 'assist-fcb34.appspot.com',
+    storageBucket: 'assist-fcb34.firebasestorage.app',
     iosBundleId: 'com.kofi.assist',
   );
+
 }
