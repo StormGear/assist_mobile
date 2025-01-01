@@ -102,7 +102,7 @@ class MovingBackgroundScreenState extends State<MovingBackgroundScreen>
           ),
           Container(),
           Container(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withAlpha(30),
           ),
           // Foreground buttons
           Positioned(

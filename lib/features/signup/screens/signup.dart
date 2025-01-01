@@ -37,13 +37,13 @@ class _SignUpState extends State<SignUp> {
                     color: Theme.of(context).scaffoldBackgroundColor,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.05),
+                        color: Colors.grey.withAlpha(20),
                         spreadRadius: 5,
                         blurRadius: 3,
                         offset: const Offset(2, 2),
                       ),
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.05),
+                        color: Colors.grey.withAlpha(20),
                         spreadRadius: 5,
                         blurRadius: 3,
                         offset: const Offset(-2, -2),
@@ -71,14 +71,14 @@ class _SignUpState extends State<SignUp> {
                                     Radius.circular(30.0)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(20),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(
                                         1, 1), // changes position of shadow
                                   ),
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(20),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(
@@ -107,14 +107,14 @@ class _SignUpState extends State<SignUp> {
                                     Radius.circular(30.0)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(20),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(
                                         1, 1), // changes position of shadow
                                   ),
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(20),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(
@@ -157,14 +157,14 @@ class _SignUpState extends State<SignUp> {
                                     Radius.circular(30.0)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(20),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(
                                         1, 1), // changes position of shadow
                                   ),
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(20),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(

@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
+import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -43,30 +47,35 @@ class _SearchState extends State<Search> {
   }
 
   _onChanged() {
-    getSuggestion(searchController.text);
+    if (searchController.text.length > 2) {
+      getSuggestion(searchController.text);
+    } else {
+      setState(() {
+        searchList = [];
+      });
+    }
   }
 
   void getSuggestion(String input) async {
+    String? searchApiKey = dotenv.env['SEARCH_KEY'];
+
     try {
-      // String baseURL =
-      //     'https://maps.googleapis.com/maps/api/place/autocomplete/json';
-      // String request =
-      //     '$baseURL?input=$input&key=$placesApiKey&sessiontoken=$_sessionToken';
-      // var response = await http.get(Uri.parse(request));
-      if (true) {
-        // if (response.statusCode == 200) {
+      String baseURL = 'https://api.tomtom.com/search/2/autocomplete';
+      String request = '$baseURL/$input.json?key=$searchApiKey&language=en-US';
+      var response = await http.get(Uri.parse(request));
+      if (response.statusCode == 200) {
         if (mounted) {
-          // setState(() {
-          //   searchList = json.decode(response.body)['predictions'];
-          // });
+          setState(() {
+            searchList = json.decode(response.body)['results'];
+          });
         }
+        log('Search List: $searchList');
+      } else {
+        throw Exception('Failed to load predictions');
       }
-      //  else {
-      //   throw Exception('Failed to load predictions');
-      // }
     } catch (e) {
       log('Error ${e.toString()}', name: 'Get Suggestions');
-      // customSnackbar('Error getting places predictions', e.toString());
+      Get.snackbar('Error getting places predictions', e.toString());
     }
   }
 
@@ -99,7 +108,7 @@ class _SearchState extends State<Search> {
                     color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey.withAlpha(60),
                         spreadRadius: 0.3,
                         blurRadius: 7,
                         offset: const Offset(
@@ -181,14 +190,19 @@ class _SearchState extends State<Search> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           isSearching
-                                              ? IconButton(
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      isSearching = false;
-                                                      searchController.clear();
-                                                    });
-                                                  },
-                                                  icon: const Icon(Icons.close))
+                                              ? Tooltip(
+                                                  message: 'Clear search',
+                                                  child: IconButton(
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          isSearching = false;
+                                                          searchController
+                                                              .clear();
+                                                        });
+                                                      },
+                                                      icon: const Icon(
+                                                          Icons.close)),
+                                                )
                                               : Container(),
                                         ],
                                       )),
@@ -223,100 +237,151 @@ class _SearchState extends State<Search> {
                         itemBuilder: (context, index) {
                           return Column(
                             children: [
-                              ListTile(
-                                onTap: () async {
-                                  try {
-                                    if (mounted) {
-                                      setState(() {
-                                        _isVisible = false;
-                                      });
-                                    }
-                                    // DatabaseController
-                                    //     .instance.setPickLocationOnMap = true;
-                                    if (context.mounted) {
-                                      Navigator.pop(context);
-                                    }
-                                  } catch (e) {
-                                    log('Error ${e.toString()}',
-                                        name: 'location from address');
-                                  }
-                                },
-                                title: Text(searchList[index]["description"]),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 15.0, right: 15.0),
+                                child: Container(
+                                  width: size.width,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withAlpha(120),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color:
+                                            primaryColor.withValues(alpha: 63)),
+                                    shape: BoxShape.rectangle,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          searchList[index]["segments"][0]
+                                              ["value"],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                  fontWeight: FontWeight.w500),
+                                        ),
+                                        const Spacer(),
+
+                                        /// TODO: Enable this when this category has been chosen recently, and the user wants to go back to it, implement cache retrieval which
+                                        /// means I'll have to cache visited categories
+                                        Icon(
+                                          Icons.call_made,
+                                          color: Colors.black,
+                                          weight: 3,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
-                              Divider(
-                                endIndent: size.width * 0.05,
-                                indent: size.width * 0.05,
-                              )
+                              Gap(10),
+                              // ListTile(
+                              //   // selectedT/// The above code appears to be written in Dart, a
+                              //   /// programming language. It defines a variable named
+                              //   /// `primaryColor` of type `Color`. The `
+                              //   ileColor:
+                              //   //     primaryColor, // Colors.grey.shade200,
+                              //   tileColor: primaryColor,
+                              //   shape: RoundedRectangleBorder(
+                              //       borderRadius: BorderRadius.circular(10)),
+                              //   minTileHeight: 2,
+                              //   contentPadding: EdgeInsets.symmetric(
+                              //       horizontal: size.width * 0.05),
+                              //   onTap: () async {
+                              //     try {
+                              //       if (mounted) {
+                              //         setState(() {
+                              //           _isVisible = false;
+                              //         });
+                              //       }
+                              //       if (context.mounted) {
+                              //         Navigator.pop(context);
+                              //       }
+                              //     } catch (e) {
+                              //       log('Error ${e.toString()}',
+                              //           name: 'location from address');
+                              //     }
+                              //   },
+                              //   title: Text(
+                              //       searchList[index]["segments"][0]["value"]),
+                              // ),
+                              // Divider(
+                              //   endIndent: size.width * 0.05,
+                              //   indent: size.width * 0.05,
+                              // )
                             ],
                           );
                         },
                       ),
-                      if (searchList.isEmpty)
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: size.width * 0.05),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Popular Searches',
-                                style: Theme.of(context).textTheme.titleLarge,
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: size.width * 0.05),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Popular Searches',
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            Gap(15),
+                            GridView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 20,
+                                crossAxisSpacing: 10,
+                                childAspectRatio: 4,
                               ),
-                              Gap(15),
-                              GridView.builder(
-                                shrinkWrap: true,
-                                physics: NeverScrollableScrollPhysics(),
-                                gridDelegate:
-                                    SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  mainAxisSpacing: 20,
-                                  crossAxisSpacing: 10,
-                                  childAspectRatio: 4,
-                                ),
-                                itemCount: items.length,
-                                itemBuilder: (context, index) {
-                                  String item = items[index];
-                                  return LayoutBuilder(
-                                    builder: (context, constraints) {
-                                      return Container(
-                                          width: constraints.maxWidth,
-                                          height: 60,
-                                          decoration: BoxDecoration(
-                                            color: Colors.transparent,
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Container(
-                                                width: 60,
-                                                height: 60,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.transparent,
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  border: Border.all(
-                                                      color: Colors.blueAccent),
-                                                  shape: BoxShape.rectangle,
-                                                ),
+                              itemCount: items.length,
+                              itemBuilder: (context, index) {
+                                String item = items[index];
+                                return LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    return Container(
+                                        width: constraints.maxWidth,
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              width: 60,
+                                              height: 60,
+                                              decoration: BoxDecoration(
+                                                color: Colors.transparent,
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                                border: Border.all(
+                                                    color: Colors.blueAccent),
+                                                shape: BoxShape.rectangle,
                                               ),
-                                              Gap(10),
-                                              Text(
-                                                item,
-                                                style: Theme.of(context)
-                                                    .textTheme
-                                                    .bodyLarge,
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ],
-                                          ));
-                                    },
-                                  );
-                                },
-                              )
-                            ],
-                          ),
+                                            ),
+                                            Gap(10),
+                                            Text(
+                                              item,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge,
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        ));
+                                  },
+                                );
+                              },
+                            )
+                          ],
                         ),
+                      ),
                     ],
                   ),
                 ),

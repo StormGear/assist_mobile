@@ -60,8 +60,8 @@ class _SettingsState extends State<Settings> {
           Container(
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.only(left: 30, right: 30),
-            child: Text('Group Name',
-                style: Theme.of(context).textTheme.titleLarge),
+            child:
+                Text('Account', style: Theme.of(context).textTheme.titleLarge),
           ),
           Gap(10),
           Container(
@@ -74,8 +74,11 @@ class _SettingsState extends State<Settings> {
               child: Column(
                 children: [
                   ListTile(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/profile');
+                    },
                     title: Text(
-                      'Account',
+                      'Profile',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     trailing: Icon(Icons.arrow_forward_ios),

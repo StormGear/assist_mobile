@@ -43,13 +43,13 @@ class _SignInState extends State<SignIn> {
                     color: Theme.of(context).scaffoldBackgroundColor,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.05),
+                        color: Colors.grey.withAlpha(15),
                         spreadRadius: 5,
                         blurRadius: 3,
                         offset: const Offset(2, 2),
                       ),
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.05),
+                        color: Colors.grey.withAlpha(15),
                         spreadRadius: 5,
                         blurRadius: 3,
                         offset: const Offset(-2, -2),
@@ -77,14 +77,14 @@ class _SignInState extends State<SignIn> {
                                     Radius.circular(30.0)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(10),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(
                                         1, 1), // changes position of shadow
                                   ),
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(10),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(
@@ -113,14 +113,14 @@ class _SignInState extends State<SignIn> {
                                     Radius.circular(30.0)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(10),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(
                                         1, 1), // changes position of shadow
                                   ),
                                   BoxShadow(
-                                    color: Colors.grey.withOpacity(0.05),
+                                    color: Colors.grey.withAlpha(10),
                                     spreadRadius: 5,
                                     blurRadius: 3,
                                     offset: const Offset(

@@ -14,6 +14,12 @@ class _PostServiceState extends State<PostService> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: primaryColor),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
         backgroundColor: Colors.transparent,
         title: Text(
           "Post a Service",
@@ -37,7 +43,7 @@ class _PostServiceState extends State<PostService> {
                   subtitle:
                       Text("Select a category under which your service falls"),
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
-                  tileColor: primaryColor.withOpacity(0.1),
+                  tileColor: primaryColor.withAlpha(30),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(15))),
                 ),
@@ -49,7 +55,7 @@ class _PostServiceState extends State<PostService> {
                   title: Text('Region'),
                   subtitle: Text("Select your region of primary operation"),
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
-                  tileColor: primaryColor.withOpacity(0.1),
+                  tileColor: primaryColor.withAlpha(30),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(15))),
                 ),
@@ -75,7 +81,7 @@ class _PostServiceState extends State<PostService> {
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: TextField(
                   decoration: InputDecoration(
-                    fillColor: primaryColor.withOpacity(0.1),
+                    fillColor: primaryColor.withAlpha(30),
                     hintText: 'Business Name',
                     hintStyle: Theme.of(context).textTheme.bodyLarge,
                   ),
@@ -97,7 +103,7 @@ class _PostServiceState extends State<PostService> {
                   title: Text('Select Keywords'),
                   subtitle: Text("Keywords help users find your service"),
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
-                  tileColor: primaryColor.withOpacity(0.1),
+                  tileColor: primaryColor.withAlpha(30),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(15))),
                 ),
@@ -108,7 +114,7 @@ class _PostServiceState extends State<PostService> {
                 child: TextField(
                   maxLines: 5,
                   decoration: InputDecoration(
-                    fillColor: primaryColor.withOpacity(0.1),
+                    fillColor: primaryColor.withAlpha(30),
                     hintText: 'Description',
                     hintStyle: Theme.of(context).textTheme.bodyLarge,
                   ),

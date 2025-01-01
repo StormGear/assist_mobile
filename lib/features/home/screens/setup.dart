@@ -52,112 +52,114 @@ class _SetupState extends State<Setup> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Colors.white,
-        appBar: switch (_currentPage) {
-          0 => AppBar(
-                backgroundColor: Colors.transparent,
-                automaticallyImplyLeading: false,
-                leadingWidth: 70,
-                leading: Row(
-                  children: [
-                    Gap(10),
-                    Image.asset('assets/images/logo/favicon.png'),
-                  ],
-                ),
-                actions: [
-                  IconButton(
-                    iconSize: 30,
-                    icon: Icon(
-                      Icons.search,
-                      color: primaryColor,
+    return SafeArea(
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: switch (_currentPage) {
+            0 => AppBar(
+                  backgroundColor: Colors.transparent,
+                  automaticallyImplyLeading: false,
+                  leadingWidth: 70,
+                  leading: Row(
+                    children: [
+                      Gap(10),
+                      Image.asset('assets/images/logo/favicon.png'),
+                    ],
+                  ),
+                  actions: [
+                    IconButton(
+                      iconSize: 30,
+                      icon: Icon(
+                        Icons.search,
+                        color: primaryColor,
+                      ),
+                      onPressed: () {
+                        Get.toNamed('/search');
+                      },
                     ),
-                    onPressed: () {
-                      Get.toNamed('/search');
-                    },
-                  ),
-                ]),
-          1 => AppBar(
-              backgroundColor: Colors.transparent,
-              title: Text(
-                "Post Service/Business",
-                style: TextStyle(
-                    color: primaryColor,
-                    fontSize:
-                        Theme.of(context).textTheme.headlineSmall!.fontSize,
-                    fontWeight: FontWeight.bold),
-              ),
-              automaticallyImplyLeading: false,
-            ),
-          3 => AppBar(
-              backgroundColor: Colors.transparent,
-              title: Text(
-                currentTitle,
-                style: TextStyle(
-                    color: primaryColor,
-                    fontSize:
-                        Theme.of(context).textTheme.headlineSmall!.fontSize,
-                    fontWeight: FontWeight.bold),
-              ),
-              automaticallyImplyLeading: false,
-            ),
-          _ => AppBar(
-              backgroundColor: Colors.transparent,
-              title: Text(
-                currentTitle,
-                style: TextStyle(
-                    color: primaryColor,
-                    fontSize:
-                        Theme.of(context).textTheme.headlineSmall!.fontSize,
-                    fontWeight: FontWeight.bold),
-              ),
-              automaticallyImplyLeading: false,
-            ),
-        },
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              switch (_currentPage) {
-                0 => Home(),
-                1 => Post(),
-                2 => Text(
-                    'Alarm Page',
-                    style: TextStyle(color: currentColor),
-                  ),
-                3 => Settings(),
-                _ => Text(
-                    'Home Page',
-                    style: TextStyle(color: currentColor),
-                  )
-              },
-            ],
-          ),
-        ),
-        bottomNavigationBar: CubertoBottomBar(
-          key: const Key("BottomBar"),
-          inactiveIconColor: _inactiveColor,
-          tabStyle: CubertoTabStyle.styleNormal,
-          selectedTab: _currentPage,
-          tabs: tabs
-              .map(
-                (value) => TabData(
-                  key: Key(value.title),
-                  iconData: value.iconData,
-                  title: value.title,
-                  tabColor: value.tabColor,
-                  tabGradient: value.tabGradient,
+                  ]),
+            1 => AppBar(
+                backgroundColor: Colors.transparent,
+                title: Text(
+                  "Post Service/Business",
+                  style: TextStyle(
+                      color: primaryColor,
+                      fontSize:
+                          Theme.of(context).textTheme.headlineSmall!.fontSize,
+                      fontWeight: FontWeight.bold),
                 ),
-              )
-              .toList(),
-          onTabChangedListener: (position, title, color) {
-            setState(() {
-              _currentPage = position;
-              currentTitle = title;
-              if (color != null) {
-                currentColor = color;
-              }
-            });
+                automaticallyImplyLeading: false,
+              ),
+            3 => AppBar(
+                backgroundColor: Colors.transparent,
+                title: Text(
+                  currentTitle,
+                  style: TextStyle(
+                      color: primaryColor,
+                      fontSize:
+                          Theme.of(context).textTheme.headlineSmall!.fontSize,
+                      fontWeight: FontWeight.bold),
+                ),
+                automaticallyImplyLeading: false,
+              ),
+            _ => AppBar(
+                backgroundColor: Colors.transparent,
+                title: Text(
+                  currentTitle,
+                  style: TextStyle(
+                      color: primaryColor,
+                      fontSize:
+                          Theme.of(context).textTheme.headlineSmall!.fontSize,
+                      fontWeight: FontWeight.bold),
+                ),
+                automaticallyImplyLeading: false,
+              ),
           },
-        ));
+          body: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                switch (_currentPage) {
+                  0 => Home(),
+                  1 => Post(),
+                  2 => Text(
+                      'Alarm Page',
+                      style: TextStyle(color: currentColor),
+                    ),
+                  3 => Settings(),
+                  _ => Text(
+                      'Home Page',
+                      style: TextStyle(color: currentColor),
+                    )
+                },
+              ],
+            ),
+          ),
+          bottomNavigationBar: CubertoBottomBar(
+            key: const Key("BottomBar"),
+            inactiveIconColor: _inactiveColor,
+            tabStyle: CubertoTabStyle.styleNormal,
+            selectedTab: _currentPage,
+            tabs: tabs
+                .map(
+                  (value) => TabData(
+                    key: Key(value.title),
+                    iconData: value.iconData,
+                    title: value.title,
+                    tabColor: value.tabColor,
+                    tabGradient: value.tabGradient,
+                  ),
+                )
+                .toList(),
+            onTabChangedListener: (position, title, color) {
+              setState(() {
+                _currentPage = position;
+                currentTitle = title;
+                if (color != null) {
+                  currentColor = color;
+                }
+              });
+            },
+          )),
+    );
   }
 }

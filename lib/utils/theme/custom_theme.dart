@@ -86,7 +86,7 @@ class CustomTheme {
     ),
     textSelectionTheme: TextSelectionThemeData(
       cursorColor: primaryColor,
-      selectionColor: primaryColor.withOpacity(0.3),
+      selectionColor: primaryColor.withAlpha(30),
       selectionHandleColor: primaryColor,
     ),
     inputDecorationTheme: const InputDecorationTheme(
@@ -108,7 +108,7 @@ class CustomTheme {
         style: ButtonStyle(
            splashFactory: InkRipple.splashFactory,
         overlayColor:
-            WidgetStateProperty.all<Color>(primaryColor.withOpacity(0.3)),
+            WidgetStateProperty.all<Color>(primaryColor.withAlpha(30)),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       backgroundColor: WidgetStateProperty.all<Color>(primaryColor),
       padding: WidgetStateProperty.all<EdgeInsets>(
@@ -126,7 +126,7 @@ class CustomTheme {
       style: ButtonStyle(
         splashFactory: InkRipple.splashFactory,
         overlayColor:
-            WidgetStateProperty.all<Color>(primaryColor.withOpacity(0.3)),
+            WidgetStateProperty.all<Color>(primaryColor.withAlpha(30)),
         foregroundColor: WidgetStateProperty.all<Color>(primaryColor),
         textStyle: WidgetStateProperty.all<TextStyle>(
           const TextStyle(
@@ -158,7 +158,7 @@ class CustomTheme {
       style: ButtonStyle(
         foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
         backgroundColor:
-            WidgetStateProperty.all<Color>(primaryColor.withOpacity(0.3)),
+            WidgetStateProperty.all<Color>(primaryColor.withAlpha(30)),
         side: WidgetStateProperty.all<BorderSide>(
           const BorderSide(color: primaryColor, width: 2.0),
         ),
