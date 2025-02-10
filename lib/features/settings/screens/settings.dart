@@ -82,13 +82,15 @@ class _SettingsState extends State<Settings> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     trailing: Icon(Icons.arrow_forward_ios),
+                    subtitle: Text('Edit your profile'),
                   ),
                   ListTile(
                     title: Text(
-                      'Account',
+                      'Account Validation',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     trailing: Icon(Icons.arrow_forward_ios),
+                    subtitle: Text('Verify your personal information'),
                   ),
                   ListTile(
                     title: Text(
