@@ -94,10 +94,11 @@ class _SettingsState extends State<Settings> {
                   ),
                   ListTile(
                     title: Text(
-                      'Account',
+                      'Business Details',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     trailing: Icon(Icons.arrow_forward_ios),
+                    subtitle: Text('Include more business details'),
                   ),
                 ],
               )),
