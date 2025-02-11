@@ -50,29 +50,34 @@ class Post extends StatelessWidget {
             ),
           ),
           Gap(70),
-          Column(
-            children: [
-              Container(
-                width: 100,
-                height: 100,
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.blueAccent),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/post-product');
+            },
+            child: Column(
+              children: [
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.blueAccent),
+                  ),
+                  child: Image.asset('assets/images/settings/gift.png'),
                 ),
-                child: Image.asset('assets/images/settings/gift.png'),
-              ),
-              Gap(10),
-              Text(
-                'Purchase and Sales',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Gap(10),
-              Text(
-                'Post items or products you want to sell',
-                style: Theme.of(context).textTheme.bodyMedium,
-              )
-            ],
+                Gap(10),
+                Text(
+                  'Purchase and Sales',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                Gap(10),
+                Text(
+                  'Post items or products you want to sell',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                )
+              ],
+            ),
           ),
         ],
       ),

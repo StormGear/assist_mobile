@@ -91,24 +91,23 @@ class CustomTheme {
     ),
     inputDecorationTheme: const InputDecorationTheme(
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
           borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(30.0)),
+          borderRadius: BorderRadius.all(Radius.circular(10.0)),
           borderSide: BorderSide.none,
         ),
         filled: true,
         fillColor: Colors.white),
     elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
-           splashFactory: InkRipple.splashFactory,
-        overlayColor:
-            WidgetStateProperty.all<Color>(primaryColor.withAlpha(30)),
+      splashFactory: InkRipple.splashFactory,
+      overlayColor: WidgetStateProperty.all<Color>(primaryColor.withAlpha(30)),
       foregroundColor: WidgetStateProperty.all<Color>(Colors.white),
       backgroundColor: WidgetStateProperty.all<Color>(primaryColor),
       padding: WidgetStateProperty.all<EdgeInsets>(

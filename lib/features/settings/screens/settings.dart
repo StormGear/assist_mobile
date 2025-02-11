@@ -77,6 +77,7 @@ class _SettingsState extends State<Settings> {
                     onTap: () {
                       Navigator.pushNamed(context, '/profile');
                     },
+                    leading: Icon(Icons.person),
                     title: Text(
                       'Profile',
                       style: Theme.of(context).textTheme.titleLarge,
@@ -85,6 +86,9 @@ class _SettingsState extends State<Settings> {
                     subtitle: Text('Edit your profile'),
                   ),
                   ListTile(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/account-validation');
+                    },
                     title: Text(
                       'Account Validation',
                       style: Theme.of(context).textTheme.titleLarge,
@@ -93,6 +97,9 @@ class _SettingsState extends State<Settings> {
                     subtitle: Text('Verify your personal information'),
                   ),
                   ListTile(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/business-details');
+                    },
                     title: Text(
                       'Business Details',
                       style: Theme.of(context).textTheme.titleLarge,
@@ -100,14 +107,35 @@ class _SettingsState extends State<Settings> {
                     trailing: Icon(Icons.arrow_forward_ios),
                     subtitle: Text('Include more business details'),
                   ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/change-password');
+                    },
+                    title: Text(
+                      'Change Password',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    trailing: Icon(Icons.arrow_forward_ios),
+                    subtitle: Text('Reset your password'),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.pushNamed(context, '/notifications');
+                    },
+                    title: Text(
+                      'Notifications',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    trailing: Icon(Icons.arrow_forward_ios),
+                    subtitle: Text('Manage your notifications'),
+                  ),
                 ],
               )),
           Gap(20),
           Container(
             alignment: Alignment.centerLeft,
             margin: EdgeInsets.only(left: 30, right: 30),
-            child: Text('Group Name',
-                style: Theme.of(context).textTheme.titleLarge),
+            child: Text('Posts', style: Theme.of(context).textTheme.titleLarge),
           ),
           Gap(10),
           Container(
@@ -121,10 +149,11 @@ class _SettingsState extends State<Settings> {
                 children: [
                   ListTile(
                     title: Text(
-                      'Account',
+                      'Manage Posts',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     trailing: Icon(Icons.arrow_forward_ios),
+                    subtitle: Text('Edit, delete or view your posts'),
                   ),
                   ListTile(
                     title: Text(

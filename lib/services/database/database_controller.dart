@@ -1,0 +1,273 @@
+import 'dart:async';
+// import 'dart:convert';
+import 'dart:developer';
+import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/utils/function_utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
+// import 'package:http/http.dart' as http;
+
+class DatabaseController extends GetxController {
+  static DatabaseController get instance => Get.find();
+
+  // initialize database
+  FirebaseFirestore db = FirebaseFirestore.instance;
+
+  /// FCM token for the user
+  String? fcmToken;
+
+  /// document id for current user
+  String? documentId;
+
+  /// create a new user in db
+  Future<String> createUserInDb(Map<String, dynamic> user) async {
+    var documentId = '';
+    try {
+      // Check if there is an active connection
+      if (await checkServerReachability()) {
+        DocumentReference newDocRef = db.collection('users').doc();
+
+        documentId = await db.runTransaction((transaction) async {
+          log('transaction started');
+          transaction.set(newDocRef, user, SetOptions(merge: true));
+          log("New user document added with ID: ${newDocRef.id}");
+          return newDocRef.id;
+        }).then((value) {
+          log("Transaction successfully completed");
+          return value;
+        }).catchError((error) {
+          log("Failed to complete transaction: $error");
+          return '';
+        });
+
+        return documentId;
+      } else {
+        Fluttertoast.showToast(
+            msg: "Error: No internet connection",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: primaryColor,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        log('Error: No internet connection');
+        return '';
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Error: ${e.toString()}",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      log('Error creating user in db: ${e.toString()}');
+      return '';
+    }
+  }
+
+  /// check whether user exists in the database based on phone number
+  Future<Map<String, dynamic>> checkIfPhoneExists(String phoneNumber) async {
+    // Specify the collection
+    CollectionReference users = db.collection('users');
+
+    // Query Firestore for documents with 'phone' field equal to the given value
+    QuerySnapshot querySnapshot =
+        await users.where('phone', isEqualTo: phoneNumber).get();
+    bool? isDelete;
+    bool? isSuspend;
+    bool? isDisable;
+    String? phone;
+    String? userId;
+
+    log('matching phone numbers: ${querySnapshot.toString()}');
+    // Check if any documents match the query
+    if (querySnapshot.docs.isNotEmpty) {
+      for (var doc in querySnapshot.docs) {
+        Map<String, dynamic> content = doc.data() as Map<String, dynamic>;
+        phone = content['phone'];
+        isDelete = content['isDelete'];
+        isSuspend = content['isSuspend'];
+        isDisable = content['isDisable'];
+        userId = doc.id;
+      }
+      log('Phone number(user) exists in at least one document');
+      log({
+        'phone exists': phone == phoneNumber,
+        'isDelete': isDelete,
+        'isSuspend': isSuspend,
+        'isDisable': isDisable,
+        'userId': userId,
+      }.toString());
+      return {
+        'phone exists': phone == phoneNumber,
+        'isDelete': isDelete,
+        'isSuspend': isSuspend,
+        'isDisable': isDisable,
+        'userId': userId,
+      }; // Phone number exists in at least one document
+    } else {
+      log('Phone number(user) does not exist in any document');
+      return {
+        'phone exists': false,
+      }; // Phone number does not exist in any document
+    }
+  }
+
+  /// check whether user exists in the database based on phone number
+  Future<Map<String, dynamic>> checkIfEmailExists(String emailtext) async {
+    try {
+      // Specify the collection
+      CollectionReference users = db.collection('users');
+
+      // Query Firestore for documents with 'phone' field equal to the given value
+      QuerySnapshot querySnapshot =
+          await users.where('email', isEqualTo: emailtext).get();
+      bool? isDelete;
+      bool? isSuspend;
+      bool? isDisable;
+      String? email;
+      String? userId;
+
+      log('matching emails: ${querySnapshot.toString()}');
+      // Check if any documents match the query
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs) {
+          Map<String, dynamic> content = doc.data() as Map<String, dynamic>;
+          email = content['email'];
+          isDelete = content['isDelete'];
+          isSuspend = content['isSuspend'];
+          isDisable = content['isDisable'];
+          userId = doc.id;
+        }
+        log('Email(user) exists in at least one document');
+        log({
+          'email exists': email == emailtext,
+          'isDelete': isDelete,
+          'isSuspend': isSuspend,
+          'isDisable': isDisable,
+          'userId': userId,
+        }.toString());
+        return {
+          'email exists': email == emailtext,
+          'isDelete': isDelete,
+          'isSuspend': isSuspend,
+          'isDisable': isDisable,
+          'userId': userId,
+        }; // Phone number exists in at least one document
+      } else {
+        // log('Email (user) does not exist in any document');
+        return {
+          'email exists': false,
+        }; // Email does not exist in any document
+      }
+    } catch (e) {
+      log('Error: ${e.toString()}', name: 'checkIfEmailExists');
+      Fluttertoast.showToast(
+          msg: "Error while checking email",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+
+      /// TODO: Return error field if database can't be checked or there's an error
+      return {
+        'email exists': false,
+      };
+    }
+  }
+
+  /// retrieve user from firestore
+  Future<Map<dynamic, dynamic>> retrieveUserDataWithID(String userId) async {
+    if (!await checkServerReachability()) {
+      Fluttertoast.showToast(
+          msg: "Error: No internet connection",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      log('Error: No internet connection');
+      return {};
+    }
+    // Specify the collection
+    CollectionReference users = db.collection('users');
+    Map<String, dynamic>? user;
+    try {
+      DocumentSnapshot<Object?> docSnapshot = await users.doc(userId).get();
+
+      user = docSnapshot.data() as Map<String, dynamic>;
+      log('User data retrieved');
+      return user;
+    } catch (e) {
+      log("User id($userId) does not exist $e", name: 'retrieveUserDataWithID');
+      log("No user with this id found $e", name: 'retrieveUserDataWithID');
+      Fluttertoast.showToast(
+          msg: "No user with this id found",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return {};
+    }
+  }
+
+  /// Generic stream for listening to changes in a document
+  Stream<DocumentSnapshot>? listenToDocumentChanges(String bookingID) {
+    try {
+      final DocumentReference docRef = db.collection('bookings').doc(bookingID);
+      final Stream<DocumentSnapshot> docStream = docRef.snapshots();
+      return docStream;
+    } catch (e) {
+      log('Error with document stream ${e.toString()}');
+      Fluttertoast.showToast(
+          msg: "Error with document stream",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return null;
+    }
+  }
+
+  /// update fields in a document in firebase
+  Future<bool> updateUserDocumentFields(
+      String userId, Map<String, dynamic> fields) async {
+    CollectionReference users = db.collection('users');
+    try {
+      DocumentSnapshot<Object?> docSnapshot = await users.doc(userId).get();
+
+      log('Document ID retrieved: ${docSnapshot.id}');
+      if (await checkServerReachability()) {
+        await users.doc(docSnapshot.id).update(fields);
+        log('Document fields updated successfully');
+        return true;
+      } else {
+        Fluttertoast.showToast(
+            msg: "Error: No internet connection",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: primaryColor,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        log('Error: No internet connection');
+        return false;
+      }
+    } catch (e) {
+      // customSnackbar("Error", e.toString());
+      log('Error updating user document (updateUserDocumentFields): ${e.toString()}');
+      return false;
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import 'package:assist/common_widgets/common_button.dart';
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -12,6 +13,8 @@ class PostService extends StatefulWidget {
 class _PostServiceState extends State<PostService> {
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -45,7 +48,7 @@ class _PostServiceState extends State<PostService> {
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
                   tileColor: primaryColor.withAlpha(30),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
                 ),
               ),
               Gap(10),
@@ -57,7 +60,7 @@ class _PostServiceState extends State<PostService> {
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
                   tileColor: primaryColor.withAlpha(30),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
                 ),
               ),
               Gap(20),
@@ -120,6 +123,16 @@ class _PostServiceState extends State<PostService> {
                   ),
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Text(
+                    'Kindly provide a detailed description of your service, doing so will help users understand what you offer better'),
+              ),
+              Gap(20),
+              SizedBox(
+                  width: size.width * 0.5,
+                  child: CommonButton(text: 'Post for Free', onPressed: () {})),
+              Gap(20)
             ],
           ),
         ),

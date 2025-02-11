@@ -1,44 +1,22 @@
 import 'dart:developer';
-import 'dart:io';
-
 import 'package:assist/common_widgets/common_button.dart';
 import 'package:assist/common_widgets/constants/colors.dart';
-import 'package:assist/utils/function_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
-class Profile extends StatefulWidget {
-  const Profile({super.key});
+class PostProduct extends StatefulWidget {
+  const PostProduct({super.key});
 
   @override
-  State<Profile> createState() => _ProfileState();
+  State<PostProduct> createState() => _PostProductState();
 }
 
-class _ProfileState extends State<Profile> {
-  String? imageUrl;
-
-   @override
-  void initState() {
-    super.initState();
-    fetchProfilePicture();
-  }
-
-  void fetchProfilePicture() async {
-    try {
-      // imageUrl = await StorageController.instance.loadProfilePicture();
-      if (mounted) {
-        setState(() {});
-      }
-    } catch (e) {
-      log(' Error fetching profile picture ${e.toString()}');
-    }
-  }
+class _PostProductState extends State<PostProduct> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    File? selectedImage;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,87 +28,108 @@ class _ProfileState extends State<Profile> {
         ),
         backgroundColor: Colors.transparent,
         title: Text(
-          "Profile",
+          "Post a Product",
           style: TextStyle(
               color: primaryColor,
               fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
               fontWeight: FontWeight.bold),
         ),
+        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
-        child: Center(
-            child: Padding(
-          padding: const EdgeInsets.all(15.0),
+        child: Padding(
+          padding: const EdgeInsets.all(15),
           child: Column(
-            children: [
-              Center(
-                child: Stack(
+            children: <Widget>[
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: ListTile(
+                  title: Text('Category'),
+                  subtitle:
+                      Text("Select a category under which your product falls"),
+                  trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
+                  tileColor: primaryColor.withAlpha(30),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                ),
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: ListTile(
+                  title: Text('Region'),
+                  subtitle: Text("Select your region of primary operation"),
+                  trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
+                  tileColor: primaryColor.withAlpha(30),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                ),
+              ),
+              Gap(20),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    CircleAvatar(
-                      maxRadius: 70,
-                      backgroundColor: primaryColor.withAlpha(120),
+                    Text(
+                      "Add a minimum of 3 photos",
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    GestureDetector(
-                      onTap: () async {
-                        File? imagePicked = await selectPhoto(context);
-                        if (imagePicked != null) {
-                          setState(() {
-                            selectedImage = imagePicked;
-                          });
-                        } else {
-                          log('Image not selected');
-                          if (mounted) {
-                            setState(() {
-                              selectedImage = null;
-                            });
-                          }
-                          fetchProfilePicture();
-                        }
-                      },
-                      child: Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CircleAvatar(
-                          backgroundColor: primaryColor,
-                          child: Icon(Icons.camera_alt, color: Colors.white),
-                        ),
-                      ),
-                    ),
+                    Gap(10),
+                    Image.asset('assets/images/postings/add_photo.png'),
                   ],
                 ),
               ),
-              Gap(30),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextField(
-                  decoration: InputDecoration(
-                    fillColor: primaryColor.withAlpha(30),
-                    hintText: 'First Name',
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              ),
               Gap(20),
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: TextField(
                   decoration: InputDecoration(
                     fillColor: primaryColor.withAlpha(30),
-                    hintText: 'Last Name',
+                    hintText: 'Business Name',
                     hintStyle: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
               ),
-              Gap(20),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Row(
+                  children: [
+                    Text('Select keywords that best describe your service'),
+                  ],
+                ),
+              ),
+              Gap(10),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: ListTile(
+                  title: Text('Select Keywords'),
+                  subtitle: Text("Keywords help users find your service"),
+                  trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
+                  tileColor: primaryColor.withAlpha(30),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                ),
+              ),
+              Gap(10),
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: TextField(
+                  maxLines: 5,
                   decoration: InputDecoration(
                     fillColor: primaryColor.withAlpha(30),
-                    hintText: 'Email Address',
+                    hintText: 'Description',
                     hintStyle: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10, right: 10),
+                child: Text(
+                    'Kindly provide a detailed description of your product, doing so will help users understand what you offer better'),
               ),
               Gap(20),
               Padding(
@@ -177,13 +176,13 @@ class _ProfileState extends State<Profile> {
                   },
                 ),
               ),
-              Gap(50),
               SizedBox(
-                  width: size.width * 0.8,
-                  child: CommonButton(text: 'Save Changes', onPressed: () {})),
+                  width: size.width * 0.5,
+                  child: CommonButton(text: 'Post for Free', onPressed: () {})),
+              Gap(20)
             ],
           ),
-        )),
+        ),
       ),
     );
   }
