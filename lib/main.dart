@@ -9,9 +9,16 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+String supabaseKey = String.fromEnvironment('SUPABASE_KEY');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+    await Supabase.initialize(
+    url: 'https://jxjzmvqwjpgojvsjbfsc.supabase.co',
+    anonKey: supabaseKey,
+  );
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -26,6 +33,9 @@ void main() async {
       fallbackLocale: const Locale('en', 'US'),
       child: MyApp()));
 }
+
+// It's handy to then extract the Supabase client in a variable for later uses
+final supabase = Supabase.instance.client;
 
 class MyApp extends StatelessWidget {
   final ThemeController themeController = ThemeController.instance;
