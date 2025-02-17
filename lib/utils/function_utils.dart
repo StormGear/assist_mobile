@@ -47,7 +47,7 @@ Future<void> removeProfilePicture() async {
   try {
     // Remove the current profile picture from the database
     await StorageController.instance
-        .removeProfilePhotoFromFirebaseStorage(UserDetails.instance.getUserId);
+        .removeProfilePhotoFromSupabaseStorage(UserDetails.instance.getUserId);
     // Update the user's profile picture in the database
     await DatabaseController.instance
         .updateUserDocumentFields(UserDetails.instance.getUserId, {
