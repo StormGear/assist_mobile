@@ -15,7 +15,6 @@ class Search extends StatefulWidget {
 }
 
 class _SearchState extends State<Search> {
-  bool _isVisible = false;
   TextEditingController searchController = TextEditingController();
   bool isSearching = false;
   List searchList = [];
@@ -37,12 +36,6 @@ class _SearchState extends State<Search> {
     });
     searchController.addListener(() {
       _onChanged();
-    });
-    // Set _isVisible to true after a short delay to trigger the animation
-    Future.delayed(const Duration(milliseconds: 50), () {
-      setState(() {
-        _isVisible = true;
-      });
     });
   }
 
@@ -111,33 +104,20 @@ class _SearchState extends State<Search> {
                 ),
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
+                    Gap(20),
                     Row(
                       children: [
-                        SizedBox(
-                          width: size.width * 0.03,
-                        ),
+                        Gap(20),
                         IconButton(
                           icon: Icon(
                             Icons.arrow_back_ios,
                             color: Theme.of(context).primaryColor,
                           ),
                           onPressed: () {
-                            setState(() {
-                              _isVisible = false;
-                            });
-
-                            Future.delayed(const Duration(milliseconds: 500),
-                                () {
-                              Get.back();
-                            });
+                            Get.back();
                           },
                         ),
-                        SizedBox(
-                          width: size.width * 0.03,
-                        ),
+                        Gap(20),
                         Expanded(
                           child: Text(
                             'Search from several categories',
@@ -146,9 +126,7 @@ class _SearchState extends State<Search> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
+                    Gap(20),
                     Row(
                       children: [
                         Expanded(
@@ -202,14 +180,12 @@ class _SearchState extends State<Search> {
                         ),
                       ],
                     ),
-                    SizedBox(
-                      height: size.height * 0.05,
-                    ),
+                    Gap(5)
                   ],
                 ),
               ),
               Container(
-                height: size.height * 0.73,
+                height: size.height * 0.5,
                 color: Colors.white,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,110 +238,77 @@ class _SearchState extends State<Search> {
                               ),
                             ),
                             Gap(10),
-                            // ListTile(
-                            //   // selectedT/// The above code appears to be written in Dart, a
-                            //   /// programming language. It defines a variable named
-                            //   /// `primaryColor` of type `Color`. The `
-                            //   ileColor:
-                            //   //     primaryColor, // Colors.grey.shade200,
-                            //   tileColor: primaryColor,
-                            //   shape: RoundedRectangleBorder(
-                            //       borderRadius: BorderRadius.circular(10)),
-                            //   minTileHeight: 2,
-                            //   contentPadding: EdgeInsets.symmetric(
-                            //       horizontal: size.width * 0.05),
-                            //   onTap: () async {
-                            //     try {
-                            //       if (mounted) {
-                            //         setState(() {
-                            //           _isVisible = false;
-                            //         });
-                            //       }
-                            //       if (context.mounted) {
-                            //         Navigator.pop(context);
-                            //       }
-                            //     } catch (e) {
-                            //       log('Error ${e.toString()}',
-                            //           name: 'location from address');
-                            //     }
-                            //   },
-                            //   title: Text(
-                            //       searchList[index]["segments"][0]["value"]),
-                            // ),
-                            // Divider(
-                            //   endIndent: size.width * 0.05,
-                            //   indent: size.width * 0.05,
-                            // )
                           ],
                         );
                       },
                     ),
-                    Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: size.width * 0.05),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Popular Searches',
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          Gap(15),
-                          GridView.builder(
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              mainAxisSpacing: 20,
-                              crossAxisSpacing: 10,
-                              childAspectRatio: 4,
-                            ),
-                            itemCount: items.length,
-                            itemBuilder: (context, index) {
-                              String item = items[index];
-                              return LayoutBuilder(
-                                builder: (context, constraints) {
-                                  return Container(
-                                      width: constraints.maxWidth,
-                                      height: 60,
-                                      decoration: BoxDecoration(
-                                        color: Colors.transparent,
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: [
-                                          Container(
-                                            width: 60,
-                                            height: 60,
-                                            decoration: BoxDecoration(
-                                              color: Colors.transparent,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                  color: Colors.blueAccent),
-                                              shape: BoxShape.rectangle,
-                                            ),
-                                          ),
-                                          Gap(10),
-                                          Text(
-                                            item,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge,
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ],
-                                      ));
-                                },
-                              );
-                            },
-                          )
-                        ],
-                      ),
-                    ),
                   ],
+                ),
+              ),
+              /// TODO: Implement expanded here
+              Container(
+                // height: size.height * 0.15,
+                color: Colors.white,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Popular Searches',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Gap(15),
+                      GridView.builder(
+                        shrinkWrap: true,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          mainAxisSpacing: 20,
+                          crossAxisSpacing: 10,
+                          childAspectRatio: 4,
+                        ),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          String item = items[index];
+                          return LayoutBuilder(
+                            builder: (context, constraints) {
+                              return Container(
+                                  width: constraints.maxWidth,
+                                  height: 60,
+                                  decoration: BoxDecoration(
+                                    color: Colors.transparent,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Container(
+                                        width: 60,
+                                        height: 60,
+                                        decoration: BoxDecoration(
+                                          color: Colors.transparent,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                              color: Colors.blueAccent),
+                                          shape: BoxShape.rectangle,
+                                        ),
+                                      ),
+                                      Gap(10),
+                                      Text(
+                                        item,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ));
+                            },
+                          );
+                        },
+                      )
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -3,6 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
+/*
+Artisans
+Masons
+carpenters
+plumbers
+electricians
+painters
+cleaners
+welders
+mechanics
+tilers
+dressmakers
+hairdressers
+barbers
+
+*/
+
 class Home extends StatefulWidget {
   const Home({super.key});
 

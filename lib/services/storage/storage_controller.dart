@@ -5,12 +5,10 @@ import 'package:assist/main.dart';
 import 'package:assist/services/database/database_controller.dart';
 import 'package:assist/services/database/user_details_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:path/path.dart' as p;
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -70,15 +68,28 @@ class StorageController extends GetxController {
             'profile_url': publicUrl,
           };
           log('Would add public  url to the db');
-          // Update the photoUrl
+
           // await FirebaseFirestore.instance
           //     .collection('users')
           //     .doc(documentId)
           //     .update(uploadImage);
-          // log("Profile picture url: $publicUrl");
+          // Update the photoUrl
+          await DatabaseController.instance
+              .updateUserDocumentFields(documentId, uploadImage)
+              .then((value) {
+            log('Profile picture added to Firestore');
+          });
         }
       } else {
         log('Error adding profile picture to Supabase Storage');
+        Fluttertoast.showToast(
+            msg: "Error adding profile picture to Database",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: primaryColor,
+            textColor: Colors.white,
+            fontSize: 16.0);
       }
     } catch (error) {
       log(error.toString());

@@ -34,7 +34,7 @@ class Post extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.blueAccent),
                   ),
-                  child: Image.asset('assets/images/settings/gift.png'),
+                  child: Image.asset('assets/images/categories/services.jpg'),
                 ),
                 Gap(10),
                 Text(
@@ -64,7 +64,7 @@ class Post extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.blueAccent),
                   ),
-                  child: Image.asset('assets/images/settings/gift.png'),
+                  child: Image.asset('assets/images/categories/sale.jpg'),
                 ),
                 Gap(10),
                 Text(

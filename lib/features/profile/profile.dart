@@ -1,13 +1,15 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:assist/common_widgets/common_button.dart';
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/utils/function_utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
+import 'package:shimmer/shimmer.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -18,8 +20,12 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String? imageUrl;
+  final TextEditingController firstnameController = TextEditingController();
+  final TextEditingController lastnameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
-   @override
+  @override
   void initState() {
     super.initState();
     fetchProfilePicture();
@@ -35,6 +41,19 @@ class _ProfileState extends State<Profile> {
       log(' Error fetching profile picture ${e.toString()}');
     }
   }
+
+  String? phoneValidator(PhoneNumber? value) {
+    log("Phone controller value: ${phoneController.text}");
+    if (value != null && value.number.length != 10) {
+      log("Phone number is ${value.number}");
+      return 'Please enter 10 digits';
+    } else {
+      // remove the first 0 from the phone number
+      phoneController.text = value!.number.substring(1);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -66,10 +85,48 @@ class _ProfileState extends State<Profile> {
               Center(
                 child: Stack(
                   children: [
-                    CircleAvatar(
-                      maxRadius: 70,
-                      backgroundColor: primaryColor.withAlpha(120),
-                    ),
+                    selectedImage != null
+                        ? CircleAvatar(
+                            minRadius: 70,
+                            backgroundImage: FileImage(selectedImage),
+                          )
+                        : imageUrl != null
+                            ? imageUrl!.isNotEmpty
+                                ? CachedNetworkImage(
+                                    imageUrl: imageUrl!,
+                                    imageBuilder: (context, imageProvider) =>
+                                        CircleAvatar(
+                                          minRadius: 70,
+                                          backgroundImage: imageProvider,
+                                        ),
+                                    placeholder: (context, url) =>
+                                        const CircularProgressIndicator(
+                                          color: primaryColor,
+                                        ),
+                                    errorWidget: (context, url, error) {
+                                      log(error.toString());
+                                      return const CircleAvatar(
+                                        minRadius: 70,
+                                        backgroundColor: primaryColor,
+                                        child: Icon(
+                                          Icons.error,
+                                          color: Colors.white,
+                                        ),
+                                      );
+                                    })
+                                : const CircleAvatar(
+                                    minRadius: 70,
+                                    backgroundImage: AssetImage(
+                                        'assets/images/profile/avatar.png'),
+                                  )
+                            : Shimmer.fromColors(
+                                baseColor: Colors.grey.shade300,
+                                highlightColor: Colors.grey.shade100,
+                                child: const CircleAvatar(
+                                  minRadius: 70,
+                                  backgroundImage: AssetImage(
+                                      'assets/images/profile/avatar.png'),
+                                )),
                     GestureDetector(
                       onTap: () async {
                         File? imagePicked = await selectPhoto(context);
@@ -103,9 +160,10 @@ class _ProfileState extends State<Profile> {
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: TextField(
+                  controller: firstnameController,
                   decoration: InputDecoration(
                     fillColor: primaryColor.withAlpha(30),
-                    hintText: 'First Name',
+                    hintText: 'First Name and Middle Name',
                     hintStyle: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ),
@@ -114,6 +172,7 @@ class _ProfileState extends State<Profile> {
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: TextField(
+                  controller: lastnameController,
                   decoration: InputDecoration(
                     fillColor: primaryColor.withAlpha(30),
                     hintText: 'Last Name',
@@ -125,6 +184,7 @@ class _ProfileState extends State<Profile> {
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: TextField(
+                  controller: emailController,
                   decoration: InputDecoration(
                     fillColor: primaryColor.withAlpha(30),
                     hintText: 'Email Address',
@@ -136,6 +196,8 @@ class _ProfileState extends State<Profile> {
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: IntlPhoneField(
+                  controller: phoneController,
+                  validator: phoneValidator,
                   pickerDialogStyle: PickerDialogStyle(
                       countryCodeStyle: TextStyle(
                           color: primaryColor,

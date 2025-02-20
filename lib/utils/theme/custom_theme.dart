@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class CustomTheme {
   static final ThemeData darkTheme = ThemeData(
-    fontFamily: 'Roboto',
+    fontFamily: 'Poppins',
     brightness: Brightness
         .dark, //Setting the Brightness to Dark  so that this can be used as Dark ThemeData
     scaffoldBackgroundColor:
@@ -25,6 +25,7 @@ class CustomTheme {
       ),
       textStyle: WidgetStateProperty.all<TextStyle>(
         const TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 18,
           fontWeight: FontWeight.bold,
           color: Colors.white,
@@ -32,21 +33,81 @@ class CustomTheme {
       ),
     )),
     textTheme: const TextTheme(
-      displayLarge: TextStyle(color: Colors.white, fontSize: 48.0),
-      displayMedium: TextStyle(color: Colors.white, fontSize: 40.0),
-      displaySmall: TextStyle(color: Colors.white, fontSize: 32.0),
-      headlineLarge: TextStyle(color: Colors.white, fontSize: 28.0),
-      headlineMedium: TextStyle(color: Colors.white, fontSize: 24.0),
-      headlineSmall: TextStyle(color: Colors.white, fontSize: 20.0),
-      titleLarge: TextStyle(color: Colors.white, fontSize: 18.0),
-      titleMedium: TextStyle(color: Colors.white, fontSize: 16.0),
-      titleSmall: TextStyle(color: Colors.white, fontSize: 14.0),
-      bodyLarge: TextStyle(color: Colors.white, fontSize: 16.0),
-      bodyMedium: TextStyle(color: Colors.white, fontSize: 14.0),
-      bodySmall: TextStyle(color: Colors.white, fontSize: 12.0),
-      labelLarge: TextStyle(color: Colors.white, fontSize: 14.0),
-      labelMedium: TextStyle(color: Colors.white, fontSize: 12.0),
-      labelSmall: TextStyle(color: Colors.white, fontSize: 10.0),
+      displayLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 48.0,
+        fontFamily: 'Poppins',
+      ),
+      displayMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 40.0,
+        fontFamily: 'Poppins',
+      ),
+      displaySmall: TextStyle(
+        color: Colors.white,
+        fontSize: 32.0,
+        fontFamily: 'Poppins',
+      ),
+      headlineLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 28.0,
+        fontFamily: 'Poppins',
+      ),
+      headlineMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 24.0,
+        fontFamily: 'Poppins',
+      ),
+      headlineSmall: TextStyle(
+        color: Colors.white,
+        fontSize: 20.0,
+        fontFamily: 'Poppins',
+      ),
+      titleLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 18.0,
+        fontFamily: 'Poppins',
+      ),
+      titleMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 16.0,
+        fontFamily: 'Poppins',
+      ),
+      titleSmall: TextStyle(
+        color: Colors.white,
+        fontSize: 14.0,
+        fontFamily: 'Poppins',
+      ),
+      bodyLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 16.0,
+        fontFamily: 'Poppins',
+      ),
+      bodyMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 14.0,
+        fontFamily: 'Poppins',
+      ),
+      bodySmall: TextStyle(
+        color: Colors.white,
+        fontSize: 12.0,
+        fontFamily: 'Poppins',
+      ),
+      labelLarge: TextStyle(
+        color: Colors.white,
+        fontSize: 14.0,
+        fontFamily: 'Poppins',
+      ),
+      labelMedium: TextStyle(
+        color: Colors.white,
+        fontSize: 12.0,
+        fontFamily: 'Poppins',
+      ),
+      labelSmall: TextStyle(
+        color: Colors.white,
+        fontSize: 10.0,
+        fontFamily: 'Poppins',
+      ),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
@@ -63,6 +124,7 @@ class CustomTheme {
         ),
         textStyle: WidgetStateProperty.all<TextStyle>(
           const TextStyle(
+            fontFamily: 'Poppins',
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -77,7 +139,7 @@ class CustomTheme {
     brightness: Brightness
         .light, //Setting the Brightness to light  so that this can be used as Light ThemeData
     scaffoldBackgroundColor: Colors.white,
-    fontFamily: 'Roboto',
+    fontFamily: 'Poppins',
     appBarTheme: const AppBarTheme(
       backgroundColor: primaryColor,
       elevation: 0,
@@ -90,18 +152,24 @@ class CustomTheme {
       selectionHandleColor: primaryColor,
     ),
     inputDecorationTheme: const InputDecorationTheme(
+        hintStyle: TextStyle(
+            color: Colors.grey, fontSize: 14.0, fontFamily: 'Poppins'),
+        errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            borderSide: BorderSide(width: 1.0, color: Colors.red),
+            gapPadding: 2.0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(width: 1.0, color: Colors.black),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          borderSide: BorderSide.none,
+          borderSide: BorderSide(width: 1.0, color: Colors.black),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-          borderSide: BorderSide.none,
-        ),
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            borderSide: BorderSide(width: 1.0, color: primaryColor),
+            gapPadding: 2.0),
         filled: true,
         fillColor: Colors.white),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -115,6 +183,7 @@ class CustomTheme {
       shape: WidgetStateProperty.all<OutlinedBorder>(const StadiumBorder()),
       textStyle: WidgetStateProperty.all<TextStyle>(
         const TextStyle(
+          fontFamily: 'Poppins',
           fontSize: 18,
           fontWeight: FontWeight.bold,
           color: Colors.white,
@@ -129,6 +198,7 @@ class CustomTheme {
         foregroundColor: WidgetStateProperty.all<Color>(primaryColor),
         textStyle: WidgetStateProperty.all<TextStyle>(
           const TextStyle(
+            fontFamily: 'Poppins',
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: primaryColor,
@@ -137,21 +207,39 @@ class CustomTheme {
       ),
     ),
     textTheme: const TextTheme(
-      displayLarge: TextStyle(color: Colors.black, fontSize: 48.0),
-      displayMedium: TextStyle(color: Colors.black, fontSize: 40.0),
-      displaySmall: TextStyle(color: Colors.black, fontSize: 32.0),
-      headlineLarge: TextStyle(color: Colors.black, fontSize: 28.0),
-      headlineMedium: TextStyle(color: Colors.black, fontSize: 24.0),
-      headlineSmall: TextStyle(color: Colors.black, fontSize: 20.0),
-      titleLarge: TextStyle(color: Colors.black, fontSize: 18.0),
-      titleMedium: TextStyle(color: Colors.black, fontSize: 16.0),
-      titleSmall: TextStyle(color: Colors.black, fontSize: 14.0),
-      bodyLarge: TextStyle(color: Colors.black, fontSize: 16.0),
-      bodyMedium: TextStyle(color: Colors.black, fontSize: 14.0),
-      bodySmall: TextStyle(color: Colors.black, fontSize: 12.0),
-      labelLarge: TextStyle(color: Colors.black, fontSize: 14.0),
-      labelMedium: TextStyle(color: Colors.black, fontSize: 12.0),
-      labelSmall: TextStyle(color: Colors.black, fontSize: 10.0),
+      displayLarge:
+          TextStyle(color: Colors.black, fontSize: 48.0, fontFamily: 'Poppins'),
+      displayMedium:
+          TextStyle(color: Colors.black, fontSize: 40.0, fontFamily: 'Poppins'),
+      displaySmall:
+          TextStyle(color: Colors.black, fontSize: 32.0, fontFamily: 'Poppins'),
+      headlineLarge:
+          TextStyle(color: Colors.black, fontSize: 28.0, fontFamily: 'Poppins'),
+      headlineMedium:
+          TextStyle(color: Colors.black, fontSize: 24.0, fontFamily: 'Poppins'),
+      headlineSmall: TextStyle(
+        color: Colors.black,
+        fontSize: 20.0,
+        fontFamily: 'Poppins',
+      ),
+      titleLarge:
+          TextStyle(color: Colors.black, fontSize: 18.0, fontFamily: 'Poppins'),
+      titleMedium:
+          TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'Poppins'),
+      titleSmall:
+          TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'Poppins'),
+      bodyLarge:
+          TextStyle(color: Colors.black, fontSize: 16.0, fontFamily: 'Poppins'),
+      bodyMedium:
+          TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'Poppins'),
+      bodySmall:
+          TextStyle(color: Colors.black, fontSize: 12.0, fontFamily: 'Poppins'),
+      labelLarge:
+          TextStyle(color: Colors.black, fontSize: 14.0, fontFamily: 'Poppins'),
+      labelMedium:
+          TextStyle(color: Colors.black, fontSize: 12.0, fontFamily: 'Poppins'),
+      labelSmall:
+          TextStyle(color: Colors.black, fontSize: 10.0, fontFamily: 'Poppins'),
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: ButtonStyle(
@@ -171,6 +259,7 @@ class CustomTheme {
         ),
         textStyle: WidgetStateProperty.all<TextStyle>(
           const TextStyle(
+            fontFamily: 'Poppins',
             fontSize: 18,
             fontWeight: FontWeight.bold,
             color: Colors.white,

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
@@ -5,6 +6,7 @@ import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/services/database/database_controller.dart';
 import 'package:assist/services/database/user_details_controller.dart';
 import 'package:assist/services/storage/storage_controller.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -56,6 +58,16 @@ Future<void> removeProfilePicture() async {
   } catch (error) {
     log('Error removing photo: ${error.toString()}');
   }
+}
+
+//  Hash the password
+String hashPassword(String password) {
+  // Convert the password string to bytes
+  final bytes = utf8.encode(password);
+  // Generate the SHA-256 hash
+  final hash = sha256.convert(bytes);
+  // Return the hash as a hex string
+  return hash.toString();
 }
 
 Future<File?> selectPhoto(BuildContext context) async {
