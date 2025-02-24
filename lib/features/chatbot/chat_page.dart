@@ -1,6 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:gradient_borders/box_borders/gradient_box_border.dart';
+
+String geminiKey = String.fromEnvironment('GEMINI_API_KEY');
 
 class ChatPage extends StatefulWidget {
   static const routeName = '/chat';
@@ -15,6 +20,49 @@ class _ChatPageState extends State<ChatPage> {
   final ScrollController _scrollController = ScrollController();
   final List<Map<String, dynamic>> _chatHistory = [];
   String? _file;
+  late final GenerativeModel _model;
+  late final GenerativeModel _visionModel;
+  late final ChatSession _chat;
+
+  @override
+  void initState() {
+    _model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: geminiKey);
+    _visionModel =
+        GenerativeModel(model: 'gemini-1.5-flash', apiKey: geminiKey);
+    _chat = _model.startChat();
+    super.initState();
+  }
+
+  void getAnswer(text) async {
+    late final GenerateContentResponse response;
+    if (_file != null) {
+      final firstImage = await (File(_file!).readAsBytes());
+      final prompt = TextPart(text);
+      final imageParts = [
+        DataPart('image/jpeg', firstImage),
+      ];
+      response = await _visionModel.generateContent([
+        Content.multi([prompt, ...imageParts])
+      ]);
+      _file = null;
+    } else {
+      var content = Content.text(text.toString());
+      response = await _chat.sendMessage(content);
+    }
+    setState(() {
+      _chatHistory.add({
+        "time": DateTime.now(),
+        "message": response.text,
+        "isSender": false,
+        "isImage": false
+      });
+      _file = null;
+    });
+
+    _scrollController.jumpTo(
+      _scrollController.position.maxScrollExtent,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +128,19 @@ class _ChatPageState extends State<ChatPage> {
               child: Row(
                 children: [
                   MaterialButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      FilePickerResult? result =
+                          await FilePicker.platform.pickFiles(
+                        type: FileType.custom,
+                        allowedExtensions: ['jpg', 'jpeg', 'png'],
+                      );
+                      log(result.toString());
+                      if (result != null) {
+                        setState(() {
+                          _file = result.files.first.path;
+                        });
+                      }
+                    },
                     minWidth: 42.0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(80.0)),
@@ -140,7 +200,34 @@ class _ChatPageState extends State<ChatPage> {
                     width: 4.0,
                   ),
                   MaterialButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      setState(() {
+                        if (_chatController.text.isNotEmpty) {
+                          if (_file != null) {
+                            _chatHistory.add({
+                              "time": DateTime.now(),
+                              "message": _file,
+                              "isSender": true,
+                              "isImage": true
+                            });
+                          }
+
+                          _chatHistory.add({
+                            "time": DateTime.now(),
+                            "message": _chatController.text,
+                            "isSender": true,
+                            "isImage": false
+                          });
+                        }
+                      });
+
+                      _scrollController.jumpTo(
+                        _scrollController.position.maxScrollExtent,
+                      );
+
+                      getAnswer(_chatController.text);
+                      _chatController.clear();
+                    },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(80.0)),
                     padding: const EdgeInsets.all(0.0),
