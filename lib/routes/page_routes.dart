@@ -1,9 +1,12 @@
 import 'package:assist/features/account-validation/account_validate.dart';
 import 'package:assist/features/business-details/business_details.dart';
 import 'package:assist/features/change-password/change_password.dart';
+import 'package:assist/features/chatbot/chat_page.dart';
 import 'package:assist/features/home/screens/setup.dart';
 import 'package:assist/features/notifications/notifications.dart';
+import 'package:assist/features/postings/categories.dart';
 import 'package:assist/features/postings/post_service.dart';
+import 'package:assist/features/postings/regions.dart';
 import 'package:assist/features/profile/profile.dart';
 import 'package:assist/features/search/search.dart';
 import 'package:assist/features/welcome/screens/welcome.dart';
@@ -29,6 +32,10 @@ final List<GetPage<dynamic>> appRoutes = [
   GetPage(name: '/notifications', page: () => const Notifications()),
   GetPage(name: '/change-password', page: () => const ChangePassword()),
   GetPage(name: '/business-details', page: () => const BusinessDetails()),
+  GetPage(name: '/chat', page: () => const ChatPage()),
+  GetPage(name: '/categories', page: () => const Categories()),
+  GetPage(name: '/regions', page: () => const Regions()),
+
 ];
 
 /// `openingRoutes` represents routes to the initial screens of the application.

@@ -1,6 +1,7 @@
-import 'package:assist/common_widgets/common_button.dart';
+import 'dart:developer';
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 
 class AccountValidation extends StatefulWidget {
@@ -11,6 +12,9 @@ class AccountValidation extends StatefulWidget {
 }
 
 class _AccountValidationState extends State<AccountValidation> {
+  final _formKey = GlobalKey<FormState>();
+  bool loading = false;
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -45,7 +49,7 @@ class _AccountValidationState extends State<AccountValidation> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextField(
+                child: TextFormField(
                   decoration: InputDecoration(
                     fillColor: primaryColor.withAlpha(30),
                     hintText: 'Enter your ID Number',
@@ -56,11 +60,45 @@ class _AccountValidationState extends State<AccountValidation> {
               Gap(20),
               SizedBox(
                   width: size.width * 0.8,
-                  child: CommonButton(text: 'Save Changes', onPressed: () {})),
+                  child:ElevatedButton(
+                  style: loading
+                      ? Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                            backgroundColor:
+                                WidgetStateProperty.all<Color>(loadingColor),
+                          )
+                      : null,
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        /// TODO: Save Ghana Card Number to Firestore
+                      } catch (e) {
+                        log("Error: $e");
+                        Fluttertoast.showToast(
+                            msg: e.toString(),
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: primaryColor,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+                      }
+                    }
+                  },
+                  child: loading
+                      ? SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.0,
+                          ),
+                        )
+                      : const Text("Save Changes"),
+                ),),
               Gap(20),
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextField(
+                child: TextFormField(
                   decoration: InputDecoration(
                     fillColor: primaryColor.withAlpha(30),
                     hintText: 'Digital Address',
@@ -71,7 +109,42 @@ class _AccountValidationState extends State<AccountValidation> {
               Gap(50),
               SizedBox(
                   width: size.width * 0.8,
-                  child: CommonButton(text: 'Save Changes', onPressed: () {})),
+                  child: ElevatedButton(
+                  style: loading
+                      ? Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                            backgroundColor:
+                                WidgetStateProperty.all<Color>(loadingColor),
+                          )
+                      : null,
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      try {
+                        /// TODO: Save Digital Address to Firestore
+                      } catch (e) {
+                        log("Error: $e");
+                        Fluttertoast.showToast(
+                            msg: e.toString(),
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: primaryColor,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+                      }
+                    }
+                  },
+                  child: loading
+                      ? SizedBox(
+                          width: 30,
+                          height: 30,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.0,
+                          ),
+                        )
+                      : const Text("Save Changes"),
+                ),
+                  ),
             ],
           ),
         )),

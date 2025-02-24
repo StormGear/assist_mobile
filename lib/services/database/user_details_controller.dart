@@ -10,33 +10,27 @@ class UserDetails extends GetxController {
   Rx<String> firstname = "".obs;
   Rx<String> lastname = "".obs;
   Rx<String> phone = "".obs;
-  Rx<String> phoneWithoutCode = "".obs;
   Rx<String> email = "".obs;
   Rx<String> userId = "".obs;
   Rx<String> referredBy = "".obs;
   Rx<String> referral = "".obs;
-  RxMap<dynamic, dynamic> userLocation = {}.obs;
 
   String get getFirstname => firstname.value;
   String get getLastname => lastname.value;
   String get getPhone => phone.value;
-  String get getPhoneWithoutCode => phoneWithoutCode.value;
   String get getEmail => email.value;
   String get getUserId => userId.value;
   String get getReferredBy => referredBy.value;
   String get getReferral => referral.value;
-  RxMap<dynamic, dynamic> get getUserLocation => userLocation;
 
 
   set setFirstname(String value) => firstname.value = value;
   set setLastname(String value) => lastname.value = value;
   set setPhone(String value) => phone.value = value;
-  set setPhoneWithoutCode(String value) => phoneWithoutCode.value = value;
   set setEmail(String value) => email.value = value;
   set setUserId(String value) => userId.value = value;
   set setReferredBy(String value) => referredBy.value = value;
   set setReferral(String value) => referral.value = value;
-  set setUserLocation(Map<dynamic, dynamic> value) => userLocation.value = value;
 
   // Create a StreamController
   final StreamController<String?> userChangesController =
@@ -49,7 +43,6 @@ class UserDetails extends GetxController {
     firstname.value = "";
     lastname.value = "";
     phone.value = "";
-    phoneWithoutCode.value = "";
     email.value = "";
     userId.value = "";
   }
@@ -87,6 +80,5 @@ class UserDetails extends GetxController {
     log('UserDetails: loadUser: firstname: ${firstname.value}');
     UserDetails.instance.userChangesController.add(firstname.value);
   }
-
   
 }

@@ -1,8 +1,9 @@
 import 'dart:developer';
-import 'package:assist/common_widgets/common_button.dart';
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
@@ -14,6 +15,9 @@ class PostProduct extends StatefulWidget {
 }
 
 class _PostProductState extends State<PostProduct> {
+  bool loading = false;
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
@@ -45,6 +49,9 @@ class _PostProductState extends State<PostProduct> {
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: ListTile(
+                  onTap: () {
+                    Get.toNamed('/categories');
+                  },
                   title: Text('Category'),
                   subtitle:
                       Text("Select a category under which your product falls"),
@@ -58,6 +65,9 @@ class _PostProductState extends State<PostProduct> {
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: ListTile(
+                  onTap: () {
+                    Get.toNamed('/regions');
+                  },
                   title: Text('Region'),
                   subtitle: Text("Select your region of primary operation"),
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
@@ -83,47 +93,57 @@ class _PostProductState extends State<PostProduct> {
                 ),
               ),
               Gap(20),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextField(
-                  decoration: InputDecoration(
-                    fillColor: primaryColor.withAlpha(30),
-                    hintText: 'Business Name',
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              ),
-              Gap(10),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: Row(
+              Form(
+                key: _formKey,
+                child: Column(
                   children: [
-                    Text('Select keywords that best describe your service'),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          fillColor: primaryColor.withAlpha(30),
+                          hintText: 'Business Name',
+                          hintStyle: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                    ),
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: Row(
+                        children: [
+                          Text('Select keywords that best describe your service'),
+                        ],
+                      ),
+                    ),
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: ListTile(
+                        onTap: () {
+                          Get.toNamed('/keywords');
+                        },
+                        title: Text('Select Keywords'),
+                        subtitle: Text("Keywords help users find your service"),
+                        trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
+                        tileColor: primaryColor.withAlpha(30),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(15))),
+                      ),
+                    ),
+                    Gap(10),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 10, right: 10),
+                      child: TextFormField(
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          fillColor: primaryColor.withAlpha(30),
+                          hintText: 'Description',
+                          hintStyle: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                    ),
                   ],
-                ),
-              ),
-              Gap(10),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: ListTile(
-                  title: Text('Select Keywords'),
-                  subtitle: Text("Keywords help users find your service"),
-                  trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
-                  tileColor: primaryColor.withAlpha(30),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(15))),
-                ),
-              ),
-              Gap(10),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextField(
-                  maxLines: 5,
-                  decoration: InputDecoration(
-                    fillColor: primaryColor.withAlpha(30),
-                    hintText: 'Description',
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
-                  ),
                 ),
               ),
               Padding(
@@ -178,7 +198,46 @@ class _PostProductState extends State<PostProduct> {
               ),
               SizedBox(
                   width: size.width * 0.5,
-                  child: CommonButton(text: 'Post for Free', onPressed: () {})),
+                  child: ElevatedButton(
+                                  style: loading
+                                      ? Theme.of(context)
+                                          .elevatedButtonTheme
+                                          .style
+                                          ?.copyWith(
+                                            backgroundColor:
+                                                WidgetStateProperty.all<Color>(
+                                                    loadingColor),
+                                          )
+                                      : null,
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      
+                                      try {
+                                       /// TODO: Post product save to Firestore
+                                      } catch (e) {
+                                        log("Error: $e");
+                                        Fluttertoast.showToast(
+                                            msg: e.toString(),
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor: primaryColor,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0);
+                                      }
+                                    }
+                                  },
+                                  child: loading
+                                      ? SizedBox(
+                                          width: 30,
+                                          height: 30,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2.0,
+                                          ),
+                                        )
+                                      : const Text("Post Product"),),
+                  ),
               Gap(20)
             ],
           ),

@@ -79,6 +79,7 @@ class _OnboardingState extends State<Onboarding> {
                         flex: 2,
                         child: homeCon.currentPage.value == 2
                             ? CommonButton(
+                                loading: false,
                                 text: "Continue",
                                 onPressed: () async {
                                   Get.toNamed('/welcome');

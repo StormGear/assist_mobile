@@ -1,4 +1,5 @@
 import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/features/chatbot/chat_history.dart';
 import 'package:assist/features/home/screens/home.dart';
 import 'package:assist/features/postings/post.dart';
 import 'package:assist/features/settings/screens/settings.dart';
@@ -37,8 +38,8 @@ class _SetupState extends State<Setup> {
         tabColor: Colors.pink,
       ),
       const TabData(
-        iconData: Icons.alarm,
-        title: "Alarm",
+        iconData: Icons.smart_toy,
+        title: "AssistBot",
         tabColor: Colors.amber,
       ),
       const TabData(
@@ -120,10 +121,7 @@ class _SetupState extends State<Setup> {
               switch (_currentPage) {
                 0 => Home(),
                 1 => Post(),
-                2 => Text(
-                    'Alarm Page',
-                    style: TextStyle(color: currentColor),
-                  ),
+                2 => ChatHistory(),
                 3 => Settings(),
                 _ => Text(
                     'Home Page',

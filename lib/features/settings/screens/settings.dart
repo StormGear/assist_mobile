@@ -1,6 +1,8 @@
 import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/services/database/user_details_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -21,17 +23,26 @@ class _SettingsState extends State<Settings> {
           CircleAvatar(
             maxRadius: 70,
             // foregroundImage: AssetImage('assets/images/settings/profile.jpg'),
-            backgroundImage: AssetImage('assets/images/settings/profile.jpg'),
+            backgroundImage: AssetImage('assets/images/profile/avatar.png'),
           ),
           Gap(10),
-          Text(
-            "John Doe",
-            style: Theme.of(context).textTheme.headlineMedium,
+          Obx(
+            () => Text(
+              UserDetails.instance.firstname.string,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
           ),
           Gap(10),
+          Obx(
+            () => Text(
+              UserDetails.instance.email.string,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          Gap(20),
           Container(
             width: size.width * 0.8,
-            height: 50,
+            height: 40,
             decoration: BoxDecoration(
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(30),
@@ -49,7 +60,7 @@ class _SettingsState extends State<Settings> {
                   'Help Your Friends, Earn Rewards',
                   style: TextStyle(
                       color: primaryColor,
-                      fontSize: 18,
+                      fontSize: 14,
                       fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),

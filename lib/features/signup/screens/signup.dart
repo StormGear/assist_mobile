@@ -1,9 +1,7 @@
 import 'dart:developer';
-
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/services/database/database_controller.dart';
 import 'package:assist/utils/function_utils.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
@@ -93,7 +91,7 @@ class _SignUpState extends State<SignUp> {
                                 controller: firstnameController,
                                 decoration: InputDecoration(
                                   hintText: 'First Name and Middle Name',
-                                  prefixIcon: Icon(Icons.email),
+                                  prefixIcon: Icon(Icons.person),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -114,7 +112,7 @@ class _SignUpState extends State<SignUp> {
                                 controller: lastnameController,
                                 decoration: const InputDecoration(
                                   hintText: 'Last Name',
-                                  prefixIcon: Icon(Icons.email),
+                                  prefixIcon: Icon(Icons.person),
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -314,6 +312,18 @@ class _SignUpState extends State<SignUp> {
                                       : null,
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
+                                      if (phoneNumber.length < 10) {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                'Please enter a valid phone number',
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor: primaryColor,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0);
+                                        return;
+                                      }
                                       try {
                                         if (mounted) {
                                           setState(() {
@@ -353,7 +363,16 @@ class _SignUpState extends State<SignUp> {
                                       }
                                     }
                                   },
-                                  child: const Text("Sign Up").tr()),
+                                  child: loading
+                                      ? SizedBox(
+                                          width: 30,
+                                          height: 30,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2.0,
+                                          ),
+                                        )
+                                      : const Text("Sign Up")),
                             ),
                           ],
                         ),

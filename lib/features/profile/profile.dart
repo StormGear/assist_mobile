@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'dart:io';
-import 'package:assist/common_widgets/common_button.dart';
 import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/services/database/database_controller.dart';
 import 'package:assist/utils/function_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
@@ -24,11 +26,25 @@ class _ProfileState extends State<Profile> {
   final TextEditingController lastnameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  File? selectedImage;
+  String phoneNumber = '';
+  bool loading = false;
+  final _formKey = GlobalKey<FormState>();
+  DatabaseController databaseController = DatabaseController();
 
   @override
   void initState() {
     super.initState();
     fetchProfilePicture();
+  }
+
+  @override
+  void dispose() {
+    firstnameController.dispose();
+    lastnameController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
+    super.dispose();
   }
 
   void fetchProfilePicture() async {
@@ -57,7 +73,6 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    File? selectedImage;
 
     return Scaffold(
       appBar: AppBar(
@@ -77,18 +92,19 @@ class _ProfileState extends State<Profile> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Center(
-            child: Padding(
+        child: Padding(
           padding: const EdgeInsets.all(15.0),
           child: Column(
             children: [
-              Center(
-                child: Stack(
-                  children: [
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Stack(children: [
                     selectedImage != null
                         ? CircleAvatar(
                             minRadius: 70,
-                            backgroundImage: FileImage(selectedImage),
+                            backgroundImage: FileImage(selectedImage!),
                           )
                         : imageUrl != null
                             ? imageUrl!.isNotEmpty
@@ -127,125 +143,249 @@ class _ProfileState extends State<Profile> {
                                   backgroundImage: AssetImage(
                                       'assets/images/profile/avatar.png'),
                                 )),
-                    GestureDetector(
-                      onTap: () async {
-                        File? imagePicked = await selectPhoto(context);
-                        if (imagePicked != null) {
-                          setState(() {
-                            selectedImage = imagePicked;
-                          });
-                        } else {
-                          log('Image not selected');
-                          if (mounted) {
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () async {
+                          File? imagePicked = await selectPhoto(context);
+                          if (imagePicked != null) {
                             setState(() {
-                              selectedImage = null;
+                              selectedImage = imagePicked;
                             });
+                          } else {
+                            log('Image not selected');
+                            if (mounted) {
+                              setState(() {
+                                selectedImage = null;
+                              });
+                            }
+                            fetchProfilePicture();
                           }
-                          fetchProfilePicture();
-                        }
-                      },
-                      child: Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: CircleAvatar(
-                          backgroundColor: primaryColor,
-                          child: Icon(Icons.camera_alt, color: Colors.white),
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: primaryColor,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          width: 30,
+                          height: 30,
+                          child: const Icon(
+                            Icons.camera_alt,
+                            size: 20,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ])
+                ],
               ),
               Gap(30),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextField(
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                ),
+                child: TextFormField(
                   controller: firstnameController,
                   decoration: InputDecoration(
-                    fillColor: primaryColor.withAlpha(30),
                     hintText: 'First Name and Middle Name',
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
+                    prefixIcon: Icon(Icons.person),
                   ),
-                ),
-              ),
-              Gap(20),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextField(
-                  controller: lastnameController,
-                  decoration: InputDecoration(
-                    fillColor: primaryColor.withAlpha(30),
-                    hintText: 'Last Name',
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              ),
-              Gap(20),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    fillColor: primaryColor.withAlpha(30),
-                    hintText: 'Email Address',
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-              ),
-              Gap(20),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: IntlPhoneField(
-                  controller: phoneController,
-                  validator: phoneValidator,
-                  pickerDialogStyle: PickerDialogStyle(
-                      countryCodeStyle: TextStyle(
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                      countryNameStyle: TextStyle(
-                          color: primaryColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                      searchFieldCursorColor: primaryColor,
-                      searchFieldInputDecoration: InputDecoration(
-                        hintText: 'Search a country',
-                        hintStyle: TextStyle(color: primaryColor),
-                        suffixIcon: Icon(Icons.search, color: primaryColor),
-                        filled: true,
-                        fillColor: primaryColor.withAlpha(30),
-                      ),
-                      backgroundColor: Colors.white),
-                  cursorColor: primaryColor,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: primaryColor.withAlpha(30),
-                    enabledBorder: OutlineInputBorder(
-                        gapPadding: 2.0,
-                        borderSide: BorderSide(color: primaryColor),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    focusedBorder: OutlineInputBorder(
-                        gapPadding: 2.0,
-                        borderSide: BorderSide(color: primaryColor),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    border: OutlineInputBorder(
-                        gapPadding: 2.0,
-                        borderSide: BorderSide(color: primaryColor),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                  ),
-                  initialCountryCode: 'GH',
-                  onChanged: (phone) {
-                    log(phone.completeNumber);
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter at least your first name';
+                    }
+                    return null;
                   },
                 ),
+              ),
+              Gap(20),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                ),
+                child: TextFormField(
+                  controller: lastnameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Last Name',
+                    prefixIcon: Icon(Icons.person),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your last name';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Gap(20),
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                ),
+                child: TextFormField(
+                  controller: emailController,
+                  decoration: const InputDecoration(
+                    hintText: 'Email',
+                    prefixIcon: Icon(Icons.email),
+                  ),
+                  validator: (value) {
+                    if (!RegExp(
+                            r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                        .hasMatch(value!)) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Gap(20),
+              IntlPhoneField(
+                disableLengthCheck: true,
+                onSubmitted: (val) {
+                  log("Submitted phone number is $val");
+                },
+                validator: phoneValidator,
+                controller: phoneController,
+                showDropdownIcon: false,
+                pickerDialogStyle: PickerDialogStyle(
+                    countryCodeStyle: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                    countryNameStyle: TextStyle(
+                        color: primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16),
+                    searchFieldCursorColor: primaryColor,
+                    searchFieldInputDecoration: InputDecoration(
+                      isDense: true, // Reduces the height
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                      hintText: 'Search a country',
+                      hintStyle: TextStyle(color: primaryColor),
+                      suffixIcon: Icon(Icons.search, color: primaryColor),
+                    ),
+                    backgroundColor: Colors.white),
+                cursorColor: primaryColor,
+                // controller: phoneController,
+                decoration: InputDecoration(
+                    isDense: true, // Reduces the height
+                    hintStyle: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14.0,
+                        fontFamily: 'Poppins'),
+                    contentPadding:
+                        EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    label: const Text('Phone Number'),
+                    floatingLabelStyle: const TextStyle(color: primaryColor),
+                    border: OutlineInputBorder(
+                        borderSide: const BorderSide(width: 1.0),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        gapPadding: 2.0),
+                    fillColor: Colors.white,
+                    focusColor: primaryColor,
+                    filled: true,
+                    errorBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(width: 1.0, color: Colors.red),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        gapPadding: 2.0),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            const BorderSide(width: 1.0, color: primaryColor),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
+                        gapPadding: 2.0)),
+                initialCountryCode: 'GH',
+                onChanged: (phone) {
+                  setState(() {
+                    phoneNumber = phone.countryCode + phoneController.text;
+                  });
+                  log("Phone number is(onchanged) $phoneNumber");
+                },
               ),
               Gap(50),
               SizedBox(
                   width: size.width * 0.8,
-                  child: CommonButton(text: 'Save Changes', onPressed: () {})),
+                  child: ElevatedButton(
+                                  style: loading
+                                      ? Theme.of(context)
+                                          .elevatedButtonTheme
+                                          .style
+                                          ?.copyWith(
+                                            backgroundColor:
+                                                WidgetStateProperty.all<Color>(
+                                                    loadingColor),
+                                          )
+                                      : null,
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      if (phoneNumber.length < 10) {
+                                        Fluttertoast.showToast(
+                                            msg:
+                                                'Please enter a valid phone number',
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor: primaryColor,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0);
+                                        return;
+                                      }
+                                      try {
+                                        if (mounted) {
+                                          setState(() {
+                                            loading = true;
+                                          });
+                                        }
+                                   
+                                        var user = {
+                                          'email': emailController.text,
+                                          'phone': phoneNumber,
+                                          'firstname': firstnameController.text,
+                                          'lastname': lastnameController.text,
+                                        };
+                                        databaseController
+                                            .createUserInDb(user)
+                                            .then((value) {
+                                          if (mounted) {
+                                            setState(() {
+                                              loading = false;
+                                            });
+                                          }
+                                          Get.toNamed('/home');
+                                        });
+                                      } catch (e) {
+                                        log("Error: $e");
+                                        Fluttertoast.showToast(
+                                            msg: e.toString(),
+                                            toastLength: Toast.LENGTH_LONG,
+                                            gravity: ToastGravity.CENTER,
+                                            timeInSecForIosWeb: 1,
+                                            backgroundColor: primaryColor,
+                                            textColor: Colors.white,
+                                            fontSize: 16.0);
+                                      }
+                                    }
+                                  },
+                                  child: loading
+                                      ? SizedBox(
+                                          width: 30,
+                                          height: 30,
+                                          child: CircularProgressIndicator(
+                                            color: Colors.white,
+                                            strokeWidth: 2.0,
+                                          ),
+                                        )
+                                      : const Text("Sign Up")),
+                  ),
             ],
           ),
-        )),
+        ),
       ),
     );
   }

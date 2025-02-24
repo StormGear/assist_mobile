@@ -128,6 +128,37 @@ class DatabaseController extends GetxController {
     }
   }
 
+   /// update fields in a document in firebase
+    Future<bool> updateUserDocumentFields(
+        String userId, Map<String, dynamic> fields) async {
+      CollectionReference users = db.collection('users');
+      try {
+        DocumentSnapshot<Object?> docSnapshot = await users.doc(userId).get();
+
+        log('Document ID retrieved: ${docSnapshot.id}');
+        if (await checkServerReachability()) {
+          await users.doc(docSnapshot.id).update(fields);
+          log('Document fields updated successfully');
+          return true;
+        } else {
+          Fluttertoast.showToast(
+              msg: "Error: No internet connection",
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: primaryColor,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          log('Error: No internet connection');
+          return false;
+        }
+      } catch (e) {
+        // customSnackbar("Error", e.toString());
+        log('Error updating user document (updateUserDocumentFields): ${e.toString()}');
+        return false;
+      }
+    }
+
     /// check whether user exists in the database based on phone number
     Future<Map<String, dynamic>> checkIfPhoneExists(String phoneNumber) async {
       // Specify the collection
@@ -301,35 +332,5 @@ class DatabaseController extends GetxController {
       }
     }
 
-    /// update fields in a document in firebase
-    Future<bool> updateUserDocumentFields(
-        String userId, Map<String, dynamic> fields) async {
-      CollectionReference users = db.collection('users');
-      try {
-        DocumentSnapshot<Object?> docSnapshot = await users.doc(userId).get();
-
-        log('Document ID retrieved: ${docSnapshot.id}');
-        if (await checkServerReachability()) {
-          await users.doc(docSnapshot.id).update(fields);
-          log('Document fields updated successfully');
-          return true;
-        } else {
-          Fluttertoast.showToast(
-              msg: "Error: No internet connection",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: primaryColor,
-              textColor: Colors.white,
-              fontSize: 16.0);
-          log('Error: No internet connection');
-          return false;
-        }
-      } catch (e) {
-        // customSnackbar("Error", e.toString());
-        log('Error updating user document (updateUserDocumentFields): ${e.toString()}');
-        return false;
-      }
-    }
   }
 
