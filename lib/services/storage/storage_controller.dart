@@ -1,106 +1,83 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:assist/common_widgets/constants/colors.dart';
-import 'package:assist/main.dart';
 import 'package:assist/services/database/database_controller.dart';
 import 'package:assist/services/database/user_details_controller.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:path/path.dart' as p;
 import 'package:get/get.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StorageController extends GetxController {
   /// access the StorageController instance from anywhere within the app
   static StorageController get instance => Get.find();
 
+  /// Access Firebase storage API
+  final _storage = FirebaseStorage.instance;
+
   /// Remove profile photo from Firebase storage
-  Future<void> removeProfilePhotoFromSupabaseStorage(String documentId) async {
+  /// Remove profile photo from Firebase storage
+  Future<bool> removeProfilePhotoFromFirebaseStorage(String documentId) async {
     try {
-      // Delete the profile photo from Supabase storage
-      final List<FileObject> objectsInFolder = await supabase.storage
-          .from('avatars')
-          .list(path: 'user-profile-pictures/$documentId/');
-      for (var object in objectsInFolder) {
-        log('Object: $object');
+      // Delete the profile photo from Firebase storage
+      var ref = await _storage
+          .ref()
+          .child('user-profile/profile-photo/$documentId/')
+          .listAll();
+      for (var item in ref.items) {
+        // The items under storageRef.
+        log(item.toString());
+        await _storage.ref(item.fullPath).delete().whenComplete(() {
+          log('Profile photo removed from Firebase Storage');
+        });
       }
-      // final List<FileObject> objects = await supabase
-      //       .storage
-      //       .from('avatars')
-      //       .remove(['user-profile-pictures/$documentId/$fileName']);
+      return true;
     } catch (error) {
-      log('Error: ${error.toString()}');
-      Fluttertoast.showToast(
-          msg: "Error: ${error.toString()}",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: primaryColor,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      log(error.toString());
+      return false;
     }
   }
 
-  Future<void> addProfilePhototoSupabaseStorage(
+  Future<bool> addProfilePhototoFirebaseStorage(
       String documentId, File addedImage) async {
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(documentId)
+        .get();
     try {
-      String name = UserDetails.instance.getFirstname.isEmpty
-          ? 'user'
-          : UserDetails.instance.getFirstname;
+      String name = documentSnapshot['firstname'];
       String fileName =
           name.replaceAll(' ', '_').trim() + p.extension(addedImage.path);
-      // Initialize a task to upload image to Supabase storage
-      final String fullPath = await supabase.storage
-          .from('assist-storage') // Replace with your storage bucket name
-          .upload('user-profile-pictures/$documentId/$fileName', addedImage);
+      // Initialize a task to upload image to Firebase storage
+      UploadTask task = _storage
+          .ref('user-profile/profile-photo/$documentId/$fileName')
+          .putFile(addedImage);
 
-      if (fullPath.isNotEmpty) {
-        log('Profile picture added to Supabase Storage');
-        final String publicUrl = supabase.storage
-            .from('assist-storage')
-            .getPublicUrl('user-profile-pictures/$documentId/$fileName');
-        log('Public URL: $publicUrl');
-        if (publicUrl.isNotEmpty) {
+      return task.then((snapshot) async {
+        try {
+          String profilePictureURL = await snapshot.ref.getDownloadURL();
           Map<String, dynamic> uploadImage = {
-            'profile_url': publicUrl,
+            'profile_url': profilePictureURL,
           };
-          log('Would add public  url to the db');
-
-          // await FirebaseFirestore.instance
-          //     .collection('users')
-          //     .doc(documentId)
-          //     .update(uploadImage);
           // Update the photoUrl
-          await DatabaseController.instance
-              .updateUserDocumentFields(documentId, uploadImage)
-              .then((value) {
-            log('Profile picture added to Firestore');
-          });
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(documentId)
+              .update(uploadImage);
+          log("profile picture url: $profilePictureURL");
+          return true;
+        } catch (e) {
+          log("Error message: ${e.toString()}");
+          return false;
         }
-      } else {
-        log('Error adding profile picture to Supabase Storage');
-        Fluttertoast.showToast(
-            msg: "Error adding profile picture to Database",
-            toastLength: Toast.LENGTH_SHORT,
-            gravity: ToastGravity.CENTER,
-            timeInSecForIosWeb: 1,
-            backgroundColor: primaryColor,
-            textColor: Colors.white,
-            fontSize: 16.0);
-      }
+      });
     } catch (error) {
       log(error.toString());
-      Fluttertoast.showToast(
-          msg: "Error: ${error.toString()}",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          backgroundColor: primaryColor,
-          textColor: Colors.white,
-          fontSize: 16.0);
+      return false;
     }
   }
 

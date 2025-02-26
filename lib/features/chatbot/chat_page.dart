@@ -1,263 +1,695 @@
-import 'dart:developer';
-import 'dart:io';
-import 'package:file_picker/file_picker.dart';
+import 'dart:async';
+import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/features/chatbot/common.dart';
+import 'package:assist/features/chatbot/widgets/custom_button.dart';
+import 'package:assist/services/database/user_details_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
-import 'package:gradient_borders/box_borders/gradient_box_border.dart';
+import 'package:syncfusion_flutter_chat/assist_view.dart';
 
 String geminiKey = String.fromEnvironment('GEMINI_API_KEY');
 
 class ChatPage extends StatefulWidget {
-  static const routeName = '/chat';
   const ChatPage({super.key});
 
   @override
-  State<ChatPage> createState() => _ChatPageState();
+  State<ChatPage> createState() => _AssistViewState();
 }
 
-class _ChatPageState extends State<ChatPage> {
-  final TextEditingController _chatController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  final List<Map<String, dynamic>> _chatHistory = [];
-  String? _file;
-  late final GenerativeModel _model;
-  late final GenerativeModel _visionModel;
-  late final ChatSession _chat;
+class _AssistViewState extends State<ChatPage> {
+  final AssistMessageAuthor _userAuthor = AssistMessageAuthor(
+      id: UserDetails.instance.getUserId,
+      name: UserDetails.instance.firstname.string);
+  final AssistMessageAuthor _aiAuthor =
+      const AssistMessageAuthor(id: 'assistbot', name: 'AssistBot');
+
+  late List<AssistMessage> _messages;
+  late List<String> _bubbleAlignmentItem;
+  late List<String> _placeholderBehaviorItem;
+
+  double _widthFactor = 0.9;
+  String _selectedAlignment = 'Auto';
+  String _selectedBehavior = 'Scroll';
+  AssistPlaceholderBehavior _placeholderBehavior =
+      AssistPlaceholderBehavior.scrollWithMessage;
+  AssistBubbleAlignment _bubbleAlignment = AssistBubbleAlignment.auto;
+
+  bool _showRequestAvatar = true;
+  bool _showRequestUserName = true;
+  bool _showRequestTimestamp = false;
+  bool _showResponseAvatar = true;
+  bool _showResponseUserName = true;
+  bool _showResponseTimestamp = false;
+  // bool _lightTheme = true;
+
+  SelectionArea _buildAIAssistView() {
+    return SelectionArea(
+      child: SfAIAssistView(
+        messages: _messages,
+        placeholderBuilder: _buildPlaceholder,
+        placeholderBehavior: _placeholderBehavior,
+        bubbleAvatarBuilder: _buildAvatar,
+        bubbleAlignment: _bubbleAlignment,
+        requestBubbleSettings: AssistBubbleSettings(
+          widthFactor: _widthFactor,
+          showUserAvatar: _showRequestAvatar,
+          showTimestamp: _showRequestTimestamp,
+          showUserName: _showRequestUserName,
+        ),
+        responseBubbleSettings: AssistBubbleSettings(
+          widthFactor: _widthFactor,
+          showUserAvatar: _showResponseAvatar,
+          showTimestamp: _showResponseTimestamp,
+          showUserName: _showResponseUserName,
+        ),
+        composer: const AssistComposer(
+          decoration: InputDecoration(
+            hintText: 'Type message here...',
+          ),
+        ),
+        actionButton: AssistActionButton(onPressed: _handleActionButtonPressed),
+        bubbleContentBuilder: (context, int index, AssistMessage message) {
+          return MarkdownBody(data: message.data);
+        },
+      ),
+    );
+  }
+
+  Widget _buildPlaceholder(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox.square(
+            dimension: 80.0,
+            child: Image.asset(
+              'assets/images/chat/ai_avatar_light.png',
+              color: primaryColor,
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          const Text(
+            'Ask AI Anything!',
+            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10.0),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              spacing: 10.0,
+              runSpacing: 10.0,
+              children: _generateQuickAccessTiles(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _generateQuickAccessTiles() {
+    return topics.map((topic) {
+      return Column(
+        children: [
+          GestureDetector(
+            onTapDown: (TapDownDetails details) =>
+                _handleQuickAccessTileTap(topic),
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 2.0,
+                  color: primaryColor,
+                ),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              padding: const EdgeInsets.all(10.0),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  // Image.asset(
+                  //   topic['image']! +
+                  //       (_lightTheme ? '_light.png' : '_dark.png'),
+                  //   width: 20.0,
+                  //   height: 20.0,
+                  // ),
+                  const SizedBox(width: 10.0),
+                  Text(
+                    topic['title']!,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 5.0),
+        ],
+      );
+    }).toList();
+  }
+
+  void _handleQuickAccessTileTap(Map<String, String> topic) {
+    _addMessageAndRebuild(AssistMessage.request(
+      data: topic['title']!,
+      author: _userAuthor,
+      time: DateTime.now(),
+    ));
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        _generateResponse(
+          topic['title'].toString(),
+          topic['description'].toString(),
+        );
+      });
+    });
+  }
+
+  Future<void> _generateResponse(String prompt,
+      [String localResponse = '']) async {
+    final GenerativeModel aiModel = GenerativeModel(
+      model: 'gemini-1.5-flash-latest',
+      apiKey: geminiKey,
+    );
+
+    try {
+      final GenerateContentResponse response =
+          await aiModel.generateContent([Content.text(prompt)]);
+      _addResponseMessage(response.text!);
+    } catch (err) {
+      if (localResponse.isNotEmpty) {
+        _addResponseMessage(localResponse);
+      } else {
+        _addResponseMessage('The given $err');
+      }
+    }
+  }
+
+  void _addResponseMessage(String response) {
+    _addMessageAndRebuild(AssistMessage.response(
+      data: response,
+      author: _aiAuthor,
+      time: DateTime.now(),
+    ));
+  }
+
+  void _addMessageAndRebuild(AssistMessage message) {
+    setState(() => _messages.add(message));
+  }
+
+  Widget _buildAvatar(BuildContext context, int index, AssistMessage message) {
+    return message.isRequested
+        ? Image.asset('assets/images/chat/People_Circle7.png')
+        : Image.asset(
+            'assets/images/chat/ai_avatar_light.png',
+            color: primaryColor,
+          );
+  }
+
+  void _handleActionButtonPressed(String prompt) {
+    _addMessageAndRebuild(AssistMessage.request(
+      data: prompt,
+      author: _userAuthor,
+      time: DateTime.now(),
+    ));
+    Future.delayed(
+      const Duration(milliseconds: 500),
+      () {
+        if (geminiKey.isEmpty) {
+          _addMessageAndRebuild(
+            AssistMessage.response(
+              data:
+                  'Please connect to your preferred AI server for real-time queries.',
+              author: _aiAuthor,
+              time: DateTime.now(),
+            ),
+          );
+        } else {
+          _generateResponse(prompt);
+        }
+      },
+    );
+  }
+
+  // Widget _buildAIConfigurationSetting() {
+  //   return Align(
+  //     alignment: Alignment.topRight,
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(5.0),
+  //       child: SizedBox(
+  //         height: 40,
+  //         width: 40,
+  //         child: IconButton(
+  //           style: ButtonStyle(
+  //             foregroundColor: WidgetStateProperty.all<Color>(
+  //               primaryColor
+  //             ),
+  //           ),
+  //           tooltip: 'Configure AI',
+  //           icon: const Icon(Icons.settings),
+  //           onPressed: () {
+  //             showDialog(
+  //               context: context,
+  //               builder: (context) => WelcomeDialog(
+  //                 primaryColor: model.primaryColor,
+  //                 apiKey: model.assistApiKey,
+  //                 onApiKeySaved: (newApiKey) {
+  //                   setState(() {
+  //                     model.assistApiKey = newApiKey;
+  //                   });
+  //                 },
+  //               ),
+  //             );
+  //           },
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildWidthFactorSetting() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        const Text(
+          'Width factor',
+          style: TextStyle(fontSize: 16),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: CustomDirectionalButtons(
+            maxValue: 1.0,
+            minValue: 0.8,
+            step: 0.05,
+            initialValue: _widthFactor,
+            onChanged: (double val) => setState(() {
+              _widthFactor = val;
+            }),
+            iconColor: primaryColor,
+            style: TextStyle(fontSize: 16.0, color: primaryColor),
+          ),
+        )
+      ],
+    );
+  }
+
+  Widget _buildBubbleAlignmentSetting(StateSetter stateSetter) {
+    return SizedBox(
+      width: 230,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              'Bubble alignment',
+              overflow: TextOverflow.clip,
+              softWrap: false,
+              style: TextStyle(fontSize: 16.0, color: primaryColor),
+            ),
+          ),
+          DropdownButton<String>(
+            dropdownColor: primaryColor,
+            focusColor: Colors.transparent,
+            underline: Container(
+              color: const Color(0xFFBDBDBD),
+              height: 1.0,
+            ),
+            value: _selectedAlignment,
+            items: _bubbleAlignmentItem.map((String value) {
+              return DropdownMenuItem<String>(
+                value: (value != null) ? value : 'Auto',
+                child: Text(
+                  value,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: primaryColor),
+                ),
+              );
+            }).toList(),
+            onChanged: (String? value) {
+              stateSetter(() {
+                _handleAlignmentChange(value.toString());
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleAlignmentChange(String value) {
+    setState(() {
+      _selectedAlignment = value;
+      switch (value) {
+        case 'Start':
+          _bubbleAlignment = AssistBubbleAlignment.start;
+          break;
+        case 'End':
+          _bubbleAlignment = AssistBubbleAlignment.end;
+          break;
+        case 'Auto':
+          _bubbleAlignment = AssistBubbleAlignment.auto;
+          break;
+      }
+    });
+  }
+
+  Widget _buildPlaceholderBehaviorSetting(StateSetter stateSetter) {
+    return SizedBox(
+      width: 230,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              'Placeholder',
+              overflow: TextOverflow.clip,
+              softWrap: false,
+              style: TextStyle(fontSize: 16.0, color: primaryColor),
+            ),
+          ),
+          DropdownButton<String>(
+            dropdownColor: primaryColor,
+            focusColor: Colors.transparent,
+            underline: Container(color: const Color(0xFFBDBDBD), height: 1.0),
+            value: _selectedBehavior,
+            items: _placeholderBehaviorItem.map((String value) {
+              return DropdownMenuItem<String>(
+                value: 'Scroll',
+                child: Text(
+                  value,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: primaryColor),
+                ),
+              );
+            }).toList(),
+            onChanged: (String? value) {
+              stateSetter(() {
+                _handlePlaceholderBehavior(value.toString());
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handlePlaceholderBehavior(String value) {
+    setState(() {
+      _selectedBehavior = value;
+      switch (value) {
+        case 'Scroll':
+          _placeholderBehavior = AssistPlaceholderBehavior.scrollWithMessage;
+          break;
+        case 'Hide':
+          _placeholderBehavior = AssistPlaceholderBehavior.hideOnMessage;
+      }
+    });
+  }
+
+  Padding _buildBubbleSettingTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20.0, bottom: 10),
+      child: Text(
+        title,
+        overflow: TextOverflow.clip,
+        softWrap: false,
+        style: TextStyle(
+          fontSize: 16.0,
+          fontWeight: FontWeight.bold,
+          color: primaryColor,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRequestShowAvatarSetting(StateSetter stateSetter) {
+    return SizedBox(
+      width: 200,
+      child: CheckboxListTile(
+        value: _showRequestAvatar,
+        title: const Text('Show avatar', softWrap: false),
+        activeColor: primaryColor,
+        contentPadding: EdgeInsets.zero,
+        onChanged: (bool? value) {
+          setState(() {
+            stateSetter(() {
+              _showRequestAvatar = value!;
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildRequestShowTimestampSetting(StateSetter stateSetter) {
+    return SizedBox(
+      width: 200,
+      child: CheckboxListTile(
+        value: _showRequestTimestamp,
+        title: const Text('Show timestamp', softWrap: false),
+        activeColor: primaryColor,
+        contentPadding: EdgeInsets.zero,
+        onChanged: (bool? value) {
+          setState(() {
+            stateSetter(() {
+              _showRequestTimestamp = value!;
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildRequestShowUserNameSetting(StateSetter stateSetter) {
+    return SizedBox(
+      width: 200,
+      child: CheckboxListTile(
+        value: _showRequestUserName,
+        title: const Text('Show name', softWrap: false),
+        activeColor: primaryColor,
+        contentPadding: EdgeInsets.zero,
+        onChanged: (bool? value) {
+          setState(() {
+            stateSetter(() {
+              _showRequestUserName = value!;
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildResponseShowAvatarSetting(StateSetter stateSetter) {
+    return SizedBox(
+      width: 200,
+      child: CheckboxListTile(
+        value: _showResponseAvatar,
+        title: const Text('Show avatar', softWrap: false),
+        activeColor: primaryColor,
+        contentPadding: EdgeInsets.zero,
+        onChanged: (bool? value) {
+          setState(() {
+            stateSetter(() {
+              _showResponseAvatar = value!;
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildResponseShowUserNameSetting(StateSetter stateSetter) {
+    return SizedBox(
+      width: 200,
+      child: CheckboxListTile(
+        value: _showResponseUserName,
+        title: const Text('Show name', softWrap: false),
+        activeColor: primaryColor,
+        contentPadding: EdgeInsets.zero,
+        onChanged: (bool? value) {
+          setState(() {
+            stateSetter(() {
+              _showResponseUserName = value!;
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildResponseShowTimestampSetting(StateSetter stateSetter) {
+    return SizedBox(
+      width: 200,
+      child: CheckboxListTile(
+        value: _showResponseTimestamp,
+        title: const Text('Show timestamp', softWrap: false),
+        activeColor: primaryColor,
+        contentPadding: EdgeInsets.zero,
+        onChanged: (bool? value) {
+          setState(() {
+            stateSetter(() {
+              _showResponseTimestamp = value!;
+            });
+          });
+        },
+      ),
+    );
+  }
+
+  Widget _buildClearChatSetting() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+            (Set<WidgetState> states) {
+              if (states.contains(WidgetState.pressed)) {
+                return primaryColor.withAlpha(150);
+              }
+              return primaryColor;
+            },
+          ),
+        ),
+        onPressed: () {
+          if (_messages.isNotEmpty) {
+            setState(() {
+              _messages.clear();
+            });
+          }
+        },
+        child: Text(
+          'Clear Chat',
+          style: TextStyle(
+            color: primaryColor,
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   void initState() {
-    _model = GenerativeModel(model: 'gemini-1.5-flash', apiKey: geminiKey);
-    _visionModel =
-        GenerativeModel(model: 'gemini-1.5-flash', apiKey: geminiKey);
-    _chat = _model.startChat();
+    _messages = <AssistMessage>[];
+    _bubbleAlignmentItem = ['Auto', 'Start', 'End'];
+    _placeholderBehaviorItem = ['Scroll', 'Hide'];
     super.initState();
-  }
 
-  void getAnswer(text) async {
-    late final GenerateContentResponse response;
-    if (_file != null) {
-      final firstImage = await (File(_file!).readAsBytes());
-      final prompt = TextPart(text);
-      final imageParts = [
-        DataPart('image/jpeg', firstImage),
-      ];
-      response = await _visionModel.generateContent([
-        Content.multi([prompt, ...imageParts])
-      ]);
-      _file = null;
-    } else {
-      var content = Content.text(text.toString());
-      response = await _chat.sendMessage(content);
-    }
-    setState(() {
-      _chatHistory.add({
-        "time": DateTime.now(),
-        "message": response.text,
-        "isSender": false,
-        "isImage": false
-      });
-      _file = null;
-    });
-
-    _scrollController.jumpTo(
-      _scrollController.position.maxScrollExtent,
-    );
+    // Show the dialog when the app starts.
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (model.isFirstTime) {
+    //     showDialog(
+    //       context: context,
+    //       builder: (context) => WelcomeDialog(
+    //         primaryColor: model.primaryColor,
+    //         apiKey: model.assistApiKey,
+    //         onApiKeySaved: (newApiKey) {
+    //           setState(() {
+    //             model.assistApiKey = newApiKey;
+    //           });
+    //         },
+    //       ),
+    //     );
+    //     model.isFirstTime = false;
+    //   }
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Chat",
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        title: Text(
+          'AssistBot AI Assistant',
+          style: TextStyle(
+              color: primaryColor,
+              fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
+              fontWeight: FontWeight.bold),
         ),
-        body: Stack(
-          children: [
-            SizedBox(
-              //get max height
-              height: MediaQuery.of(context).size.height - 160,
-              child: ListView.builder(
-                itemCount: _chatHistory.length,
-                shrinkWrap: false,
-                controller: _scrollController,
-                padding: const EdgeInsets.only(top: 10, bottom: 10),
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context, index) {
-                  return Container(
-                    padding: EdgeInsets.only(
-                        left: 14, right: 14, top: 10, bottom: 10),
-                    child: Align(
-                      alignment: (_chatHistory[index]["isSender"]
-                          ? Alignment.topRight
-                          : Alignment.topLeft),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withAlpha(150),
-                              spreadRadius: 2,
-                              blurRadius: 5,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                          color: (_chatHistory[index]["isSender"]
-                              ? Color(0xFFF69170)
-                              : Colors.white),
-                        ),
-                        padding: EdgeInsets.all(16),
-                        child: _chatHistory[index]["isImage"]
-                            ? Image.file(File(_chatHistory[index]["message"]),
-                                width: 200)
-                            : Text(_chatHistory[index]["message"],
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    color: _chatHistory[index]["isSender"]
-                                        ? Colors.white
-                                        : Colors.black)),
-                      ),
-                    ),
-                  );
-                },
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: primaryColor,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Stack(
+        children: [
+          Positioned(
+            top: -45,
+            right: -45,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50.0),
+              child: Container(
+                color: primaryColor,
+                height: 100,
+                width: 100,
               ),
             ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                children: [
-                  MaterialButton(
-                    onPressed: () async {
-                      FilePickerResult? result =
-                          await FilePicker.platform.pickFiles(
-                        type: FileType.custom,
-                        allowedExtensions: ['jpg', 'jpeg', 'png'],
-                      );
-                      log(result.toString());
-                      if (result != null) {
-                        setState(() {
-                          _file = result.files.first.path;
-                        });
-                      }
-                    },
-                    minWidth: 42.0,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(80.0)),
-                    padding: const EdgeInsets.all(0.0),
-                    child: Ink(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(0xFFF69170),
-                              Color(0xFF7D96E6),
-                            ]),
-                        borderRadius: BorderRadius.all(Radius.circular(30.0)),
-                      ),
-                      child: Container(
-                          constraints: const BoxConstraints(
-                              minWidth: 42.0, minHeight: 36.0),
-                          alignment: Alignment.center,
-                          child: Icon(
-                            _file == null ? Icons.image : Icons.check,
-                            color: Colors.white,
-                          )),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 4.0,
-                  ),
-                  Expanded(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        border: GradientBoxBorder(
-                          gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(0xFFF69170),
-                                Color(0xFF7D96E6),
-                              ]),
-                        ),
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: TextField(
-                          decoration: const InputDecoration(
-                            hintText: "Type a message",
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.all(8.0),
-                          ),
-                          controller: _chatController,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 4.0,
-                  ),
-                  MaterialButton(
-                    onPressed: () {
-                      setState(() {
-                        if (_chatController.text.isNotEmpty) {
-                          if (_file != null) {
-                            _chatHistory.add({
-                              "time": DateTime.now(),
-                              "message": _file,
-                              "isSender": true,
-                              "isImage": true
-                            });
-                          }
+          ),
 
-                          _chatHistory.add({
-                            "time": DateTime.now(),
-                            "message": _chatController.text,
-                            "isSender": true,
-                            "isImage": false
-                          });
-                        }
-                      });
-
-                      _scrollController.jumpTo(
-                        _scrollController.position.maxScrollExtent,
-                      );
-
-                      getAnswer(_chatController.text);
-                      _chatController.clear();
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(80.0)),
-                    padding: const EdgeInsets.all(0.0),
-                    child: Ink(
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              Color(0xFFF69170),
-                              Color(0xFF7D96E6),
-                            ]),
-                        borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                      ),
-                      child: Container(
-                          constraints: const BoxConstraints(
-                              minWidth: 88.0,
-                              minHeight:
-                                  36.0), // min sizes for Material buttons
-                          alignment: Alignment.center,
-                          child: const Icon(
-                            Icons.send,
-                            color: Colors.white,
-                          )),
-                    ),
-                  )
-                ],
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: _buildAIAssistView(),
+                ),
               ),
-            )
-          ],
-        ));
+            ),
+          )
+          // _buildAIConfigurationSetting()
+        ],
+      ),
+    );
+  }
+
+  // @override
+  // Widget buildSettings(BuildContext context) {
+  //   return StatefulBuilder(
+  //     builder: (BuildContext context, StateSetter stateSetter) {
+  //       return Column(
+  //         mainAxisAlignment: MainAxisAlignment.end,
+  //         children: [
+  //           _buildClearChatSetting(),
+  //           Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               _buildWidthFactorSetting(),
+  //               _buildBubbleAlignmentSetting(stateSetter),
+  //               _buildPlaceholderBehaviorSetting(stateSetter),
+  //               Column(
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 children: [
+  //                   _buildBubbleSettingTitle('Request bubble settings'),
+  //                   _buildRequestShowAvatarSetting(stateSetter),
+  //                   _buildRequestShowUserNameSetting(stateSetter),
+  //                   _buildRequestShowTimestampSetting(stateSetter),
+  //                   _buildBubbleSettingTitle('Response bubble settings'),
+  //                   _buildResponseShowAvatarSetting(stateSetter),
+  //                   _buildResponseShowUserNameSetting(stateSetter),
+  //                   _buildResponseShowTimestampSetting(stateSetter)
+  //                 ],
+  //               ),
+  //             ],
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  @override
+  void dispose() {
+    _messages.clear();
+    _bubbleAlignmentItem.clear();
+    _placeholderBehaviorItem.clear();
+    super.dispose();
   }
 }

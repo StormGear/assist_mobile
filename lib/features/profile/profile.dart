@@ -2,16 +2,17 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/services/database/database_controller.dart';
+import 'package:assist/services/database/user_details_controller.dart';
+import 'package:assist/services/storage/storage_controller.dart';
 import 'package:assist/utils/function_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
-import 'package:get/get.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
-import 'package:shimmer/shimmer.dart';
+// import 'package:shimmer/shimmer.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -135,14 +136,11 @@ class _ProfileState extends State<Profile> {
                                     backgroundImage: AssetImage(
                                         'assets/images/profile/avatar.png'),
                                   )
-                            : Shimmer.fromColors(
-                                baseColor: Colors.grey.shade300,
-                                highlightColor: Colors.grey.shade100,
-                                child: const CircleAvatar(
-                                  minRadius: 70,
-                                  backgroundImage: AssetImage(
-                                      'assets/images/profile/avatar.png'),
-                                )),
+                            : const CircleAvatar(
+                                minRadius: 70,
+                                backgroundImage: AssetImage(
+                                    'assets/images/profile/avatar.png'),
+                              ),
                     Positioned(
                       bottom: 0,
                       right: 0,
@@ -182,207 +180,249 @@ class _ProfileState extends State<Profile> {
                 ],
               ),
               Gap(30),
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                ),
-                child: TextFormField(
-                  controller: firstnameController,
-                  decoration: InputDecoration(
-                    hintText: 'First Name and Middle Name',
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter at least your first name';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Gap(20),
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                ),
-                child: TextFormField(
-                  controller: lastnameController,
-                  decoration: const InputDecoration(
-                    hintText: 'Last Name',
-                    prefixIcon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Gap(20),
-              Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  borderRadius: const BorderRadius.all(Radius.circular(30.0)),
-                ),
-                child: TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(
-                    hintText: 'Email',
-                    prefixIcon: Icon(Icons.email),
-                  ),
-                  validator: (value) {
-                    if (!RegExp(
-                            r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
-                        .hasMatch(value!)) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Gap(20),
-              IntlPhoneField(
-                disableLengthCheck: true,
-                onSubmitted: (val) {
-                  log("Submitted phone number is $val");
-                },
-                validator: phoneValidator,
-                controller: phoneController,
-                showDropdownIcon: false,
-                pickerDialogStyle: PickerDialogStyle(
-                    countryCodeStyle: TextStyle(
-                        color: primaryColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16),
-                    countryNameStyle: TextStyle(
-                        color: primaryColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16),
-                    searchFieldCursorColor: primaryColor,
-                    searchFieldInputDecoration: InputDecoration(
-                      isDense: true, // Reduces the height
-                      contentPadding:
-                          EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                      hintText: 'Search a country',
-                      hintStyle: TextStyle(color: primaryColor),
-                      suffixIcon: Icon(Icons.search, color: primaryColor),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                      ),
+                      child: TextFormField(
+                        controller: firstnameController,
+                        decoration: InputDecoration(
+                          hintText: 'First Name and Middle Name',
+                          prefixIcon: Icon(Icons.person),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter at least your first name';
+                          }
+                          return null;
+                        },
+                      ),
                     ),
-                    backgroundColor: Colors.white),
-                cursorColor: primaryColor,
-                // controller: phoneController,
-                decoration: InputDecoration(
-                    isDense: true, // Reduces the height
-                    hintStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: 14.0,
-                        fontFamily: 'Poppins'),
-                    contentPadding:
-                        EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    label: const Text('Phone Number'),
-                    floatingLabelStyle: const TextStyle(color: primaryColor),
-                    border: OutlineInputBorder(
-                        borderSide: const BorderSide(width: 1.0),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        gapPadding: 2.0),
-                    fillColor: Colors.white,
-                    focusColor: primaryColor,
-                    filled: true,
-                    errorBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 1.0, color: Colors.red),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        gapPadding: 2.0),
-                    focusedBorder: OutlineInputBorder(
-                        borderSide:
-                            const BorderSide(width: 1.0, color: primaryColor),
-                        borderRadius: BorderRadius.all(Radius.circular(8)),
-                        gapPadding: 2.0)),
-                initialCountryCode: 'GH',
-                onChanged: (phone) {
-                  setState(() {
-                    phoneNumber = phone.countryCode + phoneController.text;
-                  });
-                  log("Phone number is(onchanged) $phoneNumber");
-                },
+                    Gap(20),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                      ),
+                      child: TextFormField(
+                        controller: lastnameController,
+                        decoration: const InputDecoration(
+                          hintText: 'Last Name',
+                          prefixIcon: Icon(Icons.person),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your last name';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Gap(20),
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                      ),
+                      child: TextFormField(
+                        controller: emailController,
+                        decoration: const InputDecoration(
+                          hintText: 'Email',
+                          prefixIcon: Icon(Icons.email),
+                        ),
+                        validator: (value) {
+                          if (!RegExp(
+                                  r'^.+@[a-zA-Z]+\.{1}[a-zA-Z]+(\.{0,1}[a-zA-Z]+)$')
+                              .hasMatch(value!)) {
+                            return 'Please enter a valid email';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Gap(20),
+                    IntlPhoneField(
+                      disableLengthCheck: true,
+                      onSubmitted: (val) {
+                        log("Submitted phone number is $val");
+                      },
+                      validator: phoneValidator,
+                      controller: phoneController,
+                      showDropdownIcon: false,
+                      pickerDialogStyle: PickerDialogStyle(
+                          countryCodeStyle: TextStyle(
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                          countryNameStyle: TextStyle(
+                              color: primaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16),
+                          searchFieldCursorColor: primaryColor,
+                          searchFieldInputDecoration: InputDecoration(
+                            isDense: true, // Reduces the height
+                            contentPadding:
+                                EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            hintText: 'Search a country',
+                            hintStyle: TextStyle(color: primaryColor),
+                            suffixIcon: Icon(Icons.search, color: primaryColor),
+                          ),
+                          backgroundColor: Colors.white),
+                      cursorColor: primaryColor,
+                      // controller: phoneController,
+                      decoration: InputDecoration(
+                          isDense: true, // Reduces the height
+                          hintStyle: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14.0,
+                              fontFamily: 'Poppins'),
+                          contentPadding:
+                              EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                          label: const Text('Phone Number'),
+                          floatingLabelStyle: const TextStyle(color: primaryColor),
+                          border: OutlineInputBorder(
+                              borderSide: const BorderSide(width: 1.0),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              gapPadding: 2.0),
+                          fillColor: Colors.white,
+                          focusColor: primaryColor,
+                          filled: true,
+                          errorBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(width: 1.0, color: Colors.red),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              gapPadding: 2.0),
+                          focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  const BorderSide(width: 1.0, color: primaryColor),
+                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              gapPadding: 2.0)),
+                      initialCountryCode: 'GH',
+                      onChanged: (phone) {
+                        setState(() {
+                          phoneNumber = phone.countryCode + phoneController.text;
+                        });
+                        log("Phone number is(onchanged) $phoneNumber");
+                      },
+                    ),
+                  ],
+                ),
               ),
               Gap(50),
               SizedBox(
-                  width: size.width * 0.8,
-                  child: ElevatedButton(
-                                  style: loading
-                                      ? Theme.of(context)
-                                          .elevatedButtonTheme
-                                          .style
-                                          ?.copyWith(
-                                            backgroundColor:
-                                                WidgetStateProperty.all<Color>(
-                                                    loadingColor),
-                                          )
-                                      : null,
-                                  onPressed: () {
-                                    if (_formKey.currentState!.validate()) {
-                                      if (phoneNumber.length < 10) {
-                                        Fluttertoast.showToast(
-                                            msg:
-                                                'Please enter a valid phone number',
-                                            toastLength: Toast.LENGTH_LONG,
-                                            gravity: ToastGravity.CENTER,
-                                            timeInSecForIosWeb: 1,
-                                            backgroundColor: primaryColor,
-                                            textColor: Colors.white,
-                                            fontSize: 16.0);
-                                        return;
-                                      }
-                                      try {
-                                        if (mounted) {
-                                          setState(() {
-                                            loading = true;
-                                          });
-                                        }
-                                   
-                                        var user = {
-                                          'email': emailController.text,
-                                          'phone': phoneNumber,
-                                          'firstname': firstnameController.text,
-                                          'lastname': lastnameController.text,
-                                        };
-                                        databaseController
-                                            .createUserInDb(user)
-                                            .then((value) {
-                                          if (mounted) {
-                                            setState(() {
-                                              loading = false;
-                                            });
-                                          }
-                                          Get.toNamed('/home');
-                                        });
-                                      } catch (e) {
-                                        log("Error: $e");
-                                        Fluttertoast.showToast(
-                                            msg: e.toString(),
-                                            toastLength: Toast.LENGTH_LONG,
-                                            gravity: ToastGravity.CENTER,
-                                            timeInSecForIosWeb: 1,
-                                            backgroundColor: primaryColor,
-                                            textColor: Colors.white,
-                                            fontSize: 16.0);
-                                      }
-                                    }
-                                  },
-                                  child: loading
-                                      ? SizedBox(
-                                          width: 30,
-                                          height: 30,
-                                          child: CircularProgressIndicator(
-                                            color: Colors.white,
-                                            strokeWidth: 2.0,
-                                          ),
-                                        )
-                                      : const Text("Sign Up")),
-                  ),
+                width: size.width * 0.8,
+                child: ElevatedButton(
+                    style: loading
+                        ? Theme.of(context).elevatedButtonTheme.style?.copyWith(
+                              backgroundColor:
+                                  WidgetStateProperty.all<Color>(loadingColor),
+                            )
+                        : null,
+                    onPressed: () async {
+                      // if (_formKey.currentState!.validate()) {
+                      // _formKey.currentState!.save();
+                      log('Phone number is $phoneNumber');
+
+                      try {
+                        setState(() {
+                          loading = true;
+                        });
+                        // await DatabaseController.instance
+                        //     .updateUserDocumentFields(
+                        //         UserDetails.instance.getUserId, {
+                        //   'firstname': firstnameController.text,
+                        //   'lastname': lastnameController.text,
+                        //   'email': emailController.text,
+                        //   'phone': phoneNumber
+                        // });
+
+                        // setState(() {
+                        //   loading = false;
+                        // });
+
+                        // Fluttertoast.showToast(
+                        //     msg: "Profile updated successfully",
+                        //     toastLength: Toast.LENGTH_SHORT,
+                        //     gravity: ToastGravity.CENTER,
+                        //     timeInSecForIosWeb: 1,
+                        //     backgroundColor: primaryColor,
+                        //     textColor: Colors.white,
+                        //     fontSize: 16.0);
+                      } on Exception catch (e) {
+                        log(e.toString());
+                        Fluttertoast.showToast(
+                            msg: "Error: ${e.toString()}",
+                            toastLength: Toast.LENGTH_SHORT,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: primaryColor,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+                        setState(() {
+                          loading = false;
+                        });
+                      }
+                      // }
+
+                      if (selectedImage != null) {
+                        try {
+                          if (UserDetails.instance.getUserId.isNotEmpty) {
+                            // compress Image
+                            File? compressedImage =
+                                await compressImage(selectedImage!);
+                            if (compressedImage == null) {
+                              setState(() {
+                                loading = false;
+                              });
+                            }
+                            await StorageController.instance
+                                .addProfilePhototoFirebaseStorage(
+                                    UserDetails.instance.getUserId,
+                                    compressedImage!);
+                          }
+                          setState(() {
+                            loading = false;
+                          });
+                          Fluttertoast.showToast(
+                              msg: "Profile picture updated successfully",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: primaryColor,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                        } on Exception catch (e) {
+                          log(e.toString());
+                          Fluttertoast.showToast(
+                              msg: "Error: ${e.toString()}",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: primaryColor,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                          setState(() {
+                            loading = false;
+                          });
+                        }
+                      }
+                    },
+                    child: loading
+                        ? SizedBox(
+                            width: 30,
+                            height: 30,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.0,
+                            ),
+                          )
+                        : const Text("Save Changes")),
+              ),
             ],
           ),
         ),

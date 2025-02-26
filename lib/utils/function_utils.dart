@@ -1,15 +1,65 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/services/database/database_controller.dart';
 import 'package:assist/services/database/user_details_controller.dart';
 import 'package:assist/services/storage/storage_controller.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:mime/mime.dart';
+import 'package:path_provider/path_provider.dart';
+
+Future<File?> compressImage(File file) async {
+  String? mimeType = lookupMimeType(file.path);
+  final filePath = file.absolute.path;
+  final lastIndex = filePath.lastIndexOf(RegExp(r'.png|.jpg|.jpeg'));
+  // final splitted = filePath.substring(0, (lastIndex));
+  // final outPath = "${splitted}_out${filePath.substring(lastIndex)}";
+  Directory? directory = await getApplicationDocumentsDirectory();
+  String outPath = '${directory.path}/compressed_${file.path.split('/').last}';
+
+  if (mimeType != null && mimeType.startsWith('image/')) {
+    try {
+      if (lastIndex == filePath.lastIndexOf(RegExp(r'.png'))) {
+        final compressedImage = await FlutterImageCompress.compressAndGetFile(
+            filePath, outPath,
+            minWidth: 1000,
+            minHeight: 1000,
+            quality: 50,
+            format: CompressFormat.png);
+        File? compressedFile = File(compressedImage!.path);
+        return compressedFile;
+      } else {
+        final compressedImage = await FlutterImageCompress.compressAndGetFile(
+          filePath,
+          outPath,
+          minWidth: 1000,
+          minHeight: 1000,
+          quality: 50,
+        );
+        File? compressedFile = File(compressedImage!.path);
+        return compressedFile;
+      }
+    } catch (e) {
+      log('Error compressing image: ${e.toString()}', name: 'compressImage');
+      Fluttertoast.showToast(
+          msg: e.toString(),
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
+  return null;
+}
 
 Future<bool> checkServerReachability() async {
   try {

@@ -32,7 +32,7 @@ final List<GetPage<dynamic>> appRoutes = [
   GetPage(name: '/notifications', page: () => const Notifications()),
   GetPage(name: '/change-password', page: () => const ChangePassword()),
   GetPage(name: '/business-details', page: () => const BusinessDetails()),
-  GetPage(name: '/chat', page: () => const ChatPage()),
+  GetPage(name: '/chat', page: () =>  ChatPage()),
   GetPage(name: '/categories', page: () => const Categories()),
   GetPage(name: '/regions', page: () => const Regions()),
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 
 class Post extends StatelessWidget {
   const Post({super.key});
@@ -22,7 +23,7 @@ class Post extends StatelessWidget {
           // ),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/post-service');
+              Get.toNamed('/post-service');
             },
             child: Column(
               children: [
@@ -34,7 +35,13 @@ class Post extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.blueAccent),
                   ),
-                  child: Image.asset('assets/images/categories/services.jpg'),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/images/categories/services.jpg',
+                      fit: BoxFit.fill,
+                    ),
+                  ),
                 ),
                 Gap(10),
                 Text(
@@ -52,7 +59,7 @@ class Post extends StatelessWidget {
           Gap(70),
           GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, '/post-product');
+              Get.toNamed('/post-product');
             },
             child: Column(
               children: [
@@ -64,7 +71,13 @@ class Post extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(color: Colors.blueAccent),
                   ),
-                  child: Image.asset('assets/images/categories/sale.jpg'),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/images/categories/sale.jpg',
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 Gap(10),
                 Text(

@@ -56,12 +56,18 @@ dependencies:
   shimmer: ^3.0.0
   path: ^1.9.0
   image_picker: ^1.1.2
-  firebase_storage: ^12.4.2
+  firebase_storage: ^12.4.3
   supabase_flutter: ^2.8.3
   crypto: ^3.0.6
   file_picker: ^9.0.0
   google_generative_ai: ^0.4.6
   gradient_borders: ^1.0.1
+  syncfusion_flutter_chat: ^28.1.36+1-beta
+  flutter_markdown: ^0.7.6+2
+  syncfusion_localizations: ^28.2.7
+  flutter_image_compress: ^2.4.0
+  mime: ^2.0.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -116,6 +122,7 @@ flutter:
     - assets/images/postings/
     - assets/images/profile/
     - assets/images/categories/
+    - assets/images/chat/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
