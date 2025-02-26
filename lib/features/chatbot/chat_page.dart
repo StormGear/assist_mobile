@@ -233,42 +233,6 @@ class _AssistViewState extends State<ChatPage> {
     );
   }
 
-  // Widget _buildAIConfigurationSetting() {
-  //   return Align(
-  //     alignment: Alignment.topRight,
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(5.0),
-  //       child: SizedBox(
-  //         height: 40,
-  //         width: 40,
-  //         child: IconButton(
-  //           style: ButtonStyle(
-  //             foregroundColor: WidgetStateProperty.all<Color>(
-  //               primaryColor
-  //             ),
-  //           ),
-  //           tooltip: 'Configure AI',
-  //           icon: const Icon(Icons.settings),
-  //           onPressed: () {
-  //             showDialog(
-  //               context: context,
-  //               builder: (context) => WelcomeDialog(
-  //                 primaryColor: model.primaryColor,
-  //                 apiKey: model.assistApiKey,
-  //                 onApiKeySaved: (newApiKey) {
-  //                   setState(() {
-  //                     model.assistApiKey = newApiKey;
-  //                   });
-  //                 },
-  //               ),
-  //             );
-  //           },
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildWidthFactorSetting() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

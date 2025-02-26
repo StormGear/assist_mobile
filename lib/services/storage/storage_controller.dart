@@ -81,6 +81,45 @@ class StorageController extends GetxController {
     }
   }
 
+  Future<bool> addProductPostImagestoFirebaseStorage(
+      String documentId, File addedImage) async {
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(documentId)
+        .get();
+    try {
+      String name = documentSnapshot['firstname'];
+      String fileName =
+          name.replaceAll(' ', '_').trim() + p.extension(addedImage.path);
+      // Initialize a task to upload image to Firebase storage
+      UploadTask task = _storage
+          .ref('product-posts/$documentId/$fileName')
+          .putFile(addedImage);
+
+      return task.then((snapshot) async {
+        try {
+          String profilePictureURL = await snapshot.ref.getDownloadURL();
+          Map<String, dynamic> uploadImage = {
+            'profile_url': profilePictureURL,
+          };
+          // Update the photoUrl
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(documentId)
+              .update(uploadImage);
+          log("profile picture url: $profilePictureURL");
+          return true;
+        } catch (e) {
+          log("Error message: ${e.toString()}");
+          return false;
+        }
+      });
+    } catch (error) {
+      log(error.toString());
+      return false;
+    }
+  }
+
   Future<String> loadProfilePicture() async {
     final Map<dynamic, dynamic> user = await DatabaseController.instance
         .retrieveUserDataWithID(UserDetails.instance.getUserId);

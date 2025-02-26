@@ -95,18 +95,25 @@ Future<File?> pickImage(ImageSource source) async {
 }
 
 /// remove profile photo
-Future<void> removeProfilePicture() async {
+Future<bool> removeProfilePicture() async {
   try {
     // Remove the current profile picture from the database
-    await StorageController.instance
-        .removeProfilePhotoFromSupabaseStorage(UserDetails.instance.getUserId);
+    bool isRemoved = await StorageController.instance
+        .removeProfilePhotoFromFirebaseStorage(UserDetails.instance.getUserId);
     // Update the user's profile picture in the database
-    await DatabaseController.instance
-        .updateUserDocumentFields(UserDetails.instance.getUserId, {
-      'profile_url': null,
-    });
+    if (isRemoved) {
+      await DatabaseController.instance
+          .updateUserDocumentFields(UserDetails.instance.getUserId, {
+        'profile_url': null,
+      });
+      return true;
+    } else {
+      log('Error removing photo: Photo not removed from storage');
+      return false;
+    }
   } catch (error) {
     log('Error removing photo: ${error.toString()}');
+    return false;
   }
 }
 
