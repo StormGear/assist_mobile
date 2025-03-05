@@ -135,9 +135,8 @@ class _KeywordsState extends State<Keywords> {
                       return ListTile(
                         title: Text(_filteredKeywords[index]),
                         onTap: () {
-                       
                           PostController.instance
-                              .setCategory(_filteredKeywords[index]);
+                              .addKeyword(_filteredKeywords[index]);
                           Navigator.pop(context);
                         },
                       );

@@ -24,6 +24,7 @@ class PostController extends GetxController {
   // create getters for region and category
   String get getRegion => region.value;
   String get getCategory => category.value;
+  List<String> get getKeywords => keywords;
 
   void addKeyword(String keyword) => keywords.add(keyword);
   void removeKeyword(String keyword) => keywords.remove(keyword);

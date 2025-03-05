@@ -12,6 +12,52 @@ class BusinessDetails extends StatefulWidget {
 class _BusinessDetailsState extends State<BusinessDetails> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Business Details"),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'Business Name',
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'Business Address',
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'Business Phone Number',
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'Business Email',
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: Text("Save Details"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

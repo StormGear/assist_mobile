@@ -138,7 +138,7 @@ Widget _buildHorizontalScrollableGrid(BuildContext context) {
     child: Padding(
       padding: const EdgeInsets.only(left: 15.0),
       child: Row(
-        children: List.generate(10, (index) {
+        children: List.generate(5, (index) {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [

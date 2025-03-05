@@ -144,7 +144,7 @@ class _RegionsState extends State<Regions> {
                           /// TODO: Setstate of the region chosen
                           ///   /// TODO: Setstate of the category chosen
                           PostController.instance
-                              .setCategory(_filteredRegions[index]);
+                              .setRegion(_filteredRegions[index]);
                           Navigator.pop(context);
                         },
                       );

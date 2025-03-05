@@ -12,6 +12,44 @@ class ChangePassword extends StatefulWidget {
 class _ChangePasswordState extends State<ChangePassword> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Change Password"),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'Old Password',
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'New Password',
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: TextFormField(
+                decoration: InputDecoration(
+                  hintText: 'Confirm New Password',
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {},
+              child: Text("Change Password"),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

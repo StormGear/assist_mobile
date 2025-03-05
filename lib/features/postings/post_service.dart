@@ -181,12 +181,9 @@ class _PostServiceState extends State<PostService> {
                     Get.toNamed('/categories');
                   },
                   title: Text('Category'),
-                  subtitle: Column(
-                    children: [
-                      Text("Select a category under which your product falls"),
-                      Text('${_postController.category}'),
-                    ],
-                  ),
+                  subtitle: Obx(() => Text(_postController.getCategory.isEmpty
+                      ? 'Select a category under which your product falls'
+                      : _postController.getCategory)),
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
                   tileColor: primaryColor.withAlpha(30),
                   shape: RoundedRectangleBorder(
@@ -201,11 +198,10 @@ class _PostServiceState extends State<PostService> {
                     Get.toNamed('/regions');
                   },
                   title: Text('Region'),
-                  subtitle: Column(
-                    children: [
-                      Text("Select your region of primary operation"),
-                      Text('${_postController.region}'),
-                    ],
+                  subtitle: Obx(
+                    () => Text(_postController.getRegion.isEmpty
+                        ? 'Select your region of primary operation'
+                        : _postController.getRegion),
                   ),
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
                   tileColor: primaryColor.withAlpha(30),
@@ -236,62 +232,59 @@ class _PostServiceState extends State<PostService> {
               if (_selectedImages.isNotEmpty)
                 SizedBox(
                   height: 200,
-                  child: Flexible(
-                    fit: FlexFit.loose,
-                    child: GridView.builder(
-                      // physics: NeverScrollableScrollPhysics(),
-                      controller: _scrollController,
-                      padding: const EdgeInsets.only(left: 10, right: 10),
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 2,
-                        mainAxisSpacing: 2,
-                      ),
-                      itemCount: _selectedImages.length,
-                      itemBuilder: (context, index) {
-                        return Stack(
-                          children: [
-                            // Image preview
-                            Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(7),
-                                child: Image.file(
-                                  File(_selectedImages[index].path),
-                                  fit: BoxFit.cover,
-                                  width: 80,
-                                  height: 80,
-                                ),
-                              ),
-                            ),
-                            // Delete button
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              child: InkWell(
-                                onTap: () => _removeImage(index),
-                                child: Container(
-                                  padding: const EdgeInsets.all(2),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                    size: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        );
-                      },
+                  child: GridView.builder(
+                    // physics: NeverScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 2,
+                      mainAxisSpacing: 2,
                     ),
+                    itemCount: _selectedImages.length,
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        children: [
+                          // Image preview
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(7),
+                              child: Image.file(
+                                File(_selectedImages[index].path),
+                                fit: BoxFit.cover,
+                                width: 80,
+                                height: 80,
+                              ),
+                            ),
+                          ),
+                          // Delete button
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            child: InkWell(
+                              onTap: () => _removeImage(index),
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               Gap(20),
@@ -335,12 +328,10 @@ class _PostServiceState extends State<PostService> {
                           Get.toNamed('/keywords');
                         },
                         title: Text('Select Keywords'),
-                        subtitle: Column(
-                          children: [
-                            Text("Keywords help users find your service"),
-                            Text(_postController.keywords.join(', ')),
-                          ],
-                        ),
+                        subtitle: Obx(() => Text(
+                            _postController.getKeywords.isEmpty
+                                ? "Keywords help users find your service"
+                                : _postController.getKeywords.join(','))),
                         trailing:
                             Icon(Icons.arrow_forward_ios, color: primaryColor),
                         tileColor: primaryColor.withAlpha(30),
@@ -423,6 +414,7 @@ class _PostServiceState extends State<PostService> {
                   initialCountryCode: 'GH',
                 ),
               ),
+              Gap(30),
               SizedBox(
                 width: size.width * 0.5,
                 child: ElevatedButton(
@@ -472,6 +464,12 @@ class _PostServiceState extends State<PostService> {
                           await StorageController.instance
                               .addServicePostImagestoFirebaseStorage(
                                   serviceDocumentId, _selectedImages);
+                        }
+
+                        if (mounted) {
+                          setState(() {
+                            loading = false;
+                          });
                         }
                       } catch (e) {
                         log("Error: $e");
