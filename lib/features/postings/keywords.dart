@@ -2,48 +2,32 @@ import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/services/posts/post_controller.dart';
 import 'package:flutter/material.dart';
 
-class Categories extends StatefulWidget {
-  const Categories({super.key});
+class Keywords extends StatefulWidget {
+  const Keywords({super.key});
 
   @override
-  State<Categories> createState() => _CategoriesState();
+  State<Keywords> createState() => _KeywordsState();
 }
 
-// Artisans
-// Masons
-// carpenters
-// plumbers
-// electricians
-// painters
-// cleaners
-// welders
-// mechanics
-// tilers
-// dressmakers
-// hairdressers
-// barbers
-
-class _CategoriesState extends State<Categories> {
+class _KeywordsState extends State<Keywords> {
   // Sample data for the list
-  final List<String> _allCategories = [
-    'Building and Construction',
-    'Carpentry and Woodwork',
-    'Plumbing',
-    'Electrical Work',
-    'Cleaning or Laundry',
-    'Welding',
-    'Mechanical Work',
-    'Tiling',
-    'Dressmaking',
-    'Hairdressing',
-    'Barbering',
-    'Painting',
-    'Masonry',
-    'Catering',
+  final List<String> _allKeywords = [
+    'Masons',
+    'Carpenters',
+    'Plumbers',
+    'Electricians',
+    'Painters',
+    'Cleaners',
+    'Welders',
+    'Mechanics',
+    'Tilers',
+    'Dressmakers',
+    'Hairdressers',
+    'Barbers',
   ];
 
   // Items filtered by search
-  List<String> _filteredCategories = [];
+  List<String> _filteredKeywords = [];
 
   // Controller for the search field
   final TextEditingController _searchController = TextEditingController();
@@ -52,7 +36,7 @@ class _CategoriesState extends State<Categories> {
   void initState() {
     super.initState();
     // Initially, show all items
-    _filteredCategories = _allCategories;
+    _filteredKeywords = _allKeywords;
 
     // Add listener to search controller
     _searchController.addListener(_filterItems);
@@ -65,10 +49,10 @@ class _CategoriesState extends State<Categories> {
     setState(() {
       if (query.isEmpty) {
         // If search is empty, show all items
-        _filteredCategories = _allCategories;
+        _filteredKeywords = _allKeywords;
       } else {
         // Filter items that contain the query
-        _filteredCategories = _allCategories
+        _filteredKeywords = _allKeywords
             .where((item) => item.toLowerCase().contains(query))
             .toList();
       }
@@ -93,7 +77,7 @@ class _CategoriesState extends State<Categories> {
         ),
         backgroundColor: Colors.transparent,
         title: Text(
-          "Categories",
+          "Keywords",
           style: TextStyle(
               color: primaryColor,
               fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
@@ -113,8 +97,11 @@ class _CategoriesState extends State<Categories> {
                 labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: primaryColor,
                     ),
-                hintText: 'Search for a category...',
-                prefixIcon: const Icon(Icons.search, color: primaryColor),
+                hintText: 'Search a keyword...',
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: primaryColor,
+                ),
                 border: OutlineInputBorder(
                   borderSide: BorderSide(color: primaryColor),
                   borderRadius: BorderRadius.circular(10.0),
@@ -128,31 +115,29 @@ class _CategoriesState extends State<Categories> {
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 // Clear button
-                suffixIcon: _searchController.text.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                        },
-                      ),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                  },
+                ),
               ),
             ),
           ),
 
           // ListView with filtered items
           Expanded(
-            child: _filteredCategories.isEmpty
+            child: _filteredKeywords.isEmpty
                 ? const Center(child: Text('No matching items found'))
                 : ListView.builder(
-                    itemCount: _filteredCategories.length,
+                    itemCount: _filteredKeywords.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text(_filteredCategories[index]),
+                        title: Text(_filteredKeywords[index]),
                         onTap: () {
-                          /// TODO: Setstate of the category chosen
+                       
                           PostController.instance
-                              .setCategory(_filteredCategories[index]);
+                              .setCategory(_filteredKeywords[index]);
                           Navigator.pop(context);
                         },
                       );

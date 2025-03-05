@@ -5,6 +5,7 @@ import 'package:assist/features/chatbot/chat_page.dart';
 import 'package:assist/features/home/screens/setup.dart';
 import 'package:assist/features/notifications/notifications.dart';
 import 'package:assist/features/postings/categories.dart';
+import 'package:assist/features/postings/keywords.dart';
 import 'package:assist/features/postings/post_service.dart';
 import 'package:assist/features/postings/regions.dart';
 import 'package:assist/features/profile/profile.dart';
@@ -32,10 +33,37 @@ final List<GetPage<dynamic>> appRoutes = [
   GetPage(name: '/notifications', page: () => const Notifications()),
   GetPage(name: '/change-password', page: () => const ChangePassword()),
   GetPage(name: '/business-details', page: () => const BusinessDetails()),
-  GetPage(name: '/chat', page: () =>  ChatPage()),
-  GetPage(name: '/categories', page: () => const Categories()),
-  GetPage(name: '/regions', page: () => const Regions()),
-
+  GetPage(name: '/chat', page: () => ChatPage()),
+  GetPage(
+      name: '/categories',
+      page: () => const Categories(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      preventDuplicates: false, // Add this if needed
+      popGesture: true, // Add this if you want swipe to pop
+      fullscreenDialog: true // This helps ensure proper up/down animation
+      ),
+  GetPage(
+      name: '/regions',
+      page: () => const Regions(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      preventDuplicates: false, // Add this if needed
+      popGesture: true, // Add this if you want swipe to pop
+      fullscreenDialog: true // This helps ensure proper up/down animation
+      ),
+  GetPage(
+      name: '/keywords',
+      page: () => const Keywords(),
+      transition: Transition.fadeIn,
+      transitionDuration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOut,
+      preventDuplicates: false, // Add this if needed
+      popGesture: true, // Add this if you want swipe to pop
+      fullscreenDialog: true // This helps ensure proper up/down animation
+      ),
 ];
 
 /// `openingRoutes` represents routes to the initial screens of the application.

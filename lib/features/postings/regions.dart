@@ -1,3 +1,5 @@
+import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/services/posts/post_controller.dart';
 import 'package:flutter/material.dart';
 
 class Regions extends StatefulWidget {
@@ -9,16 +11,28 @@ class Regions extends StatefulWidget {
 
 class _RegionsState extends State<Regions> {
   // Sample data for the list
-  final List<String> _allItems = [
-    'Apple', 'Banana', 'Cherry', 'Date', 'Elderberry',
-    'Fig', 'Grape', 'Honeydew', 'Kiwi', 'Lemon',
-    'Mango', 'Nectarine', 'Orange', 'Papaya', 'Quince',
-    'Raspberry', 'Strawberry', 'Tangerine', 'Watermelon'
+  final List<String> _allRegions = [
+    'Greater Accra',
+    'Ashanti',
+    'Western',
+    'Eastern',
+    'Central',
+    'Northern',
+    'Upper East',
+    'Upper West',
+    'Volta',
+    'Bono',
+    'Bono East',
+    'Ahafo',
+    'Oti',
+    'Savannah',
+    'North East',
+    'Western North'
   ];
-  
+
   // Items filtered by search
-  List<String> _filteredItems = [];
-  
+  List<String> _filteredRegions = [];
+
   // Controller for the search field
   final TextEditingController _searchController = TextEditingController();
 
@@ -26,8 +40,8 @@ class _RegionsState extends State<Regions> {
   void initState() {
     super.initState();
     // Initially, show all items
-    _filteredItems = _allItems;
-    
+    _filteredRegions = _allRegions;
+
     // Add listener to search controller
     _searchController.addListener(_filterItems);
   }
@@ -35,14 +49,14 @@ class _RegionsState extends State<Regions> {
   // Filter items based on search query
   void _filterItems() {
     final String query = _searchController.text.toLowerCase();
-    
+
     setState(() {
       if (query.isEmpty) {
         // If search is empty, show all items
-        _filteredItems = _allItems;
+        _filteredRegions = _allRegions;
       } else {
         // Filter items that contain the query
-        _filteredItems = _allItems
+        _filteredRegions = _allRegions
             .where((item) => item.toLowerCase().contains(query))
             .toList();
       }
@@ -59,7 +73,21 @@ class _RegionsState extends State<Regions> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search ListView Example'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios, color: primaryColor),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        backgroundColor: Colors.transparent,
+        title: Text(
+          "Regions",
+          style: TextStyle(
+              color: primaryColor,
+              fontSize: Theme.of(context).textTheme.headlineSmall!.fontSize,
+              fontWeight: FontWeight.bold),
+        ),
+        automaticallyImplyLeading: false,
       ),
       body: Column(
         children: [
@@ -70,38 +98,54 @@ class _RegionsState extends State<Regions> {
               controller: _searchController,
               decoration: InputDecoration(
                 labelText: 'Search',
-                hintText: 'Enter search term...',
-                prefixIcon: const Icon(Icons.search),
+                labelStyle: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      color: primaryColor,
+                    ),
+                hintText: 'Search a region...',
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: primaryColor,
+                ),
                 border: OutlineInputBorder(
+                  borderSide: BorderSide(color: primaryColor),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: primaryColor),
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: primaryColor),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 // Clear button
-                suffixIcon: IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                  },
-                ),
+                suffixIcon: _searchController.text.isEmpty
+                    ? null
+                    : IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                      ),
               ),
             ),
           ),
-          
+
           // ListView with filtered items
           Expanded(
-            child: _filteredItems.isEmpty
+            child: _filteredRegions.isEmpty
                 ? const Center(child: Text('No matching items found'))
                 : ListView.builder(
-                    itemCount: _filteredItems.length,
+                    itemCount: _filteredRegions.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text(_filteredItems[index]),
+                        title: Text(_filteredRegions[index]),
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Selected: ${_filteredItems[index]}'),
-                              duration: const Duration(seconds: 1),
-                            ),
-                          );
+                          /// TODO: Setstate of the region chosen
+                          ///   /// TODO: Setstate of the category chosen
+                          PostController.instance
+                              .setCategory(_filteredRegions[index]);
+                          Navigator.pop(context);
                         },
                       );
                     },

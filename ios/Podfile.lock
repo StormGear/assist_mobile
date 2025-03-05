@@ -1153,7 +1153,7 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.36):
     - BoringSSL-GRPC/Interface (= 0.0.36)
   - BoringSSL-GRPC/Interface (0.0.36)
-  - cloud_firestore (5.6.4):
+  - cloud_firestore (5.6.5):
     - Firebase/Firestore (= 11.8.0)
     - firebase_core
     - Flutter
@@ -1199,10 +1199,10 @@ PODS:
   - Firebase/Storage (11.8.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 11.8.0)
-  - firebase_core (3.12.0):
+  - firebase_core (3.12.1):
     - Firebase/CoreOnly (= 11.8.0)
     - Flutter
-  - firebase_storage (12.4.3):
+  - firebase_storage (12.4.4):
     - Firebase/Storage (= 11.8.0)
     - firebase_core
     - Flutter
@@ -1481,13 +1481,13 @@ SPEC CHECKSUMS:
   abseil: d121da9ef7e2ff4cab7666e76c5a3e0915ae08c3
   app_links: f3e17e4ee5e357b39d8b95290a9b2c299fca71c6
   BoringSSL-GRPC: ca6a8e5d04812fce8ffd6437810c2d46f925eaeb
-  cloud_firestore: 63a98b4e73424e1b66ebb6f289eb1a73514cbc49
+  cloud_firestore: 56e7bb3888f09698dc061d38d02d87d4fd80e2cb
   DKImagePickerController: 946cec48c7873164274ecc4624d19e3da4c1ef3c
   DKPhotoGallery: b3834fecb755ee09a593d7c9e389d8b5d6deed60
   file_picker: b159e0c068aef54932bb15dc9fd1571818edaf49
   Firebase: d80354ed7f6df5f9aca55e9eb47cc4b634735eaf
-  firebase_core: 6e223dfa350b2edceb729cea505eaaef59330682
-  firebase_storage: b57a7b96e6f7ce6a48e7d6cea67c3eabeaedd525
+  firebase_core: ac395f994af4e28f6a38b59e05a88ca57abeb874
+  firebase_storage: b31bacb1f1d7abeb753d9195e97eb5d2180e1d6f
   FirebaseAppCheckInterop: 7bf86d55a2b7e9bd91464120eba3e52e4b63b2e2
   FirebaseAuthInterop: 651756e70d9a0b9160db39ead71fd5507dbb6c84
   FirebaseCore: 99fe0c4b44a39f37d99e6404e02009d2db5d718d
@@ -1499,7 +1499,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: 8eede00081a6ce904eaa8d2daa66f1e053e8e6ea
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
-  flutter_native_splash: f71420956eb811e6d310720fee915f1d42852e7a
+  flutter_native_splash: df59bb2e1421aa0282cb2e95618af4dcb0c56c29
   fluttertoast: 21eecd6935e7064cc1fcb733a4c5a428f3f24f0f
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
   "gRPC-C++": 2fa52b3141e7789a28a737f251e0c45b4cb20a87
@@ -1522,4 +1522,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1959d098c91d8a792531a723c4a9d7e9f6a01e38
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

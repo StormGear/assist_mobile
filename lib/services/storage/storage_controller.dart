@@ -7,6 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:path/path.dart' as p;
 import 'package:get/get.dart';
@@ -81,41 +82,51 @@ class StorageController extends GetxController {
     }
   }
 
-  Future<bool> addProductPostImagestoFirebaseStorage(
-      String documentId, File addedImage) async {
-    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(documentId)
-        .get();
+  Future<bool> addServicePostImagestoFirebaseStorage(
+      String documentId, List<File?> addedImages) async {
     try {
-      String name = documentSnapshot['firstname'];
-      String fileName =
-          name.replaceAll(' ', '_').trim() + p.extension(addedImage.path);
-      // Initialize a task to upload image to Firebase storage
-      UploadTask task = _storage
-          .ref('product-posts/$documentId/$fileName')
-          .putFile(addedImage);
-
-      return task.then((snapshot) async {
-        try {
-          String profilePictureURL = await snapshot.ref.getDownloadURL();
-          Map<String, dynamic> uploadImage = {
-            'profile_url': profilePictureURL,
-          };
-          // Update the photoUrl
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(documentId)
-              .update(uploadImage);
-          log("profile picture url: $profilePictureURL");
-          return true;
-        } catch (e) {
-          log("Error message: ${e.toString()}");
-          return false;
+      for (var element in addedImages) {
+        if (element == null) {
+          continue;
         }
-      });
+
+        String fileName = documentId + p.extension(element.path);
+        // Initialize a task to upload image to Firebase storage
+        UploadTask task = _storage
+            .ref('product-posts/$documentId/$fileName')
+            .putFile(element);
+        log("image added to Firebase Storage");
+
+        task.then((snapshot) async {
+          try {
+            String imageURL = await snapshot.ref.getDownloadURL();
+            Map<String, dynamic> uploadImage = {
+              'images': FieldValue.arrayUnion([imageURL]),
+            };
+            // Update the photoUrl
+            await FirebaseFirestore.instance
+                .collection('service_posts')
+                .doc(documentId)
+                .update(uploadImage)
+                .then((value) => log('service imaged added to db.'));
+            log(" service image url: $imageURL");
+          } catch (e) {
+            log("Error message: ${e.toString()}");
+            rethrow;
+          }
+        });
+      }
+      return true;
     } catch (error) {
       log(error.toString());
+      Fluttertoast.showToast(
+          msg: "Error: ${error.toString()}",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
       return false;
     }
   }
