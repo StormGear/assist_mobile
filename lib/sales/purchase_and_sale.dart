@@ -1,13 +1,19 @@
 import 'dart:developer';
 import 'dart:io';
 import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/services/database/user_details_controller.dart';
+import 'package:assist/services/posts/post_controller.dart';
+import 'package:assist/services/storage/storage_controller.dart';
+import 'package:assist/utils/function_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/phone_number.dart';
 
 class PostProduct extends StatefulWidget {
   const PostProduct({super.key});
@@ -20,14 +26,41 @@ class _PostProductState extends State<PostProduct> {
   bool loading = false;
   final _formKey = GlobalKey<FormState>();
   final ImagePicker _picker = ImagePicker();
-  final List<XFile> _selectedImages = [];
+  final List<File> _selectedImages = [];
+  final ScrollController _scrollController = ScrollController();
+  final PostController _postController = Get.put(PostController());
+  final TextEditingController _priceController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  String _phoneNumber = '';
+  final TextEditingController _phoneController = TextEditingController();
+
+  String? _phoneValidator(PhoneNumber? value) {
+    log("Phone controller value: ${_phoneController.text}");
+    if (value != null && value.number.length != 10) {
+      log("Phone number is ${value.number}");
+      return 'Please enter 10 digits';
+    } else {
+      // remove the first 0 from the phone number
+      _phoneController.text = value!.number.substring(1);
+    }
+    return null;
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _formKey.currentState?.dispose();
+    _priceController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImages() async {
     try {
       final List<XFile> images = await _picker.pickMultiImage();
       if (images.isNotEmpty) {
         setState(() {
-          _selectedImages.addAll(images);
+          _selectedImages.addAll(images.map((image) => File(image.path)));
         });
       }
     } catch (e) {
@@ -40,6 +73,76 @@ class _PostProductState extends State<PostProduct> {
     setState(() {
       _selectedImages.removeAt(index);
     });
+  }
+
+  bool isFormValid() {
+    // Check if a category has been selected
+    if (_postController.category.isEmpty) {
+      Fluttertoast.showToast(
+          msg: 'Please select a category',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return false;
+    }
+
+    // Check if a region has been selected
+    if (_postController.region.isEmpty) {
+      Fluttertoast.showToast(
+          msg: 'Please select a region',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return false;
+    }
+
+    // Check if at least 3 images have been selected
+    if (_selectedImages.length < 3) {
+      Fluttertoast.showToast(
+          msg: 'Please select at least 3 images',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return false;
+    }
+
+    // Check if a keyword has been selected
+    // if (_postController.keywords.isEmpty) {
+    //   Fluttertoast.showToast(
+    //       msg: 'Please select at least one keyword',
+    //       toastLength: Toast.LENGTH_LONG,
+    //       gravity: ToastGravity.CENTER,
+    //       timeInSecForIosWeb: 1,
+    //       backgroundColor: primaryColor,
+    //       textColor: Colors.white,
+    //       fontSize: 16.0);
+    //   return false;
+    // }
+
+    if (_phoneNumber.length < 10) {
+      Fluttertoast.showToast(
+          msg: 'Please enter a valid phone number',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return false;
+    }
+
+    return true;
+
+    // Check if the phone number is valid
   }
 
   @override
@@ -65,9 +168,11 @@ class _PostProductState extends State<PostProduct> {
         automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Padding(
           padding: const EdgeInsets.all(15),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Gap(10),
               Padding(
@@ -77,8 +182,9 @@ class _PostProductState extends State<PostProduct> {
                     Get.toNamed('/categories');
                   },
                   title: Text('Category'),
-                  subtitle:
-                      Text("Select a category under which your product falls"),
+                  subtitle: Obx(() => Text(_postController.getCategory.isEmpty
+                      ? 'Select a category under which your product falls'
+                      : _postController.getCategory)),
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
                   tileColor: primaryColor.withAlpha(30),
                   shape: RoundedRectangleBorder(
@@ -93,7 +199,11 @@ class _PostProductState extends State<PostProduct> {
                     Get.toNamed('/regions');
                   },
                   title: Text('Region'),
-                  subtitle: Text("Select your region of primary operation"),
+                  subtitle: Obx(
+                    () => Text(_postController.getRegion.isEmpty
+                        ? 'Select your region of primary operation'
+                        : _postController.getRegion),
+                  ),
                   trailing: Icon(Icons.arrow_forward_ios, color: primaryColor),
                   tileColor: primaryColor.withAlpha(30),
                   shape: RoundedRectangleBorder(
@@ -120,65 +230,64 @@ class _PostProductState extends State<PostProduct> {
                 ),
               ),
               // Image previews
-              Expanded(
-                child: _selectedImages.isEmpty
-                    ? const Center(
-                        child: Text('No images selected'),
-                      )
-                    : GridView.builder(
-                        padding: const EdgeInsets.all(8),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 8,
-                          mainAxisSpacing: 8,
-                        ),
-                        itemCount: _selectedImages.length,
-                        itemBuilder: (context, index) {
-                          return Stack(
-                            children: [
-                              // Image preview
-                              Container(
+              if (_selectedImages.isNotEmpty)
+                SizedBox(
+                  height: 200,
+                  child: GridView.builder(
+                    // physics: NeverScrollableScrollPhysics(),
+                    controller: _scrollController,
+                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      crossAxisSpacing: 2,
+                      mainAxisSpacing: 2,
+                    ),
+                    itemCount: _selectedImages.length,
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        children: [
+                          // Image preview
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(7),
+                              child: Image.file(
+                                File(_selectedImages[index].path),
+                                fit: BoxFit.cover,
+                                width: 80,
+                                height: 80,
+                              ),
+                            ),
+                          ),
+                          // Delete button
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            child: InkWell(
+                              onTap: () => _removeImage(index),
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
                                 decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(7),
-                                  child: Image.file(
-                                    File(_selectedImages[index].path),
-                                    fit: BoxFit.cover,
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                  ),
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.red,
+                                  size: 16,
                                 ),
                               ),
-
-                              // Delete button
-                              Positioned(
-                                top: 0,
-                                left: 0,
-                                child: InkWell(
-                                  onTap: () => _removeImage(index),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: const Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ),
               Gap(20),
               Form(
                 key: _formKey,
@@ -187,8 +296,19 @@ class _PostProductState extends State<PostProduct> {
                     Padding(
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: TextFormField(
+                        controller: _priceController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9\s]')),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a price for your product';
+                          }
+                          return null;
+                        },
                         decoration: InputDecoration(
-                          fillColor: primaryColor.withAlpha(30),
+                          prefixText: 'GH₵',
                           hintText: 'Price',
                           hintStyle: Theme.of(context).textTheme.bodyLarge,
                         ),
@@ -199,36 +319,58 @@ class _PostProductState extends State<PostProduct> {
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: Row(
                         children: [
-                          Text(
-                              'Enter the price of your product in Ghana Cedis (GH₵)'),
+                          Expanded(
+                            child: Text(
+                                'Enter the price of your product in Ghana Cedis (GH₵)'),
+                          ),
                         ],
                       ),
                     ),
                     Gap(10),
                     Padding(
                       padding: const EdgeInsets.only(left: 10, right: 10),
-                      child: ListTile(
-                        onTap: () {
-                          Get.toNamed('/keywords');
-                        },
-                        leading: Text('GH₵'),
-                        title: Text('Select Keywords'),
-                        subtitle: Text("Keywords help users find your service"),
-                        trailing:
-                            Icon(Icons.arrow_forward_ios, color: primaryColor),
-                        tileColor: primaryColor.withAlpha(30),
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(15))),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                                'Select keywords that best describe your service'),
+                          ),
+                        ],
                       ),
                     ),
                     Gap(10),
+                    // Padding(
+                    //   padding: const EdgeInsets.only(left: 10, right: 10),
+                    //   child: ListTile(
+                    //     onTap: () {
+                    //       Get.toNamed('/keywords');
+                    //     },
+                    //     title: Text('Select Keywords'),
+                    //     subtitle: Obx(() => Text(
+                    //         _postController.getKeywords.isEmpty
+                    //             ? "Keywords help users find your service"
+                    //             : _postController.getKeywords.join(','))),
+                    //     trailing:
+                    //         Icon(Icons.arrow_forward_ios, color: primaryColor),
+                    //     tileColor: primaryColor.withAlpha(30),
+                    //     shape: RoundedRectangleBorder(
+                    //         borderRadius:
+                    //             BorderRadius.all(Radius.circular(15))),
+                    //   ),
+                    // ),
+                    // Gap(10),
                     Padding(
                       padding: const EdgeInsets.only(left: 10, right: 10),
                       child: TextFormField(
+                        controller: _descriptionController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter a description';
+                          }
+                          return null;
+                        },
                         maxLines: 5,
                         decoration: InputDecoration(
-                          fillColor: primaryColor.withAlpha(30),
                           hintText: 'Description',
                           hintStyle: Theme.of(context).textTheme.bodyLarge,
                         ),
@@ -246,6 +388,18 @@ class _PostProductState extends State<PostProduct> {
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
                 child: IntlPhoneField(
+                  disableLengthCheck: true,
+                  onSubmitted: (val) {
+                    log("Submitted phone number is $val");
+                  },
+                  validator: _phoneValidator,
+                  controller: _phoneController,
+                  onChanged: (phone) {
+                    setState(() {
+                      _phoneNumber = phone.countryCode + _phoneController.text;
+                    });
+                    log("Phone number is(onchanged) $_phoneNumber");
+                  },
                   pickerDialogStyle: PickerDialogStyle(
                       countryCodeStyle: TextStyle(
                           color: primaryColor,
@@ -260,17 +414,12 @@ class _PostProductState extends State<PostProduct> {
                         hintText: 'Search a country',
                         hintStyle: TextStyle(color: primaryColor),
                         suffixIcon: Icon(Icons.search, color: primaryColor),
-                        filled: true,
-                        fillColor: primaryColor.withAlpha(30),
                       ),
                       backgroundColor: Colors.white),
                   cursorColor: primaryColor,
                   decoration: InputDecoration(
-                    filled: true,
-                    fillColor: primaryColor.withAlpha(30),
                     enabledBorder: OutlineInputBorder(
                         gapPadding: 2.0,
-                        borderSide: BorderSide(color: primaryColor),
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     focusedBorder: OutlineInputBorder(
                         gapPadding: 2.0,
@@ -278,15 +427,12 @@ class _PostProductState extends State<PostProduct> {
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                     border: OutlineInputBorder(
                         gapPadding: 2.0,
-                        borderSide: BorderSide(color: primaryColor),
                         borderRadius: BorderRadius.all(Radius.circular(10))),
                   ),
                   initialCountryCode: 'GH',
-                  onChanged: (phone) {
-                    log(phone.completeNumber);
-                  },
                 ),
               ),
+              Gap(30),
               SizedBox(
                 width: size.width * 0.5,
                 child: ElevatedButton(
@@ -296,12 +442,59 @@ class _PostProductState extends State<PostProduct> {
                                 WidgetStateProperty.all<Color>(loadingColor),
                           )
                       : null,
-                  onPressed: () {
+                  onPressed: () async {
+                    if (!isFormValid()) {
+                      return;
+                    }
+
                     if (_formKey.currentState!.validate()) {
                       try {
-                        /// TODO: Post product save to Firestore
+                        if (mounted) {
+                          setState(() {
+                            loading = true;
+                          });
+                        }
+                        List<File> compressedImages = [];
+                        for (int i = 0; i < _selectedImages.length; i++) {
+                          File? compressedImage =
+                              await compressImage(_selectedImages[i]);
+                          if (compressedImage != null) {
+                            compressedImages.add(compressedImage);
+                            _selectedImages.remove(_selectedImages[i]);
+                          }
+                        }
+                        _selectedImages.addAll(compressedImages);
+
+                        var post = {
+                          'user_id': UserDetails.instance.userId.string,
+                          'category': _postController.category.toString(),
+                          'region': _postController.region.toString(),
+                          'description': _descriptionController.text,
+                          'price': _priceController.text,
+                          'phone': _phoneNumber,
+                          'created_at': DateTime.now(),
+                        };
+                        String serviceDocumentId =
+                            await PostController.instance.addServicePost(post);
+
+                        if (serviceDocumentId.isNotEmpty) {
+                          await StorageController.instance
+                              .addProductPostImagestoFirebaseStorage(
+                                  serviceDocumentId, _selectedImages);
+                        }
+
+                        if (mounted) {
+                          setState(() {
+                            loading = false;
+                          });
+                        }
                       } catch (e) {
                         log("Error: $e");
+                        if (mounted) {
+                          setState(() {
+                            loading = false;
+                          });
+                        }
                         Fluttertoast.showToast(
                             msg: e.toString(),
                             toastLength: Toast.LENGTH_LONG,

@@ -90,10 +90,57 @@ class StorageController extends GetxController {
           continue;
         }
 
-        String fileName = documentId + p.extension(element.path);
         // Initialize a task to upload image to Firebase storage
         UploadTask task = _storage
-            .ref('product-posts/$documentId/$fileName')
+            .ref('service-posts/$documentId/${p.basename(element.path)}')
+            .putFile(element);
+        log("image added to Firebase Storage");
+
+        task.then((snapshot) async {
+          try {
+            String imageURL = await snapshot.ref.getDownloadURL();
+            Map<String, dynamic> uploadImage = {
+              'images': FieldValue.arrayUnion([imageURL]),
+            };
+            // Update the photoUrl
+            await FirebaseFirestore.instance
+                .collection('service_posts')
+                .doc(documentId)
+                .update(uploadImage)
+                .then((value) => log('service imaged added to db.'));
+            log(" service image url: $imageURL");
+          } catch (e) {
+            log("Error message: ${e.toString()}");
+            rethrow;
+          }
+        });
+      }
+      return true;
+    } catch (error) {
+      log(error.toString());
+      Fluttertoast.showToast(
+          msg: "Error: ${error.toString()}",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return false;
+    }
+  }
+
+  Future<bool> addProductPostImagestoFirebaseStorage(
+      String documentId, List<File?> addedImages) async {
+    try {
+      for (var element in addedImages) {
+        if (element == null) {
+          continue;
+        }
+
+        // Initialize a task to upload image to Firebase storage
+        UploadTask task = _storage
+            .ref('product-posts/$documentId/${p.basename(element.path)}')
             .putFile(element);
         log("image added to Firebase Storage");
 

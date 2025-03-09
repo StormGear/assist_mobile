@@ -10,7 +10,7 @@ import 'package:get/get.dart';
 class PostController extends GetxController {
   static PostController get instance => Get.find();
 
-   // initialize database
+  // initialize database
   FirebaseFirestore db = FirebaseFirestore.instance;
 
   final region = "".obs;
@@ -36,7 +36,7 @@ class PostController extends GetxController {
     keywords.clear();
   }
 
-   /// create a new user in db
+  /// create a new service post
   Future<String> addServicePost(Map<String, dynamic> post) async {
     var documentId = '';
     try {
@@ -48,9 +48,7 @@ class PostController extends GetxController {
           log('transaction started');
           transaction.set(newDocRef, post, SetOptions(merge: true));
           log("New service post document added with ID: ${newDocRef.id}");
-          newDocRef.get().then((value) {
-            
-          });
+          newDocRef.get().then((value) {});
           return newDocRef.id;
         }).then((value) {
           log("Transaction successfully completed");
@@ -82,6 +80,54 @@ class PostController extends GetxController {
           textColor: Colors.white,
           fontSize: 16.0);
       log('Error creating service post in db: ${e.toString()}');
+      return '';
+    }
+  }
+
+  /// create a new product post
+  Future<String> addProductPost(Map<String, dynamic> post) async {
+    var documentId = '';
+    try {
+      // Check if there is an active connection
+      if (await checkServerReachability()) {
+        DocumentReference newDocRef = db.collection('product_posts').doc();
+
+        documentId = await db.runTransaction((transaction) async {
+          log('transaction started');
+          transaction.set(newDocRef, post, SetOptions(merge: true));
+          log("New product post document added with ID: ${newDocRef.id}");
+          newDocRef.get().then((value) {});
+          return newDocRef.id;
+        }).then((value) {
+          log("Transaction successfully completed");
+          return value;
+        }).catchError((error) {
+          log("Failed to complete transaction: $error");
+          return '';
+        });
+        return documentId;
+      } else {
+        Fluttertoast.showToast(
+            msg: "Error: No internet connection",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: primaryColor,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        log('Error: No internet connection');
+        return '';
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Error: ${e.toString()}",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      log('Error creating product post in db: ${e.toString()}');
       return '';
     }
   }

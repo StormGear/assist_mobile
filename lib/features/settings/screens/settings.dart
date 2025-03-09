@@ -131,7 +131,7 @@ class _SettingsState extends State<Settings> {
                   ),
                   ListTile(
                     onTap: () {
-                      Navigator.pushNamed(context, '/notifications');
+                      Get.toNamed('/notifications');
                     },
                     title: Text(
                       'Notifications',

@@ -40,7 +40,7 @@ class ChatHistory extends StatelessWidget {
                       ),
                       const Padding(
                         padding: EdgeInsets.only(left: 16.0),
-                        child: (Text("Anything",
+                        child: (Text("Anything About Assist",
                             style: TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
@@ -91,13 +91,14 @@ class ChatHistory extends StatelessWidget {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16.0, left: 16.0),
-            child: Text(
-              "Recent Chats",
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          ),
+
+          // const Padding(
+          //   padding: EdgeInsets.only(top: 16.0, left: 16.0),
+          //   child: Text(
+          //     "Recent Chats",
+          //     style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          //   ),
+          // ),
         ],
       ),
     );

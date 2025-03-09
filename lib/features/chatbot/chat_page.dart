@@ -1,14 +1,18 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/features/chatbot/common.dart';
-import 'package:assist/features/chatbot/widgets/custom_button.dart';
+// import 'package:assist/features/chatbot/widgets/custom_button.dart';
 import 'package:assist/services/database/user_details_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+// import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:syncfusion_flutter_chat/assist_view.dart';
 
-String geminiKey = String.fromEnvironment('GEMINI_API_KEY');
+// String geminiKey = String.fromEnvironment('GEMINI_API_KEY');
+String? geminiKey = dotenv.env['GEMINI_API_KEY'];
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -29,8 +33,8 @@ class _AssistViewState extends State<ChatPage> {
   late List<String> _placeholderBehaviorItem;
 
   double _widthFactor = 0.9;
-  String _selectedAlignment = 'Auto';
-  String _selectedBehavior = 'Scroll';
+  // String _selectedAlignment = 'Auto';
+  // String _selectedBehavior = 'Scroll';
   AssistPlaceholderBehavior _placeholderBehavior =
       AssistPlaceholderBehavior.scrollWithMessage;
   AssistBubbleAlignment _bubbleAlignment = AssistBubbleAlignment.auto;
@@ -56,19 +60,35 @@ class _AssistViewState extends State<ChatPage> {
           showUserAvatar: _showRequestAvatar,
           showTimestamp: _showRequestTimestamp,
           showUserName: _showRequestUserName,
+          contentBackgroundColor: Colors.white,
+          contentShape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            side: BorderSide(color: primaryColor, width: 2.0),
+          ),
+          textStyle: const TextStyle(color: primaryColor),
+          headerTextStyle: TextStyle(
+            color: primaryColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         responseBubbleSettings: AssistBubbleSettings(
           widthFactor: _widthFactor,
           showUserAvatar: _showResponseAvatar,
           showTimestamp: _showResponseTimestamp,
           showUserName: _showResponseUserName,
+          headerTextStyle: TextStyle(
+            color: primaryColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         composer: const AssistComposer(
           decoration: InputDecoration(
             hintText: 'Type message here...',
           ),
         ),
-        actionButton: AssistActionButton(onPressed: _handleActionButtonPressed),
+        actionButton: AssistActionButton(
+            onPressed: _handleActionButtonPressed,
+            backgroundColor: primaryColor),
         bubbleContentBuilder: (context, int index, AssistMessage message) {
           return MarkdownBody(data: message.data);
         },
@@ -126,19 +146,16 @@ class _AssistViewState extends State<ChatPage> {
               padding: const EdgeInsets.all(10.0),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  // Image.asset(
-                  //   topic['image']! +
-                  //       (_lightTheme ? '_light.png' : '_dark.png'),
-                  //   width: 20.0,
-                  //   height: 20.0,
-                  // ),
                   const SizedBox(width: 10.0),
-                  Text(
-                    topic['title']!,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14.0,
+                  Expanded(
+                    child: Text(
+                      topic['title']!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14.0,
+                      ),
                     ),
                   ),
                 ],
@@ -167,22 +184,54 @@ class _AssistViewState extends State<ChatPage> {
     });
   }
 
+  // Future<void> _generateResponse(String prompt,
+  //     [String localResponse = '']) async {
+  //   final GenerativeModel aiModel = GenerativeModel(
+  //     model: 'gemini-1.5-flash-latest',
+  //     apiKey: geminiKey,
+  //   );
+
+  //   try {
+  //     final GenerateContentResponse response =
+  //         await aiModel.generateContent([Content.text(prompt)]);
+  //     _addResponseMessage(response.text!);
+  //   } catch (err) {
+  //     if (localResponse.isNotEmpty) {
+  //       _addResponseMessage(localResponse);
+  //     } else {
+  //       _addResponseMessage('The given $err');
+  //     }
+  //   }
+  // }
+
   Future<void> _generateResponse(String prompt,
       [String localResponse = '']) async {
-    final GenerativeModel aiModel = GenerativeModel(
-      model: 'gemini-1.5-flash-latest',
-      apiKey: geminiKey,
-    );
+    if (localResponse.isNotEmpty) {
+      _addResponseMessage(localResponse);
+    } else {
+      try {
+        // Initialize Firestore reference and add document
+        final DocumentReference ref =
+            await FirebaseFirestore.instance.collection('bot_messages').add({
+          'prompt': prompt,
+        });
 
-    try {
-      final GenerateContentResponse response =
-          await aiModel.generateContent([Content.text(prompt)]);
-      _addResponseMessage(response.text!);
-    } catch (err) {
-      if (localResponse.isNotEmpty) {
-        _addResponseMessage(localResponse);
-      } else {
-        _addResponseMessage('The given $err');
+        // Set up snapshot listener
+        ref.snapshots().listen((DocumentSnapshot snapshot) {
+          if (snapshot.exists && snapshot.data() != null) {
+            final data = snapshot.data() as Map<String, dynamic>;
+            if (data['response'] != null) {
+              log('RESPONSE: ${data['response']}');
+              _addResponseMessage(data['response']);
+            }
+          }
+        }, onError: (error) {
+          log('Error listening to snapshot: $error');
+          _addResponseMessage('The given $error');
+        });
+      } catch (error) {
+        log('Error: $error');
+        _addResponseMessage('The given $error');
       }
     }
   }
@@ -217,7 +266,7 @@ class _AssistViewState extends State<ChatPage> {
     Future.delayed(
       const Duration(milliseconds: 500),
       () {
-        if (geminiKey.isEmpty) {
+        if (geminiKey != null && geminiKey!.isEmpty) {
           _addMessageAndRebuild(
             AssistMessage.response(
               data:
@@ -233,303 +282,303 @@ class _AssistViewState extends State<ChatPage> {
     );
   }
 
-  Widget _buildWidthFactorSetting() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        const Text(
-          'Width factor',
-          style: TextStyle(fontSize: 16),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(right: 8.0),
-          child: CustomDirectionalButtons(
-            maxValue: 1.0,
-            minValue: 0.8,
-            step: 0.05,
-            initialValue: _widthFactor,
-            onChanged: (double val) => setState(() {
-              _widthFactor = val;
-            }),
-            iconColor: primaryColor,
-            style: TextStyle(fontSize: 16.0, color: primaryColor),
-          ),
-        )
-      ],
-    );
-  }
+  // Widget _buildWidthFactorSetting() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //     children: <Widget>[
+  //       const Text(
+  //         'Width factor',
+  //         style: TextStyle(fontSize: 16),
+  //       ),
+  //       Padding(
+  //         padding: const EdgeInsets.only(right: 8.0),
+  //         child: CustomDirectionalButtons(
+  //           maxValue: 1.0,
+  //           minValue: 0.8,
+  //           step: 0.05,
+  //           initialValue: _widthFactor,
+  //           onChanged: (double val) => setState(() {
+  //             _widthFactor = val;
+  //           }),
+  //           iconColor: primaryColor,
+  //           style: TextStyle(fontSize: 16.0, color: primaryColor),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 
-  Widget _buildBubbleAlignmentSetting(StateSetter stateSetter) {
-    return SizedBox(
-      width: 230,
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              'Bubble alignment',
-              overflow: TextOverflow.clip,
-              softWrap: false,
-              style: TextStyle(fontSize: 16.0, color: primaryColor),
-            ),
-          ),
-          DropdownButton<String>(
-            dropdownColor: primaryColor,
-            focusColor: Colors.transparent,
-            underline: Container(
-              color: const Color(0xFFBDBDBD),
-              height: 1.0,
-            ),
-            value: _selectedAlignment,
-            items: _bubbleAlignmentItem.map((String value) {
-              return DropdownMenuItem<String>(
-                value: (value != null) ? value : 'Auto',
-                child: Text(
-                  value,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: primaryColor),
-                ),
-              );
-            }).toList(),
-            onChanged: (String? value) {
-              stateSetter(() {
-                _handleAlignmentChange(value.toString());
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildBubbleAlignmentSetting(StateSetter stateSetter) {
+  //   return SizedBox(
+  //     width: 230,
+  //     child: Row(
+  //       children: <Widget>[
+  //         Expanded(
+  //           child: Text(
+  //             'Bubble alignment',
+  //             overflow: TextOverflow.clip,
+  //             softWrap: false,
+  //             style: TextStyle(fontSize: 16.0, color: primaryColor),
+  //           ),
+  //         ),
+  //         DropdownButton<String>(
+  //           dropdownColor: primaryColor,
+  //           focusColor: Colors.transparent,
+  //           underline: Container(
+  //             color: const Color(0xFFBDBDBD),
+  //             height: 1.0,
+  //           ),
+  //           value: _selectedAlignment,
+  //           items: _bubbleAlignmentItem.map((String value) {
+  //             return DropdownMenuItem<String>(
+  //               value: (value != null) ? value : 'Auto',
+  //               child: Text(
+  //                 value,
+  //                 textAlign: TextAlign.center,
+  //                 style: TextStyle(color: primaryColor),
+  //               ),
+  //             );
+  //           }).toList(),
+  //           onChanged: (String? value) {
+  //             stateSetter(() {
+  //               _handleAlignmentChange(value.toString());
+  //             });
+  //           },
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  void _handleAlignmentChange(String value) {
-    setState(() {
-      _selectedAlignment = value;
-      switch (value) {
-        case 'Start':
-          _bubbleAlignment = AssistBubbleAlignment.start;
-          break;
-        case 'End':
-          _bubbleAlignment = AssistBubbleAlignment.end;
-          break;
-        case 'Auto':
-          _bubbleAlignment = AssistBubbleAlignment.auto;
-          break;
-      }
-    });
-  }
+  // void _handleAlignmentChange(String value) {
+  //   setState(() {
+  //     _selectedAlignment = value;
+  //     switch (value) {
+  //       case 'Start':
+  //         _bubbleAlignment = AssistBubbleAlignment.start;
+  //         break;
+  //       case 'End':
+  //         _bubbleAlignment = AssistBubbleAlignment.end;
+  //         break;
+  //       case 'Auto':
+  //         _bubbleAlignment = AssistBubbleAlignment.auto;
+  //         break;
+  //     }
+  //   });
+  // }
 
-  Widget _buildPlaceholderBehaviorSetting(StateSetter stateSetter) {
-    return SizedBox(
-      width: 230,
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              'Placeholder',
-              overflow: TextOverflow.clip,
-              softWrap: false,
-              style: TextStyle(fontSize: 16.0, color: primaryColor),
-            ),
-          ),
-          DropdownButton<String>(
-            dropdownColor: primaryColor,
-            focusColor: Colors.transparent,
-            underline: Container(color: const Color(0xFFBDBDBD), height: 1.0),
-            value: _selectedBehavior,
-            items: _placeholderBehaviorItem.map((String value) {
-              return DropdownMenuItem<String>(
-                value: 'Scroll',
-                child: Text(
-                  value,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: primaryColor),
-                ),
-              );
-            }).toList(),
-            onChanged: (String? value) {
-              stateSetter(() {
-                _handlePlaceholderBehavior(value.toString());
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildPlaceholderBehaviorSetting(StateSetter stateSetter) {
+  //   return SizedBox(
+  //     width: 230,
+  //     child: Row(
+  //       children: <Widget>[
+  //         Expanded(
+  //           child: Text(
+  //             'Placeholder',
+  //             overflow: TextOverflow.clip,
+  //             softWrap: false,
+  //             style: TextStyle(fontSize: 16.0, color: primaryColor),
+  //           ),
+  //         ),
+  //         DropdownButton<String>(
+  //           dropdownColor: primaryColor,
+  //           focusColor: Colors.transparent,
+  //           underline: Container(color: const Color(0xFFBDBDBD), height: 1.0),
+  //           value: _selectedBehavior,
+  //           items: _placeholderBehaviorItem.map((String value) {
+  //             return DropdownMenuItem<String>(
+  //               value: 'Scroll',
+  //               child: Text(
+  //                 value,
+  //                 textAlign: TextAlign.center,
+  //                 style: TextStyle(color: primaryColor),
+  //               ),
+  //             );
+  //           }).toList(),
+  //           onChanged: (String? value) {
+  //             stateSetter(() {
+  //               _handlePlaceholderBehavior(value.toString());
+  //             });
+  //           },
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  void _handlePlaceholderBehavior(String value) {
-    setState(() {
-      _selectedBehavior = value;
-      switch (value) {
-        case 'Scroll':
-          _placeholderBehavior = AssistPlaceholderBehavior.scrollWithMessage;
-          break;
-        case 'Hide':
-          _placeholderBehavior = AssistPlaceholderBehavior.hideOnMessage;
-      }
-    });
-  }
+  // void _handlePlaceholderBehavior(String value) {
+  //   setState(() {
+  //     _selectedBehavior = value;
+  //     switch (value) {
+  //       case 'Scroll':
+  //         _placeholderBehavior = AssistPlaceholderBehavior.scrollWithMessage;
+  //         break;
+  //       case 'Hide':
+  //         _placeholderBehavior = AssistPlaceholderBehavior.hideOnMessage;
+  //     }
+  //   });
+  // }
 
-  Padding _buildBubbleSettingTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20.0, bottom: 10),
-      child: Text(
-        title,
-        overflow: TextOverflow.clip,
-        softWrap: false,
-        style: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
-          color: primaryColor,
-        ),
-      ),
-    );
-  }
+  // Padding _buildBubbleSettingTitle(String title) {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(top: 20.0, bottom: 10),
+  //     child: Text(
+  //       title,
+  //       overflow: TextOverflow.clip,
+  //       softWrap: false,
+  //       style: TextStyle(
+  //         fontSize: 16.0,
+  //         fontWeight: FontWeight.bold,
+  //         color: primaryColor,
+  //       ),
+  //     ),
+  //   );
+  // }
 
-  Widget _buildRequestShowAvatarSetting(StateSetter stateSetter) {
-    return SizedBox(
-      width: 200,
-      child: CheckboxListTile(
-        value: _showRequestAvatar,
-        title: const Text('Show avatar', softWrap: false),
-        activeColor: primaryColor,
-        contentPadding: EdgeInsets.zero,
-        onChanged: (bool? value) {
-          setState(() {
-            stateSetter(() {
-              _showRequestAvatar = value!;
-            });
-          });
-        },
-      ),
-    );
-  }
+  // Widget _buildRequestShowAvatarSetting(StateSetter stateSetter) {
+  //   return SizedBox(
+  //     width: 200,
+  //     child: CheckboxListTile(
+  //       value: _showRequestAvatar,
+  //       title: const Text('Show avatar', softWrap: false),
+  //       activeColor: primaryColor,
+  //       contentPadding: EdgeInsets.zero,
+  //       onChanged: (bool? value) {
+  //         setState(() {
+  //           stateSetter(() {
+  //             _showRequestAvatar = value!;
+  //           });
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-  Widget _buildRequestShowTimestampSetting(StateSetter stateSetter) {
-    return SizedBox(
-      width: 200,
-      child: CheckboxListTile(
-        value: _showRequestTimestamp,
-        title: const Text('Show timestamp', softWrap: false),
-        activeColor: primaryColor,
-        contentPadding: EdgeInsets.zero,
-        onChanged: (bool? value) {
-          setState(() {
-            stateSetter(() {
-              _showRequestTimestamp = value!;
-            });
-          });
-        },
-      ),
-    );
-  }
+  // Widget _buildRequestShowTimestampSetting(StateSetter stateSetter) {
+  //   return SizedBox(
+  //     width: 200,
+  //     child: CheckboxListTile(
+  //       value: _showRequestTimestamp,
+  //       title: const Text('Show timestamp', softWrap: false),
+  //       activeColor: primaryColor,
+  //       contentPadding: EdgeInsets.zero,
+  //       onChanged: (bool? value) {
+  //         setState(() {
+  //           stateSetter(() {
+  //             _showRequestTimestamp = value!;
+  //           });
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-  Widget _buildRequestShowUserNameSetting(StateSetter stateSetter) {
-    return SizedBox(
-      width: 200,
-      child: CheckboxListTile(
-        value: _showRequestUserName,
-        title: const Text('Show name', softWrap: false),
-        activeColor: primaryColor,
-        contentPadding: EdgeInsets.zero,
-        onChanged: (bool? value) {
-          setState(() {
-            stateSetter(() {
-              _showRequestUserName = value!;
-            });
-          });
-        },
-      ),
-    );
-  }
+  // Widget _buildRequestShowUserNameSetting(StateSetter stateSetter) {
+  //   return SizedBox(
+  //     width: 200,
+  //     child: CheckboxListTile(
+  //       value: _showRequestUserName,
+  //       title: const Text('Show name', softWrap: false),
+  //       activeColor: primaryColor,
+  //       contentPadding: EdgeInsets.zero,
+  //       onChanged: (bool? value) {
+  //         setState(() {
+  //           stateSetter(() {
+  //             _showRequestUserName = value!;
+  //           });
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-  Widget _buildResponseShowAvatarSetting(StateSetter stateSetter) {
-    return SizedBox(
-      width: 200,
-      child: CheckboxListTile(
-        value: _showResponseAvatar,
-        title: const Text('Show avatar', softWrap: false),
-        activeColor: primaryColor,
-        contentPadding: EdgeInsets.zero,
-        onChanged: (bool? value) {
-          setState(() {
-            stateSetter(() {
-              _showResponseAvatar = value!;
-            });
-          });
-        },
-      ),
-    );
-  }
+  // Widget _buildResponseShowAvatarSetting(StateSetter stateSetter) {
+  //   return SizedBox(
+  //     width: 200,
+  //     child: CheckboxListTile(
+  //       value: _showResponseAvatar,
+  //       title: const Text('Show avatar', softWrap: false),
+  //       activeColor: primaryColor,
+  //       contentPadding: EdgeInsets.zero,
+  //       onChanged: (bool? value) {
+  //         setState(() {
+  //           stateSetter(() {
+  //             _showResponseAvatar = value!;
+  //           });
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-  Widget _buildResponseShowUserNameSetting(StateSetter stateSetter) {
-    return SizedBox(
-      width: 200,
-      child: CheckboxListTile(
-        value: _showResponseUserName,
-        title: const Text('Show name', softWrap: false),
-        activeColor: primaryColor,
-        contentPadding: EdgeInsets.zero,
-        onChanged: (bool? value) {
-          setState(() {
-            stateSetter(() {
-              _showResponseUserName = value!;
-            });
-          });
-        },
-      ),
-    );
-  }
+  // Widget _buildResponseShowUserNameSetting(StateSetter stateSetter) {
+  //   return SizedBox(
+  //     width: 200,
+  //     child: CheckboxListTile(
+  //       value: _showResponseUserName,
+  //       title: const Text('Show name', softWrap: false),
+  //       activeColor: primaryColor,
+  //       contentPadding: EdgeInsets.zero,
+  //       onChanged: (bool? value) {
+  //         setState(() {
+  //           stateSetter(() {
+  //             _showResponseUserName = value!;
+  //           });
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-  Widget _buildResponseShowTimestampSetting(StateSetter stateSetter) {
-    return SizedBox(
-      width: 200,
-      child: CheckboxListTile(
-        value: _showResponseTimestamp,
-        title: const Text('Show timestamp', softWrap: false),
-        activeColor: primaryColor,
-        contentPadding: EdgeInsets.zero,
-        onChanged: (bool? value) {
-          setState(() {
-            stateSetter(() {
-              _showResponseTimestamp = value!;
-            });
-          });
-        },
-      ),
-    );
-  }
+  // Widget _buildResponseShowTimestampSetting(StateSetter stateSetter) {
+  //   return SizedBox(
+  //     width: 200,
+  //     child: CheckboxListTile(
+  //       value: _showResponseTimestamp,
+  //       title: const Text('Show timestamp', softWrap: false),
+  //       activeColor: primaryColor,
+  //       contentPadding: EdgeInsets.zero,
+  //       onChanged: (bool? value) {
+  //         setState(() {
+  //           stateSetter(() {
+  //             _showResponseTimestamp = value!;
+  //           });
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
 
-  Widget _buildClearChatSetting() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 10.0),
-      child: ElevatedButton(
-        style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith<Color?>(
-            (Set<WidgetState> states) {
-              if (states.contains(WidgetState.pressed)) {
-                return primaryColor.withAlpha(150);
-              }
-              return primaryColor;
-            },
-          ),
-        ),
-        onPressed: () {
-          if (_messages.isNotEmpty) {
-            setState(() {
-              _messages.clear();
-            });
-          }
-        },
-        child: Text(
-          'Clear Chat',
-          style: TextStyle(
-            color: primaryColor,
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildClearChatSetting() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 10.0),
+  //     child: ElevatedButton(
+  //       style: ButtonStyle(
+  //         backgroundColor: WidgetStateProperty.resolveWith<Color?>(
+  //           (Set<WidgetState> states) {
+  //             if (states.contains(WidgetState.pressed)) {
+  //               return primaryColor.withAlpha(150);
+  //             }
+  //             return primaryColor;
+  //           },
+  //         ),
+  //       ),
+  //       onPressed: () {
+  //         if (_messages.isNotEmpty) {
+  //           setState(() {
+  //             _messages.clear();
+  //           });
+  //         }
+  //       },
+  //       child: Text(
+  //         'Clear Chat',
+  //         style: TextStyle(
+  //           color: primaryColor,
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void initState() {

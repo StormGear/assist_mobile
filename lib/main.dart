@@ -15,10 +15,7 @@ String supabaseKey = String.fromEnvironment('SUPABASE_KEY');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-    await Supabase.initialize(
-    url: 'https://jxjzmvqwjpgojvsjbfsc.supabase.co',
-    anonKey: supabaseKey,
-  );
+  await dotenv.load(fileName: ".env");
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
