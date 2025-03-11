@@ -2,18 +2,24 @@ final List<Map<String, String>> topics = [
   {
     'title': 'What can Assist App do?',
     'description': '''
-Deep Learning is a subset of machine learning that uses artificial neural networks to learn from data. These networks, inspired by the human brain, can recognize complex patterns in data like images, text, and sound. Deep Learning powers many AI applications, from image recognition to natural language processing. ''',
+Assist is a platform that connects users with skilled artisans. It allows users to find and hire artisans for various services like plumbing, electrical work, and carpentry. Users can browse through profiles, view ratings, and reviews to make informed decisions.''',
   },
   {
     'title': 'What kinds of artisans can I find on Assist?',
     'description': '''
-Natural Language Processing (NLP) is a field of artificial intelligence that teaches computers to understand and process human language. It enables machines to interpret, manipulate, and generate human language, making communication between humans and computers more natural. NLP powers various applications like chatbots, language translation, and sentiment analysis.
+Assist offers a wide range of artisans for different services. Some of the common categories include plumbers, electricians, carpenters, painters, and cleaners. Users can search for artisans based on their services. 
 ''',
   },
   {
     'title': 'Can I buy and sell on Assist?',
     'description': '''
-Time management apps help you stay organized and productive. They offer features like task scheduling, time tracking, and reminders. Popular options include Todoist, Trello, and RescueTime. These tools can boost your efficiency and reduce stress by helping you prioritize tasks and manage your time effectively.
+Yes, Assist allows users to buy and sell products and services. Users can post products for sale and set prices.  Users can browse through products, view details. 
 ''',
   },
 ];
+
+//  The app also provides a chat feature for communication between users and artisans.
+// The app also provides a chat feature for communication between buyers and sellers.
+// and make purchases directly through the app
+/// Assist also offers a secure payment gateway for transactions.
+/// Users can search for artisans based on their location, ratings, and reviews

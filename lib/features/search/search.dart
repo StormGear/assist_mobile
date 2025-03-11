@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:typesense/typesense.dart' as ts;
 
 class Search extends StatefulWidget {
   const Search({super.key});
@@ -41,11 +42,57 @@ class _SearchState extends State<Search> {
 
   _onChanged() {
     if (searchController.text.length > 2) {
-      getSuggestion(searchController.text);
+      // getSuggestion(searchController.text);
+      typesenseSearch(searchController.text);
     } else {
       setState(() {
         searchList = [];
       });
+    }
+  }
+
+  Future<void> typesenseSearch(String query) async {
+    final host = "velwu7fhs6c8bajqp-1.a1.typesense.net",
+        protocol = ts.Protocol.https;
+    String? typesenseApiKey = dotenv.env['TYPESENSE_SEARCH_KEY'];
+    final config = ts.Configuration(
+      // Api key
+      typesenseApiKey ?? '',
+      nodes: {
+        ts.Node(
+          protocol,
+          host,
+          port: 443,
+        )
+      },
+      numRetries: 3, // A total of 4 tries (1 original try + 3 retries)
+      connectionTimeout: const Duration(seconds: 5),
+    );
+
+    final client = ts.Client(config);
+
+    final searchParameters = {
+      'q': query,
+      'query_by': 'name,description',
+      'filter_by': '',
+      'sort_by': '',
+    };
+
+    try {
+      var response = await client
+          .collection('service_categories')
+          .documents
+          .search(searchParameters);
+      if (mounted) {
+        setState(() {
+          searchList = response['hits'].map((e) => e['document']).toList();
+        });
+      }
+      // var results = response['hits'].map((e) => e['document']).toList();
+      log('Response: $searchList');
+    } catch (e) {
+      log("Error: $e");
+      Get.snackbar('Error getting results', e.toString());
     }
   }
 
@@ -191,6 +238,14 @@ class _SearchState extends State<Search> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Gap(10),
+                    if (searchList.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 15.0),
+                        child: Text(
+                          'No search results found',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
                     ListView.builder(
                       shrinkWrap: true,
                       itemCount: searchList.length,
@@ -200,40 +255,46 @@ class _SearchState extends State<Search> {
                             Padding(
                               padding: const EdgeInsets.only(
                                   left: 15.0, right: 15.0),
-                              child: Container(
-                                width: size.width,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: primaryColor.withAlpha(120),
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color:
-                                          primaryColor.withValues(alpha: 63)),
-                                  shape: BoxShape.rectangle,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    children: [
-                                      Text(
-                                        searchList[index]["segments"][0]
-                                            ["value"],
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge
-                                            ?.copyWith(
-                                                fontWeight: FontWeight.w500),
-                                      ),
-                                      const Spacer(),
+                              child: GestureDetector(
+                                onTap: () {
+                                  log('Tapped on ${searchList[index]['name']}');
 
-                                      /// TODO: Enable this when this category has been chosen recently, and the user wants to go back to it, implement cache retrieval which
-                                      /// means I'll have to cache visited categories
-                                      Icon(
-                                        Icons.call_made,
-                                        color: Colors.black,
-                                        weight: 3,
-                                      )
-                                    ],
+                                  /// TODO: Implement navigation to the category page
+                                },
+                                child: Container(
+                                  width: size.width,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                    color: primaryColor.withAlpha(120),
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                        color:
+                                            primaryColor.withValues(alpha: 63)),
+                                    shape: BoxShape.rectangle,
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          searchList[index]['name'],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyLarge
+                                              ?.copyWith(
+                                                  fontWeight: FontWeight.w500),
+                                        ),
+                                        const Spacer(),
+
+                                        /// TODO: Enable this when this category has been chosen recently, and the user wants to go back to it, implement cache retrieval which
+                                        /// means I'll have to cache visited categories
+                                        Icon(
+                                          Icons.call_made,
+                                          color: Colors.black,
+                                          weight: 3,
+                                        )
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

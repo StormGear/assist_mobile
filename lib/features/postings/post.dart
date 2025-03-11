@@ -40,6 +40,9 @@ class Post extends StatelessWidget {
                     child: Image.asset(
                       'assets/images/categories/services.jpg',
                       fit: BoxFit.fill,
+                      cacheHeight:
+                          (100 * MediaQuery.of(context).devicePixelRatio)
+                              .toInt(),
                     ),
                   ),
                 ),
@@ -76,6 +79,9 @@ class Post extends StatelessWidget {
                     child: Image.asset(
                       'assets/images/categories/sale.jpg',
                       fit: BoxFit.cover,
+                      cacheHeight:
+                          (100 * MediaQuery.of(context).devicePixelRatio)
+                              .toInt(),
                     ),
                   ),
                 ),

@@ -32,19 +32,19 @@ class _AssistViewState extends State<ChatPage> {
   late List<String> _bubbleAlignmentItem;
   late List<String> _placeholderBehaviorItem;
 
-  double _widthFactor = 0.9;
+  final double _widthFactor = 0.9;
   // String _selectedAlignment = 'Auto';
   // String _selectedBehavior = 'Scroll';
-  AssistPlaceholderBehavior _placeholderBehavior =
+  final AssistPlaceholderBehavior _placeholderBehavior =
       AssistPlaceholderBehavior.scrollWithMessage;
-  AssistBubbleAlignment _bubbleAlignment = AssistBubbleAlignment.auto;
+  final AssistBubbleAlignment _bubbleAlignment = AssistBubbleAlignment.auto;
 
-  bool _showRequestAvatar = true;
-  bool _showRequestUserName = true;
-  bool _showRequestTimestamp = false;
-  bool _showResponseAvatar = true;
-  bool _showResponseUserName = true;
-  bool _showResponseTimestamp = false;
+  final bool _showRequestAvatar = true;
+  final bool _showRequestUserName = true;
+  final bool _showRequestTimestamp = false;
+  final bool _showResponseAvatar = true;
+  final bool _showResponseUserName = true;
+  final bool _showResponseTimestamp = false;
   // bool _lightTheme = true;
 
   SelectionArea _buildAIAssistView() {

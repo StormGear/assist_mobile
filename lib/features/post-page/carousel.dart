@@ -67,10 +67,7 @@ class _ImageCarouselState extends State<ImageCarousel> {
                 margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
                 decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: (Theme.of(context).brightness == Brightness.dark
-                            ? Colors.white
-                            : primaryColor)
-                        .withAlpha(_current == entry.key ? 200 : 50)),
+                    color: _current == entry.key ? primaryColor : Colors.grey),
               ),
             );
           }).toList(),

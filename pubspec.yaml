@@ -68,6 +68,8 @@ dependencies:
   path_provider: ^2.1.5
   carousel_slider: ^5.0.0
   flutter_phone_direct_caller: ^2.1.1
+  typesense: ^0.5.2
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:
@@ -123,6 +125,7 @@ flutter:
     - assets/images/profile/
     - assets/images/categories/
     - assets/images/chat/
+    - assets/images/reviews/
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see

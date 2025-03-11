@@ -332,6 +332,51 @@ class DatabaseController extends GetxController {
     }
   }
 
+  /// Create a review for a service
+  Future<bool> createReview(Map<String, dynamic> review) async {
+    try {
+      // Check if there is an active connection
+      if (await checkServerReachability()) {
+        DocumentReference newDocRef = db.collection('reviews').doc();
+
+        await db.runTransaction((transaction) async {
+          log('transaction started');
+          transaction.set(newDocRef, review, SetOptions(merge: true));
+          log("New review document added with ID: ${newDocRef.id}");
+        }).then((value) {
+          log("Transaction successfully completed");
+          return true;
+        }).catchError((error) {
+          log("Failed to complete transaction: $error");
+          return false;
+        });
+        return true;
+      } else {
+        Fluttertoast.showToast(
+            msg: "Error: No internet connection",
+            toastLength: Toast.LENGTH_SHORT,
+            gravity: ToastGravity.CENTER,
+            timeInSecForIosWeb: 1,
+            backgroundColor: primaryColor,
+            textColor: Colors.white,
+            fontSize: 16.0);
+        log('Error: No internet connection');
+        return false;
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "Error: ${e.toString()}",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      log('Error creating review in db: ${e.toString()}');
+      return false;
+    }
+  }
+
   /// Generic stream for listening to changes in a document
   Stream<DocumentSnapshot>? listenToDocumentChanges(String bookingID) {
     try {

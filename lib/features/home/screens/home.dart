@@ -188,6 +188,8 @@ class Category extends StatelessWidget {
                   fit: BoxFit.cover,
                   width: double.infinity,
                   height: double.infinity,
+                  cacheHeight:
+                      (100 * MediaQuery.of(context).devicePixelRatio).toInt(),
                 ),
               ),
             ),

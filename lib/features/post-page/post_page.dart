@@ -66,39 +66,67 @@ class PostPage extends StatelessWidget {
                       const Spacer(),
                     ],
                   ),
-                  Gap(5),
-                  Center(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          decoration: ShapeDecoration(
-                              color: Colors.grey.shade200,
-                              shape: CircleBorder()),
-                          child: IconButton(
-                              onPressed: () async {
-                                try {
-                                  await FlutterPhoneDirectCaller.callNumber(
-                                      '+233538966851');
-                                } catch (e) {
-                                  log(e.toString());
-                                }
-                              },
-                              icon: const Icon(
-                                Icons.phone,
-                                color: Colors.black,
-                                // size: 30,
-                              )),
-                        ),
-                        Gap(10),
-                        // dbController.hasCallSupport.value
-                        //     ?
-                        Text('Phone Call')
-                        // : const Text(
-                        //     'Calling not supported'),
-                      ],
-                    ),
+                  Gap(10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: ShapeDecoration(
+                                color: Colors.grey.shade200,
+                                shape: CircleBorder()),
+                            child: IconButton(
+                                onPressed: () async {
+                                  try {
+                                    await FlutterPhoneDirectCaller.callNumber(
+                                        '+233538966851');
+                                  } catch (e) {
+                                    log(e.toString());
+                                  }
+                                },
+                                icon: const Icon(
+                                  Icons.phone,
+                                  color: Colors.green,
+                                  // size: 30,
+                                )),
+                          ),
+                          Gap(10),
+                          // dbController.hasCallSupport.value
+                          //     ?
+                          Text('Phone Call')
+                          // : const Text(
+                          //     'Calling not supported'),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            decoration: ShapeDecoration(
+                                color: Colors.grey.shade200,
+                                shape: CircleBorder()),
+                            child: IconButton(
+                                onPressed: () async {
+                                  try {
+                                    await FlutterPhoneDirectCaller.callNumber(
+                                        '+233538966851');
+                                  } catch (e) {
+                                    log(e.toString());
+                                  }
+                                },
+                                icon: const Icon(Icons.chat, color: primaryColor
+                                    // size: 30,
+                                    )),
+                          ),
+                          Gap(10),
+                          Text('Chat')
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -263,7 +291,12 @@ class PostPage extends StatelessWidget {
                         SizedBox(
                           width: size.width * 0.8,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => const WriteReviewDialog(),
+                              );
+                            },
                             child: const Text("Write a Review"),
                           ),
                         ),
