@@ -1,4 +1,7 @@
 import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/features/feed/service_feed.dart';
+import 'package:assist/features/home/models/category_model.dart';
+import 'package:assist/features/home/screens/demo_values.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
@@ -58,7 +61,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           Gap(10),
-          _buildHorizontalScrollableGrid(context),
+          _buildHorizontalScrollableGrid(context, demoCategories1),
           Gap(20),
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
@@ -68,7 +71,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           Gap(10),
-          _buildHorizontalScrollableGrid(context),
+          _buildHorizontalScrollableGrid(context, demoCategories2),
           Gap(20),
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
@@ -78,7 +81,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           Gap(10),
-          _buildHorizontalScrollableGrid(context),
+          _buildHorizontalScrollableGrid(context, demoCategories3),
           Gap(20),
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
@@ -132,40 +135,69 @@ Widget _buildSearchField(BuildContext context) {
   );
 }
 
-Widget _buildHorizontalScrollableGrid(BuildContext context) {
-  return SingleChildScrollView(
-    scrollDirection: Axis.horizontal,
+Widget _buildHorizontalScrollableGrid(
+    BuildContext context, List<CategoryModel> categories) {
+  final Size size = MediaQuery.of(context).size;
+  return SizedBox(
+    width: size.width,
+    height: 200,
     child: Padding(
       padding: const EdgeInsets.only(left: 15.0),
-      child: Row(
-        children: List.generate(5, (index) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 150,
-                height: 150,
-                margin: EdgeInsets.only(right: 10),
-                decoration: BoxDecoration(
-                  color: Colors.blueAccent,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Center(
-                  child: Text(
-                    'Item $index',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ),
-              ),
-              Gap(10),
-              Text('Item $index',
-                  style: Theme.of(context).textTheme.labelLarge),
-            ],
-          );
-        }),
-      ),
+      child: ListView.builder(
+          itemCount: categories.length,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, index) {
+            return Category(
+              category: categories[index],
+            );
+          }),
     ),
   );
+}
+
+class Category extends StatelessWidget {
+  const Category({
+    super.key,
+    required this.category,
+  });
+
+  final CategoryModel category;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => Feed());
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 150,
+            height: 150,
+            margin: EdgeInsets.only(right: 10),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Image.asset(
+                  "assets/images/categories/${category.imageUrl}",
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                ),
+              ),
+            ),
+          ),
+          Gap(10),
+          Text(category.title, style: Theme.of(context).textTheme.labelLarge),
+        ],
+      ),
+    );
+  }
 }
 
 Widget _buildCategories(BuildContext context, {List<String> items = const []}) {

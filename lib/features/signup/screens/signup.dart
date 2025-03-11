@@ -339,6 +339,7 @@ class _SignUpState extends State<SignUp> {
                                           'password': hashedPassword,
                                           'firstname': firstnameController.text,
                                           'lastname': lastnameController.text,
+                                          'profile_url': '',
                                         };
                                         databaseController
                                             .createUserInDb(user)

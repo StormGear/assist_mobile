@@ -1,24 +1,34 @@
 import 'package:assist/features/feed/demo_values.dart';
+import 'package:assist/features/post-page/post_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class PostCard extends StatelessWidget {
   const PostCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 6 / 3,
-      child: Card(
-        elevation: 2,
-        child: Container(
-          margin: const EdgeInsets.all(4.0),
-          padding: const EdgeInsets.all(4.0),
-          child: Column(
-            children: <Widget>[
-              _Post(),
-              Divider(color: Colors.grey),
-              _PostDetails(),
-            ],
+    return GestureDetector(
+      onTap: () {
+        Get.to(
+          () => PostPage(),
+        );
+      },
+      child: AspectRatio(
+        aspectRatio: 6 / 3,
+        child: Card(
+          elevation: 2,
+          color: Colors.grey[200],
+          child: Container(
+            margin: const EdgeInsets.all(4.0),
+            padding: const EdgeInsets.all(4.0),
+            child: Column(
+              children: <Widget>[
+                _Post(),
+                Divider(color: Colors.grey),
+                _PostDetails(),
+              ],
+            ),
           ),
         ),
       ),
@@ -44,7 +54,7 @@ class _PostTitleAndSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextStyle titleTheme = Theme.of(context).textTheme.bodySmall!;
-    final TextStyle summaryTheme = Theme.of(context).textTheme.displaySmall!;
+    final TextStyle summaryTheme = Theme.of(context).textTheme.bodySmall!;
     final String title = DemoValues.postTitle;
     final String summary = DemoValues.postSummary;
 

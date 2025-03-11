@@ -40,7 +40,6 @@ dependencies:
   firebase_core: ^3.6.0
   flutter_svg: ^2.0.10+1
   cuberto_bottom_bar: ^3.1.0
-  easy_localization: ^3.0.7
   flutter_localizations:
     sdk: flutter
   intl: ^0.19.0
@@ -57,7 +56,6 @@ dependencies:
   path: ^1.9.0
   image_picker: ^1.1.2
   firebase_storage: ^12.4.3
-  supabase_flutter: ^2.8.3
   crypto: ^3.0.6
   file_picker: ^9.0.0
   google_generative_ai: ^0.4.6
@@ -68,6 +66,8 @@ dependencies:
   flutter_image_compress: ^2.4.0
   mime: ^2.0.0
   path_provider: ^2.1.5
+  carousel_slider: ^5.0.0
+  flutter_phone_direct_caller: ^2.1.1
 
 dev_dependencies:
   flutter_test:

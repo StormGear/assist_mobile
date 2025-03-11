@@ -190,6 +190,7 @@ class _SearchState extends State<Search> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Gap(10),
                     ListView.builder(
                       shrinkWrap: true,
                       itemCount: searchList.length,
@@ -245,72 +246,73 @@ class _SearchState extends State<Search> {
                   ],
                 ),
               ),
+
               /// TODO: Implement expanded here
-              Container(
-                // height: size.height * 0.15,
-                color: Colors.white,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Popular Searches',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Gap(15),
-                      GridView.builder(
-                        shrinkWrap: true,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: 20,
-                          crossAxisSpacing: 10,
-                          childAspectRatio: 4,
-                        ),
-                        itemCount: items.length,
-                        itemBuilder: (context, index) {
-                          String item = items[index];
-                          return LayoutBuilder(
-                            builder: (context, constraints) {
-                              return Container(
-                                  width: constraints.maxWidth,
-                                  height: 60,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: 60,
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                          color: Colors.transparent,
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                              color: Colors.blueAccent),
-                                          shape: BoxShape.rectangle,
-                                        ),
-                                      ),
-                                      Gap(10),
-                                      Text(
-                                        item,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ));
-                            },
-                          );
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              ),
+              // Container(
+              //   // height: size.height * 0.15,
+              //   color: Colors.white,
+              //   child: Padding(
+              //     padding: EdgeInsets.symmetric(horizontal: size.width * 0.05),
+              //     child: Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text(
+              //           'Popular Searches',
+              //           style: Theme.of(context).textTheme.titleLarge,
+              //         ),
+              //         Gap(15),
+              //         GridView.builder(
+              //           shrinkWrap: true,
+              //           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              //             crossAxisCount: 2,
+              //             mainAxisSpacing: 20,
+              //             crossAxisSpacing: 10,
+              //             childAspectRatio: 4,
+              //           ),
+              //           itemCount: items.length,
+              //           itemBuilder: (context, index) {
+              //             String item = items[index];
+              //             return LayoutBuilder(
+              //               builder: (context, constraints) {
+              //                 return Container(
+              //                     width: constraints.maxWidth,
+              //                     height: 60,
+              //                     decoration: BoxDecoration(
+              //                       color: Colors.transparent,
+              //                     ),
+              //                     child: Row(
+              //                       mainAxisAlignment: MainAxisAlignment.start,
+              //                       children: [
+              //                         Container(
+              //                           width: 60,
+              //                           height: 60,
+              //                           decoration: BoxDecoration(
+              //                             color: Colors.transparent,
+              //                             borderRadius:
+              //                                 BorderRadius.circular(10),
+              //                             border: Border.all(
+              //                                 color: Colors.blueAccent),
+              //                             shape: BoxShape.rectangle,
+              //                           ),
+              //                         ),
+              //                         Gap(10),
+              //                         Text(
+              //                           item,
+              //                           style: Theme.of(context)
+              //                               .textTheme
+              //                               .bodyLarge,
+              //                           textAlign: TextAlign.center,
+              //                         ),
+              //                       ],
+              //                     ));
+              //               },
+              //             );
+              //           },
+              //         )
+              //       ],
+              //     ),
+              //   ),
+              // ),
             ],
           )),
     );

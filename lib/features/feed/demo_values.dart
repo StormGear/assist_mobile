@@ -1,6 +1,6 @@
 class DemoValues {
-  static final String userImage = "assets/images/user.jpg";
-  static final String postImage = "assets/images/leaf.jpg";
+  static final String userImage = "assets/images/categories/barber.jpg";
+  static final String postImage = "assets/images/categories/mason.jpg";
   static final String userName = "Shakleen Ishfar";
   static final String userEmail = "shakleenishfar@gmail.com";
   static final String postTime = "30 April, 2019";

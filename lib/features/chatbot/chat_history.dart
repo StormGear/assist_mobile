@@ -32,7 +32,7 @@ class ChatHistory extends StatelessWidget {
                     children: [
                       const Padding(
                         padding: EdgeInsets.only(top: 16.0, left: 16.0),
-                        child: (Text("Hi! You Can Ask Me",
+                        child: (Text("You Can Ask Me",
                             style: TextStyle(
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.bold,
