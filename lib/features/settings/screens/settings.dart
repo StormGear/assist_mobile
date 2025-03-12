@@ -88,7 +88,6 @@ class _SettingsState extends State<Settings> {
                     onTap: () {
                       Navigator.pushNamed(context, '/profile');
                     },
-                    leading: Icon(Icons.person),
                     title: Text(
                       'Profile',
                       style: Theme.of(context).textTheme.titleLarge,

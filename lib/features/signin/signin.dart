@@ -259,84 +259,84 @@ class _SignInState extends State<SignIn> {
                 ],
               ),
               const Gap(5),
-              SizedBox(
-                width: size.width * 0.8,
-                child: Row(children: [
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: size.height * 0.01,
-                          horizontal: size.width * 0.03),
-                      height: 1,
-                      color: Colors.grey,
-                    ),
-                  ),
-                  const Text('or'),
-                  Expanded(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(
-                          vertical: size.height * 0.01,
-                          horizontal: size.width * 0.03),
-                      height: 1,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ]),
-              ),
+              // SizedBox(
+              //   width: size.width * 0.8,
+              //   child: Row(children: [
+              //     Expanded(
+              //       child: Container(
+              //         margin: EdgeInsets.symmetric(
+              //             vertical: size.height * 0.01,
+              //             horizontal: size.width * 0.03),
+              //         height: 1,
+              //         color: Colors.grey,
+              //       ),
+              //     ),
+              //     const Text('or'),
+              //     Expanded(
+              //       child: Container(
+              //         margin: EdgeInsets.symmetric(
+              //             vertical: size.height * 0.01,
+              //             horizontal: size.width * 0.03),
+              //         height: 1,
+              //         color: Colors.grey,
+              //       ),
+              //     ),
+              //   ]),
+              // ),
+              // const Gap(20),
+              // SizedBox(
+              //   width: size.width * 0.8,
+              //   child: ElevatedButton(
+              //     onPressed: () {},
+              //     style: ButtonStyle(
+              //       elevation: WidgetStateProperty.all<double>(2),
+              //       foregroundColor: WidgetStateProperty.all<Color>(
+              //           Theme.of(context).primaryColor),
+              //       backgroundColor:
+              //           WidgetStateProperty.all<Color>(Colors.white),
+              //     ),
+              //     child: const Row(
+              //       textBaseline: TextBaseline.alphabetic,
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       crossAxisAlignment: CrossAxisAlignment.baseline,
+              //       children: [
+              //         Image(
+              //           image: AssetImage('assets/images/signin/google.png'),
+              //           height: 20,
+              //           fit: BoxFit.fill,
+              //         ),
+              //         Gap(8),
+              //         Text('Sign In with Google'),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               const Gap(20),
-              SizedBox(
-                width: size.width * 0.8,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ButtonStyle(
-                    elevation: WidgetStateProperty.all<double>(2),
-                    foregroundColor: WidgetStateProperty.all<Color>(
-                        Theme.of(context).primaryColor),
-                    backgroundColor:
-                        WidgetStateProperty.all<Color>(Colors.white),
-                  ),
-                  child: const Row(
-                    textBaseline: TextBaseline.alphabetic,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    children: [
-                      Image(
-                        image: AssetImage('assets/images/signin/google.png'),
-                        height: 20,
-                        fit: BoxFit.fill,
-                      ),
-                      Gap(8),
-                      Text('Sign In with Google'),
-                    ],
-                  ),
-                ),
-              ),
-              const Gap(20),
-              SizedBox(
-                width: size.width * 0.8,
-                child: ElevatedButton(
-                    onPressed: () {},
-                    style: ButtonStyle(
-                      elevation: WidgetStateProperty.all<double>(2),
-                      foregroundColor: WidgetStateProperty.all<Color>(
-                          Theme.of(context).primaryColor),
-                      backgroundColor:
-                          WidgetStateProperty.all<Color>(Colors.white),
-                    ),
-                    child: const Row(
-                      textBaseline: TextBaseline.alphabetic,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image(
-                          image: AssetImage('assets/images/signin/apple.png'),
-                          height: 20,
-                        ),
-                        Gap(8),
-                        Text('Sign In with Apple'),
-                      ],
-                    )),
-              ),
+              // SizedBox(
+              //   width: size.width * 0.8,
+              //   child: ElevatedButton(
+              //       onPressed: () {},
+              //       style: ButtonStyle(
+              //         elevation: WidgetStateProperty.all<double>(2),
+              //         foregroundColor: WidgetStateProperty.all<Color>(
+              //             Theme.of(context).primaryColor),
+              //         backgroundColor:
+              //             WidgetStateProperty.all<Color>(Colors.white),
+              //       ),
+              //       child: const Row(
+              //         textBaseline: TextBaseline.alphabetic,
+              //         mainAxisAlignment: MainAxisAlignment.center,
+              //         crossAxisAlignment: CrossAxisAlignment.start,
+              //         children: [
+              //           Image(
+              //             image: AssetImage('assets/images/signin/apple.png'),
+              //             height: 20,
+              //           ),
+              //           Gap(8),
+              //           Text('Sign In with Apple'),
+              //         ],
+              //       )),
+              // ),
               const Gap(20)
             ],
           ),

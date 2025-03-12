@@ -1,6 +1,8 @@
+import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/features/feed/demo_values.dart';
 import 'package:assist/features/post-page/post_page.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
 class PostCard extends StatelessWidget {
@@ -8,6 +10,10 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle titleTheme = Theme.of(context).textTheme.bodySmall!;
+    final TextStyle summaryTheme = Theme.of(context).textTheme.bodySmall!;
+    final String title = DemoValues.postTitle;
+    final String summary = DemoValues.postSummary;
     return GestureDetector(
       onTap: () {
         Get.to(
@@ -15,140 +21,61 @@ class PostCard extends StatelessWidget {
         );
       },
       child: AspectRatio(
-        aspectRatio: 6 / 3,
+        aspectRatio: 8 / 3,
         child: Card(
-          elevation: 2,
-          color: Colors.grey[200],
-          child: Container(
-            margin: const EdgeInsets.all(4.0),
-            padding: const EdgeInsets.all(4.0),
-            child: Column(
-              children: <Widget>[
-                _Post(),
-                Divider(color: Colors.grey),
-                _PostDetails(),
-              ],
-            ),
-          ),
-        ),
+            elevation: 2,
+            color: Colors.grey[100],
+            child: Row(children: <Widget>[
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.asset(
+                    DemoValues.postImage,
+                    height: double.infinity,
+                  )),
+              Expanded(
+                flex: 3,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 4.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.only(
+                            left: 8.0, top: 5.0, right: 5.0),
+                        child: Text(title,
+                            style: titleTheme.copyWith(
+                                fontWeight: FontWeight.bold, fontSize: 14)),
+                      ),
+                      Gap(5),
+                      Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text.rich(
+                            TextSpan(
+                              text: summary,
+                              style: summaryTheme,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          )),
+                      Gap(5),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on, color: primaryColor),
+                          Text(
+                            'Location',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                          const Spacer(),
+                        ],
+                      ),
+                      Gap(5),
+                    ],
+                  ),
+                ),
+              )
+            ])),
       ),
-    );
-  }
-}
-
-class _Post extends StatelessWidget {
-  const _Post();
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: 3,
-      child: Row(children: <Widget>[_PostImage(), _PostTitleAndSummary()]),
-    );
-  }
-}
-
-class _PostTitleAndSummary extends StatelessWidget {
-  const _PostTitleAndSummary();
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle titleTheme = Theme.of(context).textTheme.bodySmall!;
-    final TextStyle summaryTheme = Theme.of(context).textTheme.bodySmall!;
-    final String title = DemoValues.postTitle;
-    final String summary = DemoValues.postSummary;
-
-    return Expanded(
-      flex: 3,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 4.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Text(title, style: titleTheme),
-            SizedBox(height: 2.0),
-            Text(summary, style: summaryTheme),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _PostImage extends StatelessWidget {
-  const _PostImage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(flex: 2, child: Image.asset(DemoValues.postImage));
-  }
-}
-
-class _PostDetails extends StatelessWidget {
-  const _PostDetails();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        _UserImage(),
-        _UserNameAndEmail(),
-        _PostTimeStamp(),
-      ],
-    );
-  }
-}
-
-class _UserNameAndEmail extends StatelessWidget {
-  const _UserNameAndEmail();
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle nameTheme = Theme.of(context).textTheme.bodySmall!;
-    final TextStyle emailTheme = Theme.of(context).textTheme.bodySmall!;
-
-    return Expanded(
-      flex: 5,
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(DemoValues.userName, style: nameTheme),
-            SizedBox(height: 2.0),
-            Text(DemoValues.userEmail, style: emailTheme),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _UserImage extends StatelessWidget {
-  const _UserImage();
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      flex: 1,
-      child: CircleAvatar(
-        backgroundImage: AssetImage(DemoValues.userImage),
-      ),
-    );
-  }
-}
-
-class _PostTimeStamp extends StatelessWidget {
-  const _PostTimeStamp();
-
-  @override
-  Widget build(BuildContext context) {
-    final TextStyle timeTheme = Theme.of(context).textTheme.bodySmall!;
-    return Expanded(
-      flex: 2,
-      child: Text(DemoValues.postTime, style: timeTheme),
     );
   }
 }
