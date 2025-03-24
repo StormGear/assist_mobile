@@ -3,7 +3,6 @@ import 'package:assist/features/chatbot/chat_history.dart';
 import 'package:assist/features/home/screens/home.dart';
 import 'package:assist/features/postings/post.dart';
 import 'package:assist/features/settings/screens/settings.dart';
-// import 'package:assist/features/home/screens/home.dart';
 import 'package:cuberto_bottom_bar/cuberto_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -38,8 +37,8 @@ class _SetupState extends State<Setup> {
         tabColor: Colors.pink,
       ),
       const TabData(
-        iconData: Icons.smart_toy,
-        title: "AssistBot",
+        iconData: Icons.chat,
+        title: "Chat",
         tabColor: Colors.amber,
       ),
       const TabData(

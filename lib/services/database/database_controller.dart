@@ -113,7 +113,7 @@ class DatabaseController extends GetxController {
           isSuspend = content['is_suspended'];
           isDisable = content['is_disabled'];
         }
-        log('Email(user) exists in at least one document');
+        log('Email exists in at least one document');
         log({
           'email exists': userEmail == user['email'],
           'isDelete': isDelete,
@@ -133,7 +133,7 @@ class DatabaseController extends GetxController {
           return false; // Email exists in at least one document
         }
       } else {
-        log('Email(user) does not exist in any document');
+        log('Email does not exist in any document');
         return false;
       }
     } catch (e, s) {
@@ -255,7 +255,7 @@ class DatabaseController extends GetxController {
           isDisable = content['isDisable'];
           userId = doc.id;
         }
-        log('Email(user) exists in at least one document');
+        log('Email exists in at least one document');
         log({
           'email exists': email == emailtext,
           'isDelete': isDelete,

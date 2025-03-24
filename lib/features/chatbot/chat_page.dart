@@ -24,7 +24,7 @@ class ChatPage extends StatefulWidget {
 class _AssistViewState extends State<ChatPage> {
   final AssistMessageAuthor _userAuthor = AssistMessageAuthor(
       id: UserDetails.instance.getUserId,
-      name: UserDetails.instance.firstname.string);
+      name: UserDetails.instance.getFirstname);
   final AssistMessageAuthor _aiAuthor =
       const AssistMessageAuthor(id: 'assistbot', name: 'AssistBot');
 

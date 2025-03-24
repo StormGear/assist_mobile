@@ -37,6 +37,10 @@ class _ProfileState extends State<Profile> {
   void initState() {
     super.initState();
     fetchProfilePicture();
+    firstnameController.text = UserDetails.instance.getFirstname;
+    lastnameController.text = UserDetails.instance.getLastname;
+    emailController.text = UserDetails.instance.getEmail;
+    phoneController.text = UserDetails.instance.getPhone.substring(4);
   }
 
   @override
@@ -187,7 +191,8 @@ class _ProfileState extends State<Profile> {
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
-                        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(30.0)),
                       ),
                       child: TextFormField(
                         controller: firstnameController,
@@ -207,7 +212,8 @@ class _ProfileState extends State<Profile> {
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
-                        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(30.0)),
                       ),
                       child: TextFormField(
                         controller: lastnameController,
@@ -227,7 +233,8 @@ class _ProfileState extends State<Profile> {
                     Container(
                       decoration: BoxDecoration(
                         shape: BoxShape.rectangle,
-                        borderRadius: const BorderRadius.all(Radius.circular(30.0)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(30.0)),
                       ),
                       child: TextFormField(
                         controller: emailController,
@@ -266,8 +273,8 @@ class _ProfileState extends State<Profile> {
                           searchFieldCursorColor: primaryColor,
                           searchFieldInputDecoration: InputDecoration(
                             isDense: true, // Reduces the height
-                            contentPadding:
-                                EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            contentPadding: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 12),
                             hintText: 'Search a country',
                             hintStyle: TextStyle(color: primaryColor),
                             suffixIcon: Icon(Icons.search, color: primaryColor),
@@ -284,28 +291,33 @@ class _ProfileState extends State<Profile> {
                           contentPadding:
                               EdgeInsets.symmetric(vertical: 8, horizontal: 12),
                           label: const Text('Phone Number'),
-                          floatingLabelStyle: const TextStyle(color: primaryColor),
+                          floatingLabelStyle:
+                              const TextStyle(color: primaryColor),
                           border: OutlineInputBorder(
                               borderSide: const BorderSide(width: 1.0),
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
                               gapPadding: 2.0),
                           fillColor: Colors.white,
                           focusColor: primaryColor,
                           filled: true,
                           errorBorder: OutlineInputBorder(
-                              borderSide:
-                                  const BorderSide(width: 1.0, color: Colors.red),
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: const BorderSide(
+                                  width: 1.0, color: Colors.red),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
                               gapPadding: 2.0),
                           focusedBorder: OutlineInputBorder(
-                              borderSide:
-                                  const BorderSide(width: 1.0, color: primaryColor),
-                              borderRadius: BorderRadius.all(Radius.circular(8)),
+                              borderSide: const BorderSide(
+                                  width: 1.0, color: primaryColor),
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(8)),
                               gapPadding: 2.0)),
                       initialCountryCode: 'GH',
                       onChanged: (phone) {
                         setState(() {
-                          phoneNumber = phone.countryCode + phoneController.text;
+                          phoneNumber =
+                              phone.countryCode + phoneController.text;
                         });
                         log("Phone number is(onchanged) $phoneNumber");
                       },

@@ -2,8 +2,8 @@ import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ChatHistory extends StatelessWidget {
-  const ChatHistory({super.key});
+class AllMessages extends StatelessWidget {
+  const AllMessages({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -92,13 +92,13 @@ class ChatHistory extends StatelessWidget {
             ),
           ),
 
-          const Padding(
-            padding: EdgeInsets.only(top: 16.0, left: 16.0),
-            child: Text(
-              "Conversations",
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          ),
+          // const Padding(
+          //   padding: EdgeInsets.only(top: 16.0, left: 16.0),
+          //   child: Text(
+          //     "Recent Chats",
+          //     style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          //   ),
+          // ),
         ],
       ),
     );
