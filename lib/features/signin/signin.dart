@@ -1,11 +1,13 @@
 import 'dart:developer';
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/services/database/database_controller.dart';
+import 'package:assist/services/database/user_details_controller.dart';
 import 'package:assist/utils/function_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -200,6 +202,16 @@ class _SignInState extends State<SignIn> {
                                               loading = false;
                                             });
                                           }
+                                          ZIMKit()
+                                              .connectUser(
+                                            id: UserDetails.instance.getUserId,
+                                            name: UserDetails
+                                                .instance.getFirstname,
+                                          )
+                                              .then((_) {
+                                            log('User is now connected to Zego');
+                                          });
+
                                           if (value) {
                                             Get.toNamed('/home');
                                           } else {

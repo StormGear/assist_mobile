@@ -43,24 +43,26 @@ class _AccountValidationState extends State<AccountValidation> {
           child: Column(
             children: [
               Gap(30),
-              Text(
-                'Ghana Card Number',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10, right: 10),
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    fillColor: primaryColor.withAlpha(30),
-                    hintText: 'Enter your ID Number',
-                    hintStyle: Theme.of(context).textTheme.bodyLarge,
+              Row(
+                children: [
+                  Text(
+                    'Ghana Card Number',
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
+                ],
+              ),
+              Gap(10),
+              TextFormField(
+                decoration: InputDecoration(
+                  fillColor: primaryColor.withAlpha(30),
+                  hintText: 'Enter your ID Number',
+                  hintStyle: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
               Gap(20),
               SizedBox(
-                  width: size.width * 0.8,
-                  child:ElevatedButton(
+                width: size.width * 0.8,
+                child: ElevatedButton(
                   style: loading
                       ? Theme.of(context).elevatedButtonTheme.style?.copyWith(
                             backgroundColor:
@@ -94,7 +96,8 @@ class _AccountValidationState extends State<AccountValidation> {
                           ),
                         )
                       : const Text("Save Changes"),
-                ),),
+                ),
+              ),
               Gap(20),
               Padding(
                 padding: const EdgeInsets.only(left: 10, right: 10),
@@ -108,8 +111,8 @@ class _AccountValidationState extends State<AccountValidation> {
               ),
               Gap(50),
               SizedBox(
-                  width: size.width * 0.8,
-                  child: ElevatedButton(
+                width: size.width * 0.8,
+                child: ElevatedButton(
                   style: loading
                       ? Theme.of(context).elevatedButtonTheme.style?.copyWith(
                             backgroundColor:
@@ -144,7 +147,7 @@ class _AccountValidationState extends State<AccountValidation> {
                         )
                       : const Text("Save Changes"),
                 ),
-                  ),
+              ),
             ],
           ),
         )),

@@ -1,9 +1,11 @@
 import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/messages/all_chats.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChatHistory extends StatelessWidget {
-  const ChatHistory({super.key});
+  ChatHistory({super.key});
+  final ScrollController _scrollController = ScrollController();
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +93,6 @@ class ChatHistory extends StatelessWidget {
               ),
             ),
           ),
-
           const Padding(
             padding: EdgeInsets.only(top: 16.0, left: 16.0),
             child: Text(
@@ -99,6 +100,7 @@ class ChatHistory extends StatelessWidget {
               style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
             ),
           ),
+          AllMessages(scrollController: _scrollController),
         ],
       ),
     );

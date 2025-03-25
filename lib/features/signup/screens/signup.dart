@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/services/database/database_controller.dart';
+import 'package:assist/services/database/user_details_controller.dart';
 import 'package:assist/utils/function_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -340,6 +342,13 @@ class _SignUpState extends State<SignUp> {
                                           'firstname': firstnameController.text,
                                           'lastname': lastnameController.text,
                                           'profile_url': '',
+                                          'created_at': DateTime.now(),
+                                          'updated_at': DateTime.now(),
+                                          'fcm_token': '',
+                                          'is_deleted': false,
+                                          'is_disabled': false,
+                                          'is_suspended': false,
+                                          'notifications_enabled': true,
                                         };
                                         databaseController
                                             .createUserInDb(user)
@@ -349,7 +358,21 @@ class _SignUpState extends State<SignUp> {
                                               loading = false;
                                             });
                                           }
-                                          Get.toNamed('/home');
+
+                                          if (value.isNotEmpty) {
+                                            ZIMKit()
+                                                .connectUser(
+                                              id: UserDetails
+                                                  .instance.getUserId,
+                                              name: UserDetails
+                                                  .instance.getFirstname,
+                                            )
+                                                .then((_) {
+                                              log('User is now connected to Zego');
+                                            });
+                                            super.initState();
+                                            Get.toNamed('/home');
+                                          }
                                         });
                                       } catch (e) {
                                         log("Error: $e");

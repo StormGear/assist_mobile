@@ -3,6 +3,7 @@ import 'package:assist/features/chatbot/chat_history.dart';
 import 'package:assist/features/home/screens/home.dart';
 import 'package:assist/features/postings/post.dart';
 import 'package:assist/features/settings/screens/settings.dart';
+import 'package:assist/messages/chat_screen.dart';
 import 'package:cuberto_bottom_bar/cuberto_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -50,6 +51,45 @@ class _SetupState extends State<Setup> {
     currentTitle = tabs[0].title;
   }
 
+  void _startNewChat(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        final userIdController = TextEditingController();
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Text('Start New Chat'),
+          content: TextField(
+            controller: userIdController,
+            decoration: const InputDecoration(hintText: 'Enter User ID'),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ChatScreen(
+                      conversationId: userIdController.text,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Start Chat'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,6 +128,30 @@ class _SetupState extends State<Setup> {
                     fontWeight: FontWeight.bold),
               ),
               automaticallyImplyLeading: false,
+            ),
+          2 => AppBar(
+              backgroundColor: Colors.transparent,
+              title: Text(
+                "Chat",
+                style: TextStyle(
+                    color: primaryColor,
+                    fontSize:
+                        Theme.of(context).textTheme.headlineSmall!.fontSize,
+                    fontWeight: FontWeight.bold),
+              ),
+              automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                  iconSize: 30,
+                  icon: Icon(
+                    Icons.chat,
+                    color: primaryColor,
+                  ),
+                  onPressed: () {
+                    _startNewChat(context);
+                  },
+                ),
+              ],
             ),
           3 => AppBar(
               backgroundColor: Colors.transparent,

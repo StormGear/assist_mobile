@@ -11,8 +11,8 @@ class ReviewCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.grey[300],
-      surfaceTintColor: Colors.white,
+      color: Colors.white,
+      elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Column(

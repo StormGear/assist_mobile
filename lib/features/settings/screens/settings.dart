@@ -166,10 +166,12 @@ class _SettingsState extends State<Settings> {
                     subtitle: Text('Edit, delete or view your posts'),
                   ),
                   ListTile(
+                    onTap: () => Get.toNamed('/certification'),
                     title: Text(
-                      'Account',
+                      'Be Certified',
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
+                    subtitle: Text('Submit your skill certifications'),
                     trailing: Icon(Icons.arrow_forward_ios),
                   ),
                   ListTile(

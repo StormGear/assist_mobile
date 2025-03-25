@@ -29,32 +29,37 @@ class DatabaseController extends GetxController {
       // Check if there is an active connection
       if (await checkServerReachability()) {
         DocumentReference newDocRef = db.collection('users').doc();
-
-        documentId = await db.runTransaction((transaction) async {
-          log('transaction started');
-          transaction.set(newDocRef, user, SetOptions(merge: true));
-          log("New user document added with ID: ${newDocRef.id}");
-          newDocRef.get().then((value) {
-            Map<String, dynamic> newUser = value.data() as Map<String, dynamic>;
-            UserDetails.instance.setEmail = newUser['email'] ?? '';
-            UserDetails.instance.setFirstname = newUser['firstname'];
-            UserDetails.instance.setLastname = newUser['lastname'];
-            UserDetails.instance.setPhone = newUser['phone'];
-          });
-          return newDocRef.id;
-        }).then((value) {
-          log("Transaction successfully completed");
-          return value;
-        }).catchError((error) {
-          log("Failed to complete transaction: $error");
-          return '';
-        });
+        log("newDocRef: $newDocRef");
+        await db.collection('users').doc().set(user, SetOptions(merge: true));
+        documentId = newDocRef.id;
+        UserDetails.instance.setEmail = user['email'] ?? '';
+        UserDetails.instance.setFirstname = user['firstname'];
+        UserDetails.instance.setLastname = user['lastname'];
+        UserDetails.instance.setPhone = user['phone'];
         UserDetails.instance.setUserId = documentId;
+
+        // documentId = await db.runTransaction((transaction) async {
+        //   log('transaction started');
+        //   transaction.set(newDocRef, user, SetOptions(merge: true));
+        //   DocumentSnapshot<Object?> documentData = await newDocRef.get();
+
+        //   log('document data: ${documentData.data()}');
+        //   Map<String, dynamic> newUser =
+        //       documentData.data() as Map<String, dynamic>;
+        //   UserDetails.instance.setEmail = newUser['email'] ?? '';
+        //   UserDetails.instance.setFirstname = newUser['firstname'];
+        //   UserDetails.instance.setLastname = newUser['lastname'];
+        //   UserDetails.instance.setPhone = newUser['phone'];
+
+        //   return newDocRef.id;
+        // });
+        // UserDetails.instance.setUserId = documentId;
+        log('Document ID: $documentId');
         return documentId;
       } else {
         Fluttertoast.showToast(
             msg: "Error: No internet connection",
-            toastLength: Toast.LENGTH_SHORT,
+            toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.CENTER,
             timeInSecForIosWeb: 1,
             backgroundColor: primaryColor,

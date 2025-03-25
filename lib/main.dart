@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 
 String supabaseKey = String.fromEnvironment('SUPABASE_KEY');
 
@@ -17,7 +18,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await dotenv.load(fileName: ".env");
+  ZIMKit().init(
+    appID: int.parse(dotenv.env['ZEGOCLOUD_APP_ID'] ?? "0"), // your appid
+    appSign: dotenv.env['ZEGOCLOUD_APP_SIGN'] ?? '', // your appSign
+  );
   DependencyInjection.setupDependencies();
   runApp(Assist());
 }

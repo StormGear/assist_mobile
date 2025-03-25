@@ -1,5 +1,6 @@
 import 'package:assist/features/account-validation/account_validate.dart';
 import 'package:assist/features/business-details/business_details.dart';
+import 'package:assist/features/certifications/ceritify.dart';
 import 'package:assist/features/change-password/change_password.dart';
 import 'package:assist/features/chatbot/chat_page.dart';
 import 'package:assist/features/feed/service_feed.dart';
@@ -36,6 +37,7 @@ final List<GetPage<dynamic>> appRoutes = [
   GetPage(name: '/business-details', page: () => const BusinessDetails()),
   GetPage(name: '/chat', page: () => ChatPage()),
   GetPage(name: '/feed', page: () => Feed()),
+  GetPage(name: '/certification', page: () => const GetCertified()),
   GetPage(
       name: '/categories',
       page: () => const Categories(),
