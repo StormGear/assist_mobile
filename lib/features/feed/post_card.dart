@@ -1,23 +1,43 @@
+import 'dart:developer';
+
 import 'package:assist/common_widgets/constants/colors.dart';
-import 'package:assist/features/feed/demo_values.dart';
 import 'package:assist/features/post-page/post_page.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class PostCard extends StatelessWidget {
-  const PostCard({super.key});
+class PostCard extends StatefulWidget {
+  const PostCard({super.key, required this.postData});
+
+  final Map<String, dynamic> postData;
+
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  @override
+  void initState() {
+    super.initState();
+    log('PostCard initialized with data: ${widget.postData}');
+  }
 
   @override
   Widget build(BuildContext context) {
     final TextStyle titleTheme = Theme.of(context).textTheme.bodySmall!;
     final TextStyle summaryTheme = Theme.of(context).textTheme.bodySmall!;
-    final String title = DemoValues.postTitle;
-    final String summary = DemoValues.postSummary;
+    // final String title = DemoValues.postTitle;
+    // final String summary = DemoValues.postSummary;
+    final String title = widget.postData['business_name'] ?? 'Post Title';
+    final String summary = widget.postData['description'] ?? 'Post Summary';
+    final String imageUrl =
+        widget.postData['images']?[0] ?? "https://placehold.co/600x400.png";
+    final String location = widget.postData['region'] ?? 'Location';
+    final String rating = widget.postData['rating'] ?? '5';
     return GestureDetector(
       onTap: () {
         Get.to(
-          () => PostPage(),
+          () => PostPage(postData: widget.postData),
         );
       },
       child: AspectRatio(
@@ -38,7 +58,9 @@ class PostCard extends StatelessWidget {
                     margin: const EdgeInsets.all(8.0),
                     child: CircleAvatar(
                       radius: 30,
-                      backgroundImage: AssetImage(DemoValues.postImage),
+                      backgroundImage: NetworkImage(
+                        imageUrl,
+                      ),
                     ),
                   ),
 
@@ -63,7 +85,7 @@ class PostCard extends StatelessWidget {
                               Icon(Icons.location_on,
                                   color: primaryColor, size: 18),
                               Text(
-                                'Location',
+                                location,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],
@@ -75,7 +97,7 @@ class PostCard extends StatelessWidget {
                               Icon(Icons.star, color: Colors.amber),
                               Gap(5),
                               Text(
-                                '5',
+                                rating,
                                 style: Theme.of(context).textTheme.bodyMedium,
                               ),
                             ],

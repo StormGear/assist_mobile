@@ -475,7 +475,7 @@ class _PostProductState extends State<PostProduct> {
                           'created_at': DateTime.now(),
                         };
                         String serviceDocumentId =
-                            await PostController.instance.addServicePost(post);
+                            await PostController.instance.addProductPost(post);
 
                         if (serviceDocumentId.isNotEmpty) {
                           await StorageController.instance
@@ -483,11 +483,22 @@ class _PostProductState extends State<PostProduct> {
                                   serviceDocumentId, _selectedImages);
                         }
 
+                        Fluttertoast.showToast(
+                            msg: "Product posted successfully!",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: primaryColor,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+
                         if (mounted) {
                           setState(() {
                             loading = false;
                           });
                         }
+
+                        Get.back();
                       } catch (e) {
                         log("Error: $e");
                         if (mounted) {

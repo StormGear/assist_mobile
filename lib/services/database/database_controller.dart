@@ -401,4 +401,215 @@ class DatabaseController extends GetxController {
       return null;
     }
   }
+
+  /// Get Product Posts from firestore using Pagination
+  /// Fetch first 10 documents
+  Future<void> getProductPosts(String category) async {
+    // Specify the collection
+    CollectionReference productPosts = db.collection('product_posts');
+
+    try {
+      log('category: $category', name: 'getProductPosts');
+      Query<Object?> query = productPosts
+          .where('category', isEqualTo: category)
+          .orderBy('created_at', descending: true)
+          .limit(10); // Limits to 10 documents
+      await retrieveProductPosts(query);
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+  late QuerySnapshot collectionStateProductPosts;
+  RxList<dynamic> posts = [].obs;
+
+  /// Clear posts list before populating it with new posts for different page
+  void clearPosts() {
+    posts.clear();
+  }
+
+  Future<void> retrieveProductPosts(Query query) async {
+    try {
+      var collection = await query.get();
+      collectionStateProductPosts = collection;
+
+      for (var doc in collection.docs) {
+        Map<String, dynamic> content = doc.data() as Map<String, dynamic>;
+
+        /// TODO: Create a list once and progressively add up to it
+        posts.add(content);
+      }
+
+      log('product posts data retrieved');
+      log('product posts: $posts');
+    } catch (e) {
+      switch (e.toString()) {
+        case 'Bad state: No element':
+          log('No products found!', name: 'retrieveProductPosts');
+          Fluttertoast.showToast(
+              msg: 'No Service Posts Yet',
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: primaryColor,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          return;
+        default:
+          log("Error retrieving booking data $e", name: 'retrieveServicePosts');
+          Fluttertoast.showToast(
+              msg: 'Error retrieving posts ${e.toString()}',
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: primaryColor,
+              textColor: Colors.white,
+              fontSize: 16.0);
+
+          return;
+      }
+    }
+  }
+
+  // Fetch next 5 documents starting from the last document fetched earlier
+  Future<void> getProductsPostsNext() async {
+    // Specify the collection
+    CollectionReference bookings = db.collection('product_posts');
+    // Get the last visible document
+    var lastVisible =
+        collectionStateProductPosts.docs[collectionState.docs.length - 1];
+    debugPrint(
+        'listDocument lenth: ${collectionStateProductPosts.size} last: $lastVisible');
+
+    var collection = bookings
+        .orderBy('createdAt', descending: true)
+        .startAfterDocument(lastVisible)
+        .limit(5);
+
+    retrieveServicePosts(collection);
+  }
+
+  /// Get Service Posts from firestore using Pagination
+  /// Fetch first 10 documents
+  Future<void> getServicePosts(String category) async {
+    // Specify the collection
+    CollectionReference servicePosts = db.collection('service_posts');
+
+    try {
+      log('category: $category', name: 'getServicePosts');
+      Query<Object?> query = servicePosts
+          .where('category', isEqualTo: category)
+          .orderBy('created_at', descending: true)
+          .limit(10); // Limits to 10 documents
+      await retrieveServicePosts(query);
+    } catch (e) {
+      debugPrint('Error: $e');
+    }
+  }
+
+  late QuerySnapshot collectionState;
+  Future<void> retrieveServicePosts(Query query) async {
+    try {
+      var collection = await query.get();
+      collectionState = collection;
+
+      for (var doc in collection.docs) {
+        Map<String, dynamic> content = doc.data() as Map<String, dynamic>;
+
+        /// TODO: Create a list once and progressively add up to it
+        posts.add(content);
+      }
+
+      log('Services posts data retrieved');
+      log('service posts: $posts');
+    } catch (e) {
+      switch (e.toString()) {
+        case 'Bad state: No element':
+          log('No services found', name: 'retrieveServicePosts');
+          Fluttertoast.showToast(
+              msg: 'No Service Posts Yet',
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: primaryColor,
+              textColor: Colors.white,
+              fontSize: 16.0);
+          return;
+        default:
+          log("Error retrieving booking data $e", name: 'retrieveServicePosts');
+          Fluttertoast.showToast(
+              msg: 'Error retrieving posts ${e.toString()}',
+              toastLength: Toast.LENGTH_LONG,
+              gravity: ToastGravity.CENTER,
+              timeInSecForIosWeb: 1,
+              backgroundColor: primaryColor,
+              textColor: Colors.white,
+              fontSize: 16.0);
+
+          return;
+      }
+    }
+  }
+
+  // Fetch next 5 documents starting from the last document fetched earlier
+  Future<void> getServicePostsNext() async {
+    // Specify the collection
+    CollectionReference bookings = db.collection('bookings');
+    // Get the last visible document
+    var lastVisible = collectionState.docs[collectionState.docs.length - 1];
+    debugPrint(
+        'listDocument lenth: ${collectionState.size} last: $lastVisible');
+
+    var collection = bookings
+        .orderBy('createdAt', descending: true)
+        .startAfterDocument(lastVisible)
+        .limit(5);
+
+    retrieveServicePosts(collection);
+  }
+
+  /// Get Reviews of an artisan using userId of user
+  Future<List<Map<dynamic, dynamic>>> getReviewsWithID(
+      String revieweeId) async {
+    List<Map<dynamic, dynamic>> allReviews = [];
+    if (!await checkServerReachability()) {
+      Fluttertoast.showToast(
+          msg: 'No internet connection',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      log('Error: No internet connection');
+      return [];
+    }
+    // Specify the collection
+    CollectionReference reviews = db.collection('reviews');
+    try {
+      QuerySnapshot<Object?> query = await reviews
+          .where('reviewee_id', isEqualTo: revieweeId)
+          .orderBy('created_at', descending: true)
+          .get();
+
+      for (var doc in query.docs) {
+        Map<String, dynamic> content = doc.data() as Map<String, dynamic>;
+        allReviews.add(content);
+      }
+      log('User data retrieved');
+      log('allReviews: $allReviews');
+      return allReviews;
+    } catch (e) {
+      log("User id($revieweeId) does not exist $e", name: 'getReviewsWithID');
+      Fluttertoast.showToast(
+          msg: 'No user with this id found ${e.toString()}',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: primaryColor,
+          textColor: Colors.white,
+          fontSize: 16.0);
+      return [];
+    }
+  }
 }

@@ -167,7 +167,7 @@ class Category extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Get.to(() => Feed());
+        Get.to(() => Feed(category: category.feed));
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,

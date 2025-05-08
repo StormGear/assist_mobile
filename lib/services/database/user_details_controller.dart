@@ -14,6 +14,7 @@ class UserDetails extends GetxController {
   Rx<String> userId = "".obs;
   Rx<String> referredBy = "".obs;
   Rx<String> referral = "".obs;
+  Rx<String> profileUrl = "".obs;
 
   String get getFirstname => firstname.value;
   String get getLastname => lastname.value;
@@ -22,6 +23,7 @@ class UserDetails extends GetxController {
   String get getUserId => userId.value;
   String get getReferredBy => referredBy.value;
   String get getReferral => referral.value;
+  String get getProfileUrl => profileUrl.value;
 
 
   set setFirstname(String value) => firstname.value = value;
@@ -31,6 +33,7 @@ class UserDetails extends GetxController {
   set setUserId(String value) => userId.value = value;
   set setReferredBy(String value) => referredBy.value = value;
   set setReferral(String value) => referral.value = value;
+  set setProfileUrl(String value) => profileUrl.value = value;
 
   // Create a StreamController
   final StreamController<String?> userChangesController =

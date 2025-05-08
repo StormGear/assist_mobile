@@ -5,6 +5,7 @@ import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/services/database/database_controller.dart';
 import 'package:assist/services/database/user_details_controller.dart';
 import 'package:assist/services/storage/storage_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -59,6 +60,25 @@ Future<File?> compressImage(File file) async {
   }
 
   return null;
+}
+
+dynamic convertFirestoreObjects(dynamic value) {
+  if (value is Timestamp) {
+    // Convert Timestamp to ISO 8601 string
+    return value.toDate().toIso8601String();
+  } else if (value is GeoPoint) {
+    // Convert GeoPoint to a map with latitude and longitude
+    return {'latitude': value.latitude, 'longitude': value.longitude};
+  } else if (value is Map) {
+    value.forEach((key, nestedValue) {
+      value[key] = convertFirestoreObjects(nestedValue);
+    });
+  } else if (value is List) {
+    for (int i = 0; i < value.length; i++) {
+      value[i] = convertFirestoreObjects(value[i]);
+    }
+  }
+  return value;
 }
 
 Future<bool> checkServerReachability() async {

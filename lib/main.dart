@@ -18,7 +18,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  ZIMKit().init(
+  await ZIMKit().init(
     appID: int.parse(dotenv.env['ZEGOCLOUD_APP_ID'] ?? "0"), // your appid
     appSign: dotenv.env['ZEGOCLOUD_APP_SIGN'] ?? '', // your appSign
   );

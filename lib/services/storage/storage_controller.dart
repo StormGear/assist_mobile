@@ -152,14 +152,13 @@ class StorageController extends GetxController {
             };
             // Update the photoUrl
             await FirebaseFirestore.instance
-                .collection('service_posts')
+                .collection('product_posts')
                 .doc(documentId)
                 .update(uploadImage)
                 .then((value) => log('service imaged added to db.'));
-            log(" service image url: $imageURL");
+            log("product image url: $imageURL");
           } catch (e) {
             log("Error message: ${e.toString()}");
-            rethrow;
           }
         });
       }

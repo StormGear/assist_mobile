@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/features/feed/service_feed.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:gap/gap.dart';
@@ -52,7 +53,7 @@ class _SearchState extends State<Search> {
   }
 
   Future<void> typesenseSearch(String query) async {
-    final host = "velwu7fhs6c8bajqp-1.a1.typesense.net",
+    final host = "krsi183ed0jy4zgqp-1.a1.typesense.net",
         protocol = ts.Protocol.https;
     String? typesenseApiKey = dotenv.env['TYPESENSE_SEARCH_KEY'];
     final config = ts.Configuration(
@@ -260,6 +261,8 @@ class _SearchState extends State<Search> {
                                   log('Tapped on ${searchList[index]['name']}');
 
                                   /// TODO: Implement navigation to the category page
+                                  Get.to(() => Feed(
+                                      category: searchList[index]['name']));
                                 },
                                 child: Container(
                                   width: size.width,

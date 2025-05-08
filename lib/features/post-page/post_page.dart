@@ -2,19 +2,70 @@ import 'dart:developer';
 
 import 'package:assist/common_widgets/constants/colors.dart';
 import 'package:assist/features/post-page/carousel.dart';
+import 'package:assist/messages/chat_screen.dart';
 import 'package:assist/reviews/review_card.dart';
 import 'package:assist/reviews/review_model.dart';
 import 'package:assist/reviews/reviews_page.dart';
+import 'package:assist/services/database/database_controller.dart';
+import 'package:assist/utils/function_utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:gap/gap.dart';
 import 'package:get/get.dart';
 
-class PostPage extends StatelessWidget {
+class PostPage extends StatefulWidget {
   const PostPage({
     super.key,
+    required this.postData,
   });
+
+  final Map<String, dynamic> postData;
+
+  @override
+  State<PostPage> createState() => _PostPageState();
+}
+
+class _PostPageState extends State<PostPage> {
+  Map<dynamic, dynamic> userDetails = {};
+  List<dynamic> reviews = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getUserReviews();
+    _getUserDetails();
+  }
+
+  Future<void> _getUserDetails() async {
+    try {
+      userDetails = await DatabaseController.instance
+          .retrieveUserDataWithID(widget.postData['user_id'] ?? 'user_id');
+      log('User details fetched: $userDetails');
+      if (mounted) {
+        setState(() {
+          userDetails = userDetails;
+        });
+      }
+    } catch (e) {
+      log('Error fetching user details: $e');
+    }
+  }
+
+  Future<void> _getUserReviews() async {
+    try {
+      reviews = await DatabaseController.instance
+          .getReviewsWithID(widget.postData['user_id'] ?? 'user_id');
+      if (mounted) {
+        setState(() {
+          reviews = reviews;
+        });
+      }
+      log('User reviews fetched: $reviews');
+    } catch (e) {
+      log('Error fetching user reviews: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +73,8 @@ class PostPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Category Selected"),
+        title: Text(widget.postData['category'] ?? 'Category'),
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => Navigator.pop(context),
@@ -34,7 +86,7 @@ class PostPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ImageCarousel(),
+            ImageCarousel(imgList: widget.postData['images'] ?? []),
             Gap(10),
             Container(
               padding: EdgeInsets.all(10),
@@ -49,7 +101,7 @@ class PostPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
-                      "Business Name",
+                      widget.postData['business_name'] ?? 'Business Name',
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -60,7 +112,7 @@ class PostPage extends StatelessWidget {
                     children: [
                       Icon(Icons.location_on, color: primaryColor),
                       Text(
-                        'Location',
+                        widget.postData['region'] ?? 'Location',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       const Spacer(),
@@ -82,7 +134,8 @@ class PostPage extends StatelessWidget {
                                 onPressed: () async {
                                   try {
                                     await FlutterPhoneDirectCaller.callNumber(
-                                        '+233538966851');
+                                        widget.postData['phone'] ??
+                                            '+233503230804');
                                   } catch (e) {
                                     log(e.toString());
                                   }
@@ -112,8 +165,16 @@ class PostPage extends StatelessWidget {
                             child: IconButton(
                                 onPressed: () async {
                                   try {
-                                    await FlutterPhoneDirectCaller.callNumber(
-                                        '+233538966851');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChatScreen(
+                                          conversationId:
+                                              widget.postData['user_id'] ??
+                                                  'user_id',
+                                        ),
+                                      ),
+                                    );
                                   } catch (e) {
                                     log(e.toString());
                                   }
@@ -154,14 +215,9 @@ class PostPage extends StatelessWidget {
                   Gap(10),
                   Padding(
                     padding: const EdgeInsets.all(15.0),
-                    child: _buildKeyservices(context, items: [
-                      'Service 1',
-                      'Service 2',
-                      'Service 3',
-                      'Service 4',
-                      'Service 5',
-                      'Service 6',
-                    ]),
+                    child: _buildKeyservices(context,
+                        items: widget.postData['keywords'] ??
+                            ['Keyword 1', 'Keyword 2']),
                   ),
                 ],
               ),
@@ -188,7 +244,8 @@ class PostPage extends StatelessWidget {
                     ),
                     Gap(10),
                     Text(
-                      'Description of the business',
+                      widget.postData['description'] ??
+                          'Description of the business',
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
@@ -223,18 +280,33 @@ class PostPage extends StatelessWidget {
                         CircleAvatar(
                             radius: 30,
                             backgroundColor: Colors.grey,
-                            backgroundImage: CachedNetworkImageProvider(
-                                'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80')),
+                            backgroundImage: userDetails['profile_url'] !=
+                                        null ||
+                                    userDetails['profile_url'] != ''
+                                ? CachedNetworkImageProvider(
+                                    userDetails['profile_url'],
+                                  )
+                                : AssetImage("assets/images/logo/favicon.png")),
                         Gap(15),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Name of person'),
-                            Gap(5),
                             Text(
-                                computeDateDifference(
-                                    DateTime.parse('2025-01-01')),
-                                style: Theme.of(context).textTheme.bodySmall),
+                                "${userDetails['firstname']} ${userDetails['lastname']}",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge!
+                                    .copyWith(fontWeight: FontWeight.bold)),
+                            Gap(5),
+                            userDetails['created_at'] != null
+                                ? Text(
+                                    computeDateDifference(
+                                      DateTime.parse(convertFirestoreObjects(
+                                          userDetails['created_at'])),
+                                    ),
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall)
+                                : Container(),
                           ],
                         )
                       ],
@@ -259,7 +331,7 @@ class PostPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Reviews & Ratings (0)",
+                          "Reviews & Ratings (${reviews.length})",
                           style: Theme.of(context)
                               .textTheme
                               .bodyLarge!
@@ -267,7 +339,10 @@ class PostPage extends StatelessWidget {
                         ),
                         TextButton(
                             onPressed: () {
-                              Get.to(() => ReviewsPage());
+                              Get.to(() => ReviewsPage(
+                                    revieweeId: userDetails['user_id'],
+                                    reviews: reviews,
+                                  ));
                             },
                             child: Text(
                               'View All',
@@ -278,15 +353,16 @@ class PostPage extends StatelessWidget {
                     Gap(10),
                     Column(
                       children: [
-                        ReviewCard(
-                            review: ReviewModel(
-                          avatarUrl:
-                              'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
-                          author: 'Name of person',
-                          rating: 3,
-                          date: DateTime.parse('2025-01-01'),
-                          comment: 'Review message',
-                        )),
+                        if (reviews.isNotEmpty)
+                          ReviewCard(
+                              review: ReviewModel(
+                            avatarUrl: userDetails['profile_url'] ?? '',
+                            author: userDetails['firstname'] ?? 'User',
+                            rating: reviews[0]['rating'] ?? 0,
+                            date: DateTime.parse(convertFirestoreObjects(
+                                reviews[0]['created_at'])),
+                            comment: 'Review message',
+                          )),
                         Gap(10),
                         SizedBox(
                           width: size.width * 0.8,
@@ -294,7 +370,9 @@ class PostPage extends StatelessWidget {
                             onPressed: () {
                               showDialog(
                                 context: context,
-                                builder: (context) => const WriteReviewDialog(),
+                                builder: (context) => WriteReviewDialog(
+                                  revieweeId: userDetails['user_id'],
+                                ),
                               );
                             },
                             child: const Text("Write a Review"),
@@ -314,7 +392,7 @@ class PostPage extends StatelessWidget {
 }
 
 Widget _buildKeyservices(BuildContext context,
-    {List<String> items = const []}) {
+    {List<dynamic> items = const []}) {
   return GridView.builder(
     shrinkWrap: true,
     physics: NeverScrollableScrollPhysics(),

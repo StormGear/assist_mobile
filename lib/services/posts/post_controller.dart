@@ -96,7 +96,11 @@ class PostController extends GetxController {
           log('transaction started');
           transaction.set(newDocRef, post, SetOptions(merge: true));
           log("New product post document added with ID: ${newDocRef.id}");
-          newDocRef.get().then((value) {});
+          newDocRef.get().then((value) {
+            log('New product post document data: ${value.data()}');
+          }).catchError((error) {
+            log('Error getting new product post document: $error');
+          });
           return newDocRef.id;
         }).then((value) {
           log("Transaction successfully completed");

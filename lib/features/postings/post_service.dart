@@ -466,11 +466,22 @@ class _PostServiceState extends State<PostService> {
                                   serviceDocumentId, _selectedImages);
                         }
 
+                        Fluttertoast.showToast(
+                            msg: "Service posted successfully!",
+                            toastLength: Toast.LENGTH_LONG,
+                            gravity: ToastGravity.CENTER,
+                            timeInSecForIosWeb: 1,
+                            backgroundColor: primaryColor,
+                            textColor: Colors.white,
+                            fontSize: 16.0);
+
                         if (mounted) {
                           setState(() {
                             loading = false;
                           });
                         }
+
+                        Get.back();
                       } catch (e) {
                         log("Error: $e");
                         if (mounted) {

@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:assist/common_widgets/constants/colors.dart';
-import 'package:assist/reviews/demo_values.dart';
+// import 'package:assist/reviews/demo_values.dart';
 import 'package:assist/reviews/review_card.dart';
 import 'package:assist/services/database/database_controller.dart';
 import 'package:assist/services/database/user_details_controller.dart';
@@ -12,7 +12,9 @@ import 'package:gap/gap.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class ReviewsPage extends StatefulWidget {
-  const ReviewsPage({super.key});
+  const ReviewsPage({super.key, required this.reviews, this.revieweeId});
+  final String? revieweeId;
+  final List reviews;
 
   @override
   State<ReviewsPage> createState() => _ReviewsPageState();
@@ -39,7 +41,8 @@ class _ReviewsPageState extends State<ReviewsPage> {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => const WriteReviewDialog(),
+                  builder: (context) =>
+                      WriteReviewDialog(revieweeId: widget.revieweeId),
                 );
               },
               child: const Text("Write a Review"),
@@ -49,12 +52,12 @@ class _ReviewsPageState extends State<ReviewsPage> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: demoReviews.length,
+              itemCount: widget.reviews.length,
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: ReviewCard(
-                    review: demoReviews[index],
+                    review: widget.reviews[index],
                   ),
                 );
               },
@@ -68,7 +71,8 @@ class _ReviewsPageState extends State<ReviewsPage> {
 
 /// Create a dialog to write a review and rate the service
 class WriteReviewDialog extends StatefulWidget {
-  const WriteReviewDialog({super.key});
+  const WriteReviewDialog({super.key, this.revieweeId});
+  final String? revieweeId;
 
   @override
   State<WriteReviewDialog> createState() => _WriteReviewDialogState();
@@ -156,8 +160,8 @@ class _WriteReviewDialogState extends State<WriteReviewDialog> {
               log("Rating: $rating");
               var review = {
                 "rating": rating,
-                "reviewer_id": "reviewer_id",
-                "reviewee_id": UserDetails.instance.getUserId,
+                "reviewer_id": UserDetails.instance.getUserId,
+                "reviewee_id": widget.revieweeId,
                 "review": _reviewController,
                 "created_at": DateTime.now()
               };

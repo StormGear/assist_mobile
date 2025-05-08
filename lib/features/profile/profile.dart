@@ -9,9 +9,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
+import 'package:get/get.dart';
 import 'package:intl_phone_field/country_picker_dialog.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:intl_phone_field/phone_number.dart';
+import 'package:shimmer/shimmer.dart';
 // import 'package:shimmer/shimmer.dart';
 
 class Profile extends StatefulWidget {
@@ -111,19 +113,26 @@ class _ProfileState extends State<Profile> {
                             minRadius: 70,
                             backgroundImage: FileImage(selectedImage!),
                           )
-                        : imageUrl != null
-                            ? imageUrl!.isNotEmpty
-                                ? CachedNetworkImage(
-                                    imageUrl: imageUrl!,
+                        : UserDetails.instance.getProfileUrl.isNotEmpty
+                            ? Obx(
+                                () => CachedNetworkImage(
+                                    imageUrl:
+                                        UserDetails.instance.getProfileUrl,
                                     imageBuilder: (context, imageProvider) =>
                                         CircleAvatar(
                                           minRadius: 70,
                                           backgroundImage: imageProvider,
                                         ),
                                     placeholder: (context, url) =>
-                                        const CircularProgressIndicator(
-                                          color: primaryColor,
-                                        ),
+                                        Shimmer.fromColors(
+                                            baseColor: Colors.grey.shade300,
+                                            highlightColor:
+                                                Colors.grey.shade100,
+                                            child: const CircleAvatar(
+                                              minRadius: 70,
+                                              backgroundImage: AssetImage(
+                                                  'assets/images/profile/avatar.png'),
+                                            )),
                                     errorWidget: (context, url, error) {
                                       log(error.toString());
                                       return const CircleAvatar(
@@ -131,15 +140,11 @@ class _ProfileState extends State<Profile> {
                                         backgroundColor: primaryColor,
                                         child: Icon(
                                           Icons.error,
-                                          color: Colors.white,
+                                          color: Colors.red,
                                         ),
                                       );
-                                    })
-                                : const CircleAvatar(
-                                    minRadius: 70,
-                                    backgroundImage: AssetImage(
-                                        'assets/images/profile/avatar.png'),
-                                  )
+                                    }),
+                              )
                             : const CircleAvatar(
                                 minRadius: 70,
                                 backgroundImage: AssetImage(

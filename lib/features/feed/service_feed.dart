@@ -1,12 +1,17 @@
 import 'package:assist/common_widgets/constants/colors.dart';
+import 'package:assist/common_widgets/feed_shimmer.dart';
 import 'package:assist/features/feed/post_card.dart';
+import 'package:assist/services/database/database_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 class Feed extends StatefulWidget {
   const Feed({
     super.key,
+    this.category,
   });
+
+  final String? category;
 
   @override
   State<Feed> createState() => _FeedState();
@@ -15,6 +20,32 @@ class Feed extends StatefulWidget {
 class _FeedState extends State<Feed> {
   bool _filterByName = false;
   bool _filterByRating = false;
+  bool loading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // call the function to fetch posts here
+    // DatabaseController.instance.getServicePosts(widget.category ?? 'Barbering');
+    _fetchServicePosts();
+    // DatabaseController.instance.getProductPosts(widget.category ?? 'Barbering');
+    // DatabaseController.instance
+    //     .getReviewsWithID(UserDetails.instance.getUserId);
+  }
+
+  Future<void> _fetchServicePosts() async {
+    setState(() {
+      loading = true;
+    });
+    // first clear previous posts
+    DatabaseController.instance.posts.clear();
+    // then fetch new posts
+    await DatabaseController.instance
+        .getServicePosts(widget.category ?? 'Barbering');
+    setState(() {
+      loading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,26 +104,30 @@ class _FeedState extends State<Feed> {
               ],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 5,
-              itemBuilder: (BuildContext context, int index) {
-                return Container(
-                  margin:
-                      const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
-                  child: PostCard(),
-                );
-              },
+          if (loading) FeedLoading(),
+          if (!loading && DatabaseController.instance.posts.isEmpty)
+            const Center(
+              child: Text("No service posts available."),
             ),
-          ),
+          if (!loading && DatabaseController.instance.posts.isNotEmpty)
+            Expanded(
+              child: ListView.builder(
+                itemCount: DatabaseController.instance.posts.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    margin:
+                        const EdgeInsets.only(top: 8.0, left: 8.0, right: 8.0),
+                    child: PostCard(
+                        postData: DatabaseController.instance.posts[index]),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );
   }
 }
-
-// A bottomsheet for filtering the feed
-// void showFilterBottomSheet(BuildContext context) {}
 
 class FilterBottomSheet extends StatefulWidget {
   final bool filterByName;
