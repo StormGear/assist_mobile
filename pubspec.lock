@@ -1374,10 +1374,10 @@ packages:
     dependency: transitive
     description:
       name: zego_zim
-      sha256: "9dd129f8823e69a6b754a829f521bbd2b49209cd0a63041a8ba5a2333fc5ed90"
+      sha256: "7149128e7666e568ba9f1d1dfd154f404e889995962c46f35c11a26562dde397"
       url: "https://pub.dev"
     source: hosted
-    version: "2.17.1+1"
+    version: "2.20.0+1"
   zego_zim_audio:
     dependency: transitive
     description:
@@ -1390,10 +1390,10 @@ packages:
     dependency: "direct main"
     description:
       name: zego_zimkit
-      sha256: "521e6b25e68a094a5441fa0679f81ca67c690f875f67100743cb57798f9132b2"
+      sha256: "55da72f0a22b45202494b42b1540fc92b030be956c7d9dc19ff6a123904790d4"
       url: "https://pub.dev"
     source: hosted
-    version: "1.18.14"
+    version: "1.18.16"
   zego_zpns:
     dependency: transitive
     description:

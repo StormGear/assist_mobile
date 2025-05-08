@@ -6,8 +6,10 @@ import 'package:assist/services/database/user_details_controller.dart';
 import 'package:assist/utils/function_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:zego_zimkit/zego_zimkit.dart';
 // import 'package:http/http.dart' as http;
 
 class DatabaseController extends GetxController {
@@ -79,6 +81,27 @@ class DatabaseController extends GetxController {
           fontSize: 16.0);
       log('Error creating user in db: ${e.toString()}');
       return '';
+    }
+  }
+
+  Future<void> zegoLogin(String username) async {
+    try {
+      ZIMLoginConfig loginConfig = ZIMLoginConfig();
+      // The user's nickname, leave it blank if you don't want to modify the user's nickname
+      loginConfig.userName = username;
+      // If using Token authentication, please fill in this parameter; otherwise, leave it blank
+      loginConfig.token = '';
+      // Whether this login is an offline login, please refer to the offline login related documents for details
+      loginConfig.isOfflineLogin = false;
+      await ZIM.getInstance()?.login('zego', loginConfig);
+      // Login successful, write the business logic for successful login
+    } on PlatformException catch (onError) {
+      // Login failed
+      // Error code for login failure, please refer to the error code document for handling
+      log('Error logging into zego with code ${onError.code}');
+
+      // Error message for login failure
+      log('Error logging into zego with message ${onError.message}');
     }
   }
 

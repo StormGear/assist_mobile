@@ -215,14 +215,14 @@ class _SettingsState extends State<Settings> {
               ),
               child: Column(
                 children: [
-                  ListTile(
-                    title: Text(
-                      'Manage Posts',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    trailing: Icon(Icons.arrow_forward_ios),
-                    subtitle: Text('Edit, delete or view your posts'),
-                  ),
+                  // ListTile(
+                  //   title: Text(
+                  //     'Manage Posts',
+                  //     style: Theme.of(context).textTheme.titleLarge,
+                  //   ),
+                  //   trailing: Icon(Icons.arrow_forward_ios),
+                  //   subtitle: Text('Edit, delete or view your posts'),
+                  // ),
                   ListTile(
                     onTap: () => Get.toNamed('/certification'),
                     title: Text(
@@ -230,13 +230,6 @@ class _SettingsState extends State<Settings> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     subtitle: Text('Submit your skill certifications'),
-                    trailing: Icon(Icons.arrow_forward_ios),
-                  ),
-                  ListTile(
-                    title: Text(
-                      'Account',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
                     trailing: Icon(Icons.arrow_forward_ios),
                   ),
                 ],

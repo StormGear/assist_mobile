@@ -158,33 +158,34 @@ class _PostPageState extends State<PostPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            decoration: ShapeDecoration(
-                                color: Colors.grey.shade200,
-                                shape: CircleBorder()),
-                            child: IconButton(
-                                onPressed: () async {
-                                  try {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ChatScreen(
-                                          conversationId:
-                                              widget.postData['user_id'] ??
-                                                  'user_id',
-                                        ),
-                                      ),
-                                    );
-                                  } catch (e) {
-                                    log(e.toString());
-                                  }
-                                },
-                                icon: const Icon(Icons.chat, color: primaryColor
-                                    // size: 30,
-                                    )),
-                          ),
-                          Gap(10),
-                          Text('Chat')
+                          // Container(
+                          //   decoration: ShapeDecoration(
+                          //       color: Colors.grey.shade200,
+                          //       shape: CircleBorder()),
+                          //   child: IconButton(
+                          //       onPressed: () async {
+                          //         try {
+                          //           Navigator.push(
+                          //             context,
+                          //             MaterialPageRoute(
+                          //               builder: (context) => ChatScreen(
+                          //                 conversationId:
+                          //                     widget.postData['user_id'] ??
+                          //                         'user_id',
+                          //               ),
+                          //             ),
+                          //           );
+                          //         } catch (e) {
+                          //           log(e.toString());
+                          //         }
+                          //       },
+                          //       icon: const Icon(Icons.chat, color: primaryColor
+                          //           // size: 30,
+                          //           ))
+                          //           ,
+                          // ),
+                          // Gap(10),
+                          // Text('Chat')
                         ],
                       ),
                     ],
@@ -277,16 +278,22 @@ class _PostPageState extends State<PostPage> {
                     Gap(10),
                     Row(
                       children: [
+                        // CircleAvatar(
+                        //     radius: 30,
+                        //     backgroundColor: Colors.grey,
+                        //     backgroundImage: userDetails['profile_url'] !=
+                        //                 null ||
+                        //             userDetails['profile_url'] != '' ||
+                        //             userDetails['profile_url'] != 'null'
+                        //         ? CachedNetworkImageProvider(
+                        //             userDetails['profile_url'],
+                        //           )
+                        //         : AssetImage("assets/images/logo/favicon.png")),
                         CircleAvatar(
                             radius: 30,
-                            backgroundColor: Colors.grey,
-                            backgroundImage: userDetails['profile_url'] !=
-                                        null ||
-                                    userDetails['profile_url'] != ''
-                                ? CachedNetworkImageProvider(
-                                    userDetails['profile_url'],
-                                  )
-                                : AssetImage("assets/images/logo/favicon.png")),
+                            backgroundColor: Colors.white,
+                            backgroundImage:
+                                AssetImage("assets/images/logo/favicon.png")),
                         Gap(15),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,7 +365,7 @@ class _PostPageState extends State<PostPage> {
                               review: ReviewModel(
                             avatarUrl: userDetails['profile_url'] ?? '',
                             author: userDetails['firstname'] ?? 'User',
-                            rating: reviews[0]['rating'] ?? 0,
+                            rating: 5,
                             date: DateTime.parse(convertFirestoreObjects(
                                 reviews[0]['created_at'])),
                             comment: 'Review message',

@@ -166,7 +166,7 @@ class _WriteReviewDialogState extends State<WriteReviewDialog> {
                 "created_at": DateTime.now()
               };
               // Save the review to the database
-              await DatabaseController.instance.createReview(review);
+              // await DatabaseController.instance.createReview(review);
               Fluttertoast.showToast(
                   msg: "Review submitted successfully",
                   toastLength: Toast.LENGTH_SHORT,

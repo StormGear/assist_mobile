@@ -2,7 +2,7 @@ name: assist
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -30,7 +30,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -70,7 +69,7 @@ dependencies:
   flutter_phone_direct_caller: ^2.1.1
   typesense: ^0.5.2
   flutter_rating_bar: ^4.0.1
-  zego_zimkit: ^1.18.14
+  zego_zimkit: ^1.18.16
 
 dev_dependencies:
   flutter_test:
@@ -85,23 +84,23 @@ dev_dependencies:
   flutter_lints: ^5.0.0
 
 flutter_native_splash:
-  color: '#FFFFFF'
-  color_dark: '#FFFFFF'
-  image: 'assets/images/logo/logow.png'
-  image_dark: 'assets/images/logo/logow.png'
+  color: "#FFFFFF"
+  color_dark: "#FFFFFF"
+  image: "assets/images/logo/logow.png"
+  image_dark: "assets/images/logo/logow.png"
 
   android_12:
-    image: 'assets/images/logo/logow.png'
-    icon_background_color: '#FFFFFF'
-    image_dark: 'assets/images/logo/logow.png'
-    icon_background_color_dark: '#FFFFFF'
+    image: "assets/images/logo/logow.png"
+    icon_background_color: "#FFFFFF"
+    image_dark: "assets/images/logo/logow.png"
+    icon_background_color_dark: "#FFFFFF"
     ios: true
 
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   remove_alpha_ios: true
-  image_path: 'assets/images/logo/logow.png'
+  image_path: "assets/images/logo/logow.png"
   min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
@@ -109,7 +108,6 @@ flutter_launcher_icons:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

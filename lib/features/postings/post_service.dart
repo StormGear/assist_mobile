@@ -39,7 +39,7 @@ class _PostServiceState extends State<PostService> {
       log("Phone number is ${value.number}");
       return 'Please enter 10 digits';
     } else {
-      // remove the first 0 from the phone number
+      // remove the first 0 from the phone numb
       _phoneController.text = value!.number.substring(1);
     }
     return null;

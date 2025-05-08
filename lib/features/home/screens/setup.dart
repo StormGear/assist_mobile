@@ -141,16 +141,16 @@ class _SetupState extends State<Setup> {
               ),
               automaticallyImplyLeading: false,
               actions: [
-                IconButton(
-                  iconSize: 30,
-                  icon: Icon(
-                    Icons.chat,
-                    color: primaryColor,
-                  ),
-                  onPressed: () {
-                    _startNewChat(context);
-                  },
-                ),
+                // IconButton(
+                //   iconSize: 30,
+                //   icon: Icon(
+                //     Icons.chat,
+                //     color: primaryColor,
+                //   ),
+                //   onPressed: () {
+                //     _startNewChat(context);
+                //   },
+                // ),
               ],
             ),
           3 => AppBar(

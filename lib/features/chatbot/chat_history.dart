@@ -93,14 +93,14 @@ class ChatHistory extends StatelessWidget {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 16.0, left: 16.0),
-            child: Text(
-              "Conversations",
-              style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-            ),
-          ),
-          AllMessages(scrollController: _scrollController),
+          // const Padding(
+          //   padding: EdgeInsets.only(top: 16.0, left: 16.0),
+          //   child: Text(
+          //     "Conversations",
+          //     style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          //   ),
+          // ),
+          // AllMessages(scrollController: _scrollController),
         ],
       ),
     );

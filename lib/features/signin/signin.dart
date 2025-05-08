@@ -179,7 +179,7 @@ class _SignInState extends State<SignIn> {
                                                     loadingColor),
                                           )
                                       : null,
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
                                       try {
                                         if (mounted) {
@@ -196,21 +196,25 @@ class _SignInState extends State<SignIn> {
                                         };
                                         databaseController
                                             .loginUser(user)
-                                            .then((value) {
+                                            .then((value) async {
+                                          log('value: $value');
+                                          // await databaseController.zegoLogin(
+                                          //     UserDetails
+                                          //         .instance.getFirstname);
+                                          // await ZIMKit().connectUser(
+                                          //     id: UserDetails
+                                          //         .instance.getUserId,
+                                          //     name: UserDetails
+                                          //         .instance.getFirstname);
+
+                                          // log("ZIMKit ID: $id");
+                                          // // attempt to login to ZIMKit
+
                                           if (mounted) {
                                             setState(() {
                                               loading = false;
                                             });
                                           }
-                                          ZIMKit()
-                                              .connectUser(
-                                            id: UserDetails.instance.getUserId,
-                                            name: UserDetails
-                                                .instance.getFirstname,
-                                          )
-                                              .then((_) {
-                                            log('User is now connected to Zego');
-                                          });
 
                                           if (value) {
                                             Get.toNamed('/home');
